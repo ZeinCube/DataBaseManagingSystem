@@ -9,5 +9,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jackson-core-2.2.3" level="project" />
+    <orderEntry type="library" name="jackson-databind-2.2.3" level="project" />
+    <orderEntry type="library" name="jackson-annotations-2.0.1" level="project" />
   </component>
 </module>
