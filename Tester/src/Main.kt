@@ -14,6 +14,7 @@ class Main : Application() {
         System.setProperty("prism.lcdtext", "false") // for beautiful fonts on linux
         primaryStage?.scene = Scene(load<Parent?>(Main.javaClass.getResource(layout)))
         primaryStage?.show()
+
     }
 
     companion object {
