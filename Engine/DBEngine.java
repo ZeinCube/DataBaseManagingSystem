@@ -1,4 +1,5 @@
 import Entity.MetaFile;
+import Entity.MetaTable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +23,25 @@ public class DBEngine {
         return true;
     }
 
+    public void connectToDataBase(String dataBaseName) throws Exception {
+        try {
+            isDataBaseExist(dataBaseName);
+            metaFile = MetaFile.toObject(getMetaFileName(dataBaseName));
+        } catch (Exception e) {
+            throw new Exception("Such database not exist");
+        }
+
+        System.out.println("Connected to DataBase " + dataBaseName);
+    }
+
+    public void createTable(String tableName) throws Exception {
+        if (metaFile == null) {
+            throw new Exception("Not connected to Data Base");
+        }
+
+        metaFile.addTable(new MetaTable(tableName));
+    }
+
     private void checkDirectory() throws FileNotFoundException {
         File directory = new File(homeDirectory);
 
@@ -30,14 +50,16 @@ public class DBEngine {
                 throw new FileNotFoundException("Could not create directory");
             }
         }
-
-        System.out.println("Directory " + homeDirectory + " exists");
     }
 
-    private boolean isDataBaseExist(String name) throws Exception {
+    private boolean isDataBaseExist(String dataBaseName) throws Exception {
         checkDirectory();
-        File mFile = new File(homeDirectory + "/meta-" + name + ".dbms");
+        File mFile = new File(getMetaFileName(dataBaseName));
 
         return mFile.exists();
+    }
+
+    private String getMetaFileName(String dataBaseName) {
+        return homeDirectory + "/meta-" + dataBaseName + ".dbms";
     }
 }

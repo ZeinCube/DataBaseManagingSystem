@@ -16,6 +16,9 @@ public class MetaTable {
         columns = new ArrayList<>();
     }
 
+    public MetaTable() {
+    }
+
     public String getName() {
         return name;
     }
