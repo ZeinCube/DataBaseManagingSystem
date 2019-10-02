@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class MetaFile {
     private String dataBaseName;
-    private HashMap<String, MetaTable> tableNamesToFiles = new HashMap<>();
+    private HashMap<String, MetaTable> Tables = new HashMap<>();
     private long lastIndex;
 
     public static void toJSON(MetaFile file) {
@@ -46,14 +46,26 @@ public class MetaFile {
         this.lastIndex = lastIndex;
     }
 
-    public MetaFile addTable(MetaTable table) {
-        tableNamesToFiles.put(table.getName(), table);
+    public MetaFile addTable(MetaTable table) throws Exception {
+        if (Tables.containsKey(table.getName())) {
+            throw new Exception("Such table already exists");
+        }
+
+        Tables.put(table.getName(), table);
 
         return this;
     }
 
-    public HashMap<String, MetaTable> getTableNamesToFiles() {
-        return tableNamesToFiles;
+    public void dropTable(String tableName) throws Exception {
+        if (!Tables.containsKey(tableName)) {
+            throw new Exception("Table with name \"" + tableName + "does not exist\"");
+        }
+
+        Tables.remove(tableName);
+    }
+
+    public HashMap<String, MetaTable> getTables() {
+        return Tables;
     }
 
     public MetaFile setLastIndex(long lastIndex) {
@@ -72,6 +84,14 @@ public class MetaFile {
 
     public String getDataBaseName() {
         return dataBaseName;
+    }
+
+    public MetaTable getMetaTable(String tableName) throws Exception {
+        if (!Tables.containsKey(tableName)) {
+            throw new Exception("Table with name \"" + tableName + "does not exist\"");
+        }
+
+        return Tables.get(tableName);
     }
 
     private String getPath() {

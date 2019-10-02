@@ -16,6 +16,12 @@ public class MetaTable {
         columns = new ArrayList<>();
     }
 
+    public MetaTable(String name, ArrayList<Column> columns) {
+        this.name = name;
+        this.columns = columns;
+        totalRows = 0;
+    }
+
     public MetaTable() {
     }
 
