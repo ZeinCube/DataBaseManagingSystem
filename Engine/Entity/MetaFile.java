@@ -62,10 +62,6 @@ public class MetaFile {
         return this;
     }
 
-    private String getPath() {
-        return System.getProperty("user.home") + "/.dbms/meta-" + dataBaseName + ".dbms";
-    }
-
     public long getLastIndex() {
         return lastIndex;
     }
@@ -76,5 +72,9 @@ public class MetaFile {
 
     public String getDataBaseName() {
         return dataBaseName;
+    }
+
+    private String getPath() {
+        return System.getProperty("user.home") + "/.dbms/meta-" + dataBaseName + ".dbms";
     }
 }
