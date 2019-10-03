@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 public class Parser {
-    String commandRegex = "";
-
     List<String> keyWords = Arrays.asList(
             "inquiry_type",
             "table",
             "primary_key",
+//        "foreign_key",
+//        "not_null",
             "unique"
     );
 
@@ -23,19 +23,13 @@ public class Parser {
 
     Map<String, Constr> keyToConstr = new HashMap<String, Constr>() {{
         put("primary key", Constr.primary_key);
+//        put("foreign key", Constr.foreign_key);
+//        put("not null", Constr.not_null);
         put("unique", Constr.unique);
+//        put("check", Constr.check);
     }};
 
-    int pos = 0;
+    public void pars(String s) {
 
-    public void pars(String[] s) {
-        if (s[pos] == "create") {
-            ++pos;
-            parse_create(words);
-        } else if (words[pos] == drop) {
-            ++pos;
-            parse_drop(words);
-        }
-        return;
     }
 }
