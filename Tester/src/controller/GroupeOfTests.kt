@@ -41,6 +41,8 @@ class GroupeOfTests {
         val outDir = File( "$dirr\\$s.out")
         inDir.createNewFile()
         outDir.createNewFile()
-        Tests+= Test(s,"",null,null,TestType.test)
+        inDir.appendText("\n")
+        outDir.appendText("\n")
+        Tests+= Test(s,"", arrayOf(""), arrayOf(""),TestType.test)
     }
 }

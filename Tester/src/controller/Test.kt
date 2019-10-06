@@ -23,7 +23,8 @@ class Test(var name: String, var testResult: String, var _in: Array<String>? = n
         meta.createNewFile()
         for (s in tests)
             if (s != name)
-                meta.appendText(s)
+                meta.appendText(s+"\n")
+        meta.appendText(name+"\n")
         var inFile = File("$path\\$name.in")
         var outFile = File("$path\\$name.out")
         name = _name
@@ -32,9 +33,9 @@ class Test(var name: String, var testResult: String, var _in: Array<String>? = n
         inFile.createNewFile()
         outFile.createNewFile()
         for (s in __in)
-            inFile.appendText(s)
+            inFile.appendText(s+"\n")
         for (s in __out)
-            inFile.appendText(s)
+            outFile.appendText(s+"\n")
         _in = __in
         _out = __out
 

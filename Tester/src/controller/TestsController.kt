@@ -118,13 +118,13 @@ class TestsController {
             mainBox.minHeight = (26.0*5+24)*inAreas.size+50+50
         }
 
-
+        lateinit var nameBox : TextArea
         fun save(){
             val _in = Array<String>(inAreas.size,{inAreas[it].text})
             val _out = Array<String>(inAreas.size,{outAreas[it].text})
             test?.update(nameBox.text,_in,_out)
         }
-        lateinit var nameBox : TextArea
+
         fun retest(){
             save()
             test?.checkTest()
@@ -134,7 +134,7 @@ class TestsController {
             }
         }
         fun initialize() {
-            val nameBox = TextArea(test?.name)
+            nameBox = TextArea(test?.name)
             nameBox.maxHeight = 26.0
             nameBox.minHeight = 26.0
             nameBox.maxWidth = 150.0
@@ -159,7 +159,7 @@ class TestsController {
             mainBox.children.addAll(pane)
             mainBox.minWidth = 900.0
             mainBox.maxWidth = 900.0
-
+            if (!test?._in.isNullOrEmpty())
             for (i in test?._in!!)
             {
                 addNewTest()

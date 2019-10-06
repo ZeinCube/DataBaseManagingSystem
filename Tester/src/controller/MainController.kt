@@ -79,6 +79,8 @@ class MainController {
                 val outDir = File("$path$name\\def1.out")
                 inDir.createNewFile()
                 outDir.createNewFile()
+                inDir.appendText("\n")
+                outDir.appendText("\n")
 
                 testGropes += GroupeOfTests(path, s)
                 var t = TreeItem(testGropes.last().name)
