@@ -1,4 +1,4 @@
-package Entity;
+package Entity.Meta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,28 +10,6 @@ public class MetaFile {
     private String dataBaseName;
     private HashMap<String, MetaTable> Tables = new HashMap<>();
     private long lastIndex;
-
-    public static void toJSON(MetaFile file) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            mapper.writeValue(new File(file.getPath()), file);
-        } catch (IOException e) {
-            System.err.println("Could not create meta file: \n" + e.getMessage());
-            System.exit(1);
-        }
-    }
-
-    public static MetaFile toObject(String fileName) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(new File(fileName), MetaFile.class);
-        } catch (IOException e) {
-            System.err.println("Could not read value from meta file: \n" + e.getMessage());
-            System.exit(1);
-        }
-
-        return null;
-    }
 
     public MetaFile() {
     }
@@ -94,7 +72,29 @@ public class MetaFile {
         return Tables.get(tableName);
     }
 
-    private String getPath() {
+    public void saveToJSON() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper.writeValue(new File(this.getPath()), this);
+        } catch (IOException e) {
+            System.err.println("Could not create file: \n" + e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    public MetaFile toObject(String fileName) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(new File(fileName), this.getClass());
+        } catch (IOException e) {
+            System.err.println("Could not read value from file: \n" + e.getMessage());
+            System.exit(1);
+        }
+
+        return null;
+    }
+
+    public String getPath() {
         return System.getProperty("user.home") + "/.dbms/meta-" + dataBaseName + ".dbms";
     }
 }

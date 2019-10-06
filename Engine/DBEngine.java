@@ -1,6 +1,6 @@
-import Entity.Column;
-import Entity.MetaFile;
-import Entity.MetaTable;
+import Entity.Meta.MetaColumn;
+import Entity.Meta.MetaFile;
+import Entity.Meta.MetaTable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +20,7 @@ public class DBEngine {
         }
 
         metaFile = new MetaFile(dataBaseName);
-        MetaFile.toJSON(metaFile);
+        metaFile.saveToJSON();
 
         return true;
     }
@@ -28,7 +28,7 @@ public class DBEngine {
     public void connectToDataBase(String dataBaseName) throws Exception {
         try {
             isDataBaseExist(dataBaseName);
-            metaFile = MetaFile.toObject(getMetaFileName(dataBaseName));
+            metaFile = new MetaFile().toObject(getMetaFileName(dataBaseName));
         } catch (Exception e) {
             throw new Exception("Such database not exist");
         }
@@ -39,24 +39,25 @@ public class DBEngine {
     public void createTable(String tableName) throws Exception {
         checkIfConnectedToDataBase();
 
-        MetaTable table = new MetaTable(tableName, new ArrayList<>());
+        MetaTable table = new MetaTable(tableName);
         metaFile.addTable(table);
-        MetaFile.toJSON(metaFile);
+
+        metaFile.saveToJSON();
 
         System.out.println("Created table " + tableName);
     }
 
-    public void createTable(String tableName, ArrayList<Column> columns) {
+    public void createTable(String tableName, ArrayList<MetaColumn> columns, MetaColumn primaryKeyColumn) {
         checkIfConnectedToDataBase();
 
-        MetaTable table = new MetaTable(tableName, columns);
+        MetaTable table = new MetaTable(tableName, columns, primaryKeyColumn);
         try {
             metaFile.addTable(table);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return;
         }
-        MetaFile.toJSON(metaFile);
+        metaFile.saveToJSON();
 
         System.out.println("Created table " + tableName);
     }
@@ -72,7 +73,7 @@ public class DBEngine {
             return;
         }
 
-        MetaFile.toJSON(metaFile);
+        metaFile.saveToJSON();
         System.out.println("Table " + tableName + " dropped");
     }
 

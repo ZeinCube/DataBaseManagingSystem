@@ -24,8 +24,6 @@ public class Column<K, V> {
     public Column() {
     }
 
-    ;
-
     public HashMap<K, V> getObjects() {
         return objects;
     }
