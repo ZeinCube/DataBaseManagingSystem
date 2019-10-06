@@ -18,7 +18,7 @@ class GroupeOfTests {
 
             val inDir = File( "$dir$n\\$it.in")
             val outDir = File( "$dir$n\\$it.out")
-            Tests = Tests + Test(it,"",inDir.readLines().toTypedArray(),outDir.readLines().toTypedArray(),TestType.test)
+            Tests = Tests + Test(it,"",inDir.readLines().toTypedArray(),outDir.readLines().toTypedArray(),TestType.test,n)
         }
 
     }

@@ -1,8 +1,48 @@
 package controller
+
+import java.io.File
+import java.nio.file.Paths
+import java.util.*
+
 enum class TestType{
     group,
     test,
     root
 }
-class Test(val name: String, val result: String, val _in: Array<String>? = null, val _out: Array<String>? = null, val type: TestType)
+class Test(var name: String, var testResult: String, var _in: Array<String>? = null, var _out: Array<String>? = null, var type: TestType, var gr:String? = null)
+{
+    val _results: Array<String> = Array<String>(0,{""})
+    val _des: Array<String> = Array<String>(0,{""})
+
+    fun update(_name: String, __in: Array<String>, __out: Array<String>) {
+        var _path = Paths.get("").toAbsolutePath().toString()
+        var path = "$_path\\tests\\$gr"
+        var meta = File("$path\\meta.txt")
+        var tests = meta.readLines()
+        meta.delete()
+        meta.createNewFile()
+        for (s in tests)
+            if (s != name)
+                meta.appendText(s)
+        var inFile = File("$path\\$name.in")
+        var outFile = File("$path\\$name.out")
+        name = _name
+        inFile.delete()
+        outFile.delete()
+        inFile.createNewFile()
+        outFile.createNewFile()
+        for (s in __in)
+            inFile.appendText(s)
+        for (s in __out)
+            inFile.appendText(s)
+        _in = __in
+        _out = __out
+
+    }
+
+    fun checkTest()
+    {
+
+    }
+}
 
