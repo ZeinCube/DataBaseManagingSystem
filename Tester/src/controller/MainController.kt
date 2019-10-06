@@ -25,33 +25,26 @@ class MainController {
     lateinit var testButton: Button
     lateinit var MainPlane: Pane
     lateinit var newGroupeName: TextArea
-    lateinit var TestScene:Scene
+    lateinit var TestScene: Scene
 
     var testGropes: Array<GroupeOfTests> = arrayOf()
     var _path = Paths.get("").toAbsolutePath().toString()
     var path = "$_path\\tests\\"
     val mainDir = File("$path\\meta.txt")
     val treeTableView = TreeTableView<Test>()
-    private fun addNewTest(Group:String)
-    {
-        lateinit var Gr:GroupeOfTests
-        for(gr in testGropes)
-        {
-            if(gr.name.name == Group)
-            {
+    private fun addNewTest(Group: String) {
+        lateinit var Gr: GroupeOfTests
+        for (gr in testGropes) {
+            if (gr.name.name == Group) {
                 Gr = gr
                 break
             }
         }
-        for(i in 1..1000)
-        {
-            if (!Gr.exist("def$i"))
-            {
+        for (i in 1..1000) {
+            if (!Gr.exist("def$i")) {
                 Gr.addTest("def$i")
-                for(node in treeTableView.root.children)
-                {
-                    if (node.value.name==Group)
-                    {
+                for (node in treeTableView.root.children) {
+                    if (node.value.name == Group) {
                         node.children.addAll(TreeItem(Gr.Tests.last()))
                     }
                 }
@@ -60,7 +53,8 @@ class MainController {
         }
 
     }
-    private fun addNewGroup(s:String) {
+
+    private fun addNewGroup(s: String) {
         var flag = true
         for (gr in testGropes) {
             if (gr.name.name == s) {
@@ -68,36 +62,44 @@ class MainController {
                 break
             }
         }
-        if (s.length>0)
-        if (flag) {
-            val name = newGroupeName.text
-            val newDir = File("$path$name")
-            if(testGropes.size>0)
-            mainDir.appendText("\n$name")
-            else
+        if (s.length > 0)
+            if (flag) {
+                val name = newGroupeName.text
+                val newDir = File("$path$name")
+                if (testGropes.size > 0)
+                    mainDir.appendText("\n$name")
+                else
 
-                mainDir.appendText("$name")
-            newDir.mkdir()
-            val newFile = File("$path$name\\meta.txt")
-            newFile.createNewFile()
-            newFile.appendText("def1")
-            val inDir = File( "$path$name\\def1.in")
-            val outDir = File( "$path$name\\def1.out")
-            inDir.createNewFile()
-            outDir.createNewFile()
+                    mainDir.appendText("$name")
+                newDir.mkdir()
+                val newFile = File("$path$name\\meta.txt")
+                newFile.createNewFile()
+                newFile.appendText("def1")
+                val inDir = File("$path$name\\def1.in")
+                val outDir = File("$path$name\\def1.out")
+                inDir.createNewFile()
+                outDir.createNewFile()
 
-            testGropes+= GroupeOfTests(path,s)
-            treeTableView.root.children.addAll(TreeItem(testGropes.last().name))
-        }
+                testGropes += GroupeOfTests(path, s)
+                var t = TreeItem(testGropes.last().name)
+                t.children.addAll(TreeItem(testGropes.last().Tests.last()))
+                treeTableView.root.children.addAll(t)
+            }
     }
 
-    val layout:String = "/res/testInfo.fxml"
-    var newStage: Stage?
-    private fun checkTest(data:Test)
-    {
+    val layout: String = "/res/testInfo.fxml"
+    var newStage: Stage? = null
+    private fun checkTest(data: Test) {
+        if (newStage == null)
+            newStage = Stage()
+
+        newStage?.close()
+        TestsController.test = data
         val scene = Scene(FXMLLoader.load<Parent?>(Main.javaClass.getResource(layout)))
-        newStage.scene = scene
-        newStage.show()
+        newStage?.scene = scene
+        newStage?.show()
+
+
     }
 
     private fun addButtonToTable() {
@@ -114,7 +116,7 @@ class MainController {
                             addNewGroup(newGroupeName.text)
                         } else {
                             if (data.value.type == TestType.test) {
-                                btn.text = "Check Test"
+                                checkTest(data.value)
                             } else {
                                 addNewTest(data.value.name)
                             }
@@ -148,7 +150,8 @@ class MainController {
         colBtn.cellFactory = cellFactory
         treeTableView.columns.add(colBtn)
     }
-    fun initTable(){
+
+    fun initTable() {
         val testnamec = TreeTableColumn<Test, String>("Tests")
         testnamec.minWidth = 100.0
         val resultc = TreeTableColumn<Test, String>("Result")
@@ -173,10 +176,6 @@ class MainController {
                 println(it)
             }
         }
-
-
-
-
 
 
         val root = TreeItem<Test>(Test(" ", "", null, null, TestType.root));
