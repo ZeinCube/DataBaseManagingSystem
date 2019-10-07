@@ -2,19 +2,19 @@ package controller
 
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.scene.layout.Pane
-import javafx.scene.control.cell.TreeItemPropertyValueFactory
 import java.io.File
 import java.nio.file.Paths
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeTableColumn
-import com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table
 import javafx.event.ActionEvent
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 import javafx.util.Callback
+import javafx.beans.property.StringProperty
+
 
 /**
  * Created by naik on 06.02.16.
@@ -23,7 +23,7 @@ class MainController {
 
     @FXML
     lateinit var testButton: Button
-    lateinit var MainPlane: Pane
+    lateinit var MainPane: BorderPane
     lateinit var newGroupeName: TextArea
     lateinit var TestScene: Scene
 
@@ -104,6 +104,14 @@ class MainController {
 
     }
 
+    private fun updateTable() {
+        for (column in treeTableView.getColumns())
+        {
+            column.isVisible = false
+            column.isVisible = true
+        }
+    }
+
     private fun addButtonToTable() {
         val colBtn = TreeTableColumn<Test, TestType>("Button Column")
 
@@ -112,8 +120,14 @@ class MainController {
                 private val btn = Button("Action")
 
                 init {
+
                     btn.setOnAction { event: ActionEvent ->
                         val data = treeTableView.getTreeItem(index)
+
+                            if (data != null) {
+                                data.value.updater = { updateTable() }
+                            }
+
                         if (data.value.type == TestType.root) {
                             addNewGroup(newGroupeName.text)
                         } else {
@@ -123,6 +137,7 @@ class MainController {
                                 addNewTest(data.value.name)
                             }
                         }
+
                     }
                 }
 
@@ -153,30 +168,55 @@ class MainController {
         treeTableView.columns.add(colBtn)
     }
 
+
     fun initTable() {
         val testnamec = TreeTableColumn<Test, String>("Tests")
         testnamec.minWidth = 100.0
         val resultc = TreeTableColumn<Test, String>("Result")
 
+        val cellFactory = Callback<TreeTableColumn<Test, String>, TreeTableCell<Test, String>> {
+            object : TreeTableCell<Test, String>() {
+                private val text = Label("Action")
+
+                override fun updateItem(item: String?, empty: Boolean) {
+
+                    super.updateItem(item, empty)
+
+                    val data = treeTableView.getTreeItem(index)
+                    if (data != null) {
+                        if (tableColumn.text == "Tests") {
+                            text.text = data.value.name
+                        }
+                        if (tableColumn.text == "Result") {
+                            text.text = data.value.mainTestResult
+                        }
+/*
+                        if (tableColumn.text == "Tests")
+                        {
+                            text.text = data.value.name
+                        }*/
+                    }
+
+
+                    if (empty) {
+                        graphic = null
+                    } else {
+                        graphic = text
+                    }
+                }
+            }
+        }
+
         treeTableView.columns.addAll(testnamec, resultc)
-        testnamec.setCellValueFactory(TreeItemPropertyValueFactory<Test, String>("name"))
-        resultc.setCellValueFactory(TreeItemPropertyValueFactory<Test, String>("result"))
+        testnamec.setCellFactory(cellFactory)
+        resultc.setCellFactory(cellFactory)
         addButtonToTable()
     }
 
-    fun updateTable() {
+    fun loadTable() {
         testGropes = arrayOf()
         mainDir.forEachLine {
             testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
-        }
-
-
-
-        treeTableView.setOnMouseClicked() {
-
-            if (it.getClickCount() == 2) {
-                println(it)
-            }
         }
 
 
@@ -195,11 +235,15 @@ class MainController {
     fun initialize() {
 
         initTable()
-        updateTable()
+        loadTable()
+        newGroupeName.textProperty().addListener { observable, oldValue, newValue ->
+            if (newValue.contains('\n'))
+                (observable as StringProperty).value = oldValue else
+                (observable as StringProperty).value = newValue
+        }
 
 
-
-        MainPlane.children.add(treeTableView)
+        MainPane.center = (treeTableView)
     }
 
 }
