@@ -15,6 +15,7 @@ class Test(var name: String, var mainTestResult: String, var _in: Array<String>?
     var updater: () -> Unit = {}
     val _results: Array<String> = Array<String>(0, { "" })
     val _des: Array<String> = Array<String>(0, { "" })
+    var choosen: Boolean = true
 
     fun update(_name: String, __in: Array<String>, __out: Array<String>) {
         var _path = Paths.get("").toAbsolutePath().toString()

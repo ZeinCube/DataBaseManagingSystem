@@ -171,10 +171,12 @@ class MainController {
 
     fun initTable() {
         val testnamec = TreeTableColumn<Test, String>("Tests")
-        testnamec.minWidth = 100.0
+        testnamec.minWidth = 150.0
         val resultc = TreeTableColumn<Test, String>("Result")
+        resultc.minWidth = 10.0
+        val choosec = TreeTableColumn<Test, Boolean>("Selected")
 
-        val cellFactory = Callback<TreeTableColumn<Test, String>, TreeTableCell<Test, String>> {
+        val textCellFactory = Callback<TreeTableColumn<Test, String>, TreeTableCell<Test, String>> {
             object : TreeTableCell<Test, String>() {
                 private val text = Label("Action")
 
@@ -207,10 +209,73 @@ class MainController {
             }
         }
 
-        treeTableView.columns.addAll(testnamec, resultc)
-        testnamec.setCellFactory(cellFactory)
-        resultc.setCellFactory(cellFactory)
+        val chooseCellFactory = Callback<TreeTableColumn<Test, Boolean>, TreeTableCell<Test, Boolean>> {
+            object : TreeTableCell<Test, Boolean>() {
+                private val chooseBtn = CheckBox()
+                init {
+                    chooseBtn.setOnAction {
+                        val data = treeTableView.getTreeItem(index)
+                        data.value.choosen = chooseBtn.isSelected
+                        if((data.parent != null) and !chooseBtn.isSelected)
+                        {
+                            data.parent.value.choosen = false
+                            val data2 = data
+                            if((data2.parent != null) and !chooseBtn.isSelected)
+                            {
+                                data2.parent.value.choosen = false
+                            }
+                        }
+                        for (i in data.children)
+                        {
+                            i.value.choosen = chooseBtn.isSelected
+                            for(ii in i.children)
+                            {
+                                ii.value.choosen = chooseBtn.isSelected
+                            }
+                        }
+                        updateSelect()
+                    }
+                }
+
+                override fun updateItem(item: Boolean?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    val data = treeTableView.getTreeItem(index)
+                    if (data!= null)
+                    chooseBtn.isSelected = data.value.choosen
+                    if (empty) {
+                        graphic = null
+                    } else {
+                        graphic = chooseBtn
+                    }
+                }
+            }
+        }
+
+        treeTableView.columns.addAll(testnamec, resultc, choosec)
+        testnamec.setCellFactory(textCellFactory)
+        resultc.setCellFactory(textCellFactory)
+        choosec.setCellFactory(chooseCellFactory)
+
         addButtonToTable()
+    }
+
+    fun updateSelect()
+    {
+        val data = treeTableView.root
+        var flag1 = true
+            for (i in data.children)
+            {
+                i.value.choosen = data.value.choosen or i.value.choosen
+                var flag2 = true
+                for (ii in i.children) {
+                    ii.value.choosen = ii.value.choosen or i.value.choosen
+                    flag2 = flag2 and ii.value.choosen
+                }
+                i.value.choosen = flag2
+                flag1 = flag1 and i.value.choosen
+            }
+        data.value.choosen = flag1
+        updateTable()
     }
 
     fun loadTable() {
