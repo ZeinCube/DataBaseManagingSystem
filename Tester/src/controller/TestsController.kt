@@ -138,7 +138,12 @@ class TestsController {
             nameBox.maxHeight = 26.0
             nameBox.minHeight = 26.0
             nameBox.maxWidth = 150.0
-
+            nameBox.textProperty().addListener {
+                observable, oldValue, newValue ->
+                (observable as StringProperty).value
+                (observable as StringProperty).value = newValue.filter {
+                    ("йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm"+" "+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm".toUpperCase()).contains(it) }
+            }
             HBox.setMargin(nameBox, Insets(2.0, 0.0, 0.0, 13.0))
 
             val saveBtn = Button("Save Test")
