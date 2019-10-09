@@ -64,7 +64,10 @@ type_name:                                           name ( '(' signed_number ')
 
 sql_stmt_list:                                       sql_stmt;
 
-sql_stmt:                                            create_table;
+sql_stmt:                                            create_table
+                                                    |drop_table;
+
+drop_table: K_DROP K_TABLE table_name;
 
 create_table:                                        create_constr
                                                      table_name

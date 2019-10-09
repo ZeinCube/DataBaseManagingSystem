@@ -11,7 +11,7 @@ public class Console {
     public static void main(String[] args) {
         // создаем объект лексера. В качестве входа используем стандартный
 // ввод.
-        String str = "create table zhopa (kek int UNIQUE, kok int(5)) ";
+        String str = "drop table zhopa";
         HelloLexer lexer = new HelloLexer(CharStreams.fromString(str));
 
 // создаем объект парсера
