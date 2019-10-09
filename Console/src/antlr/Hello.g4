@@ -13,6 +13,8 @@ K_TABLE:                                         T A B L E;
 SPACE:                                          [\t\r\n]+;
 K_PRIMARY_KEY:                                  P R I M A R Y K E Y;
 K_UNIQUE:                                       U N I Q U E;
+DIGIT:                                 [0-9];
+NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?;
 
 IDENTIFIER:                                     '"' (~'"' | '""')* '"'
                                                |[a-zA-Z_] [a-zA-Z_0-9]* ;
@@ -20,7 +22,6 @@ IDENTIFIER:                                     '"' (~'"' | '""')* '"'
 UNEXPECTED:                                     '.';
 
 //fragments
-fragment DIGIT:                                 [0-9];
 fragment A:                                     [aA];
 fragment B:                                     [bB];
 fragment C:                                     [cC];
@@ -48,19 +49,29 @@ fragment X:                                     [xX];
 fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 
+OPEN_S: '(';
+CLOSE_S: ')';
+
+open_s: OPEN_S;
+close_s: CLOSE_S;
+
 parse:                                               sql_stmt_list EOF;
 
-sql_stmt_list:                                       sql_stmt ';'?;
-sql_stmt:                                            create_table;
 
+signed_number: ( '+' | '-' )? NUMERIC_LITERAL;
+
+type_name:                                           name ( '(' signed_number ')' )?;
+
+sql_stmt_list:                                       sql_stmt;
+
+sql_stmt:                                            create_table;
 
 create_table:                                        create_constr
                                                      table_name
-
+                                                     open_s
                                                      column_def
                                                      ( ',' column_def )*
-                                                     ( ',' )*
-                                                     ')';
+                                                     close_s;
 
 
 create_constr: K_CREATE K_TABLE;
@@ -68,15 +79,18 @@ create_constr: K_CREATE K_TABLE;
 WS : [ \t\r\n]+ -> skip;
 
 any_name:                                       IDENTIFIER
-                                                keyword
-                                                '(' any_name ')';
+                                                |keyword
+                                                |'(' any_name ')';
+
+name:any_name;
 
 column_def:                                     column_name
-                                                column_constraint*;
+                                                type_name?
+                                                column_constraint;
 
-column_constraint:                            ( K_PRIMARY_KEY
-                                                K_UNIQUE
-                                              );
+column_constraint:
+                                                (K_PRIMARY_KEY)?
+                                               |(K_UNIQUE)?;
 
 column_name:                                    any_name;
 
