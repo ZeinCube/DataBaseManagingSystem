@@ -1,9 +1,4 @@
 grammar Hello;
-//parse: create table name ';';
-//
-//create: 'create';
-//table: 'table';
-//name: 'zhopa';
 
 K_CREATE:                                        C R E A T E;
 K_DROP:                                          D R O P;
