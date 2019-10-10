@@ -11,6 +11,7 @@ import javafx.scene.control.Button
 import javafx.scene.text.Font
 import teststucture.MyFunction
 import teststucture.Test
+import teststucture.TestBlock
 
 
 class TestsController {
@@ -29,7 +30,7 @@ class TestsController {
         fun addNewTest(){
             val box = HBox()
             if (inAreas.size>=test?.tests?.size!!)
-                test?.tests = test?.tests!! + Test.TestBlock("","'")
+                test?.tests = test?.tests!! + TestBlock("","'")
 
             inAreas += TextArea(test?.tests!![(inAreas.size)].test)
             inAreas.last().maxWidth = 300.0-40.0
@@ -139,7 +140,8 @@ class TestsController {
             nameBox.textProperty().addListener {
                 observable, oldValue, newValue ->
                 (observable as StringProperty).value = newValue.filter {
-                    ("1234567890"+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm"+" "+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm".toUpperCase()).contains(it)
+                    ("1234567890"+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm"+
+                            " "+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm".toUpperCase()).contains(it)
                 }
             }
             HBox.setMargin(nameBox, Insets(2.0, 0.0, 0.0, 13.0))

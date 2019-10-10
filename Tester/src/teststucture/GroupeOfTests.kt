@@ -4,7 +4,13 @@ import java.io.File
 
 class GroupeOfTests : BaseTest {
     override fun checkTest() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        conclusion = TestResult.NT
+        if (selected)
+            for (i in Tests)
+            {
+                i.checkTest()
+                conclusion = conclusion and i.conclusion
+            }
     }
 
     var Tests: Array<Test> = arrayOf()

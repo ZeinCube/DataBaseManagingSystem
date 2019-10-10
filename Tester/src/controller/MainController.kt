@@ -37,13 +37,19 @@ class MainController {
     private val rootTest = object : BaseTest("TESTS")
     {
         override fun checkTest() {
-            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            conclusion = TestResult.NT
+            if (selected)
+                for (i in testGropes)
+                {
+                    i.checkTest()
+                    conclusion = conclusion and i.conclusion
+                }
         }
 
         var testGropes: Array<GroupeOfTests> = arrayOf()
         init {
             conclusion = TestResult.NT
-            type = TestType.group
+            type = TestType.root
             mainDir.forEachLine {
                 testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
             }
@@ -199,9 +205,21 @@ class MainController {
                         {
                             data.parent.value.selected = false
                             val data2 = data
-                            if((data2.parent != null) and !chooseBtn.isSelected)
+                            if(!chooseBtn.isSelected)
                             {
-                                data2.parent.value.selected = false
+                                if (data2.parent != null) {
+                                    data2.parent.value.selected = false
+                                    if (data2.parent.parent != null)
+                                        data2.parent.parent.value.selected = false
+                                }
+                                for (i in data.children)
+                                {
+                                    i.value.selected = false
+                                    for (ii in i.children)
+                                    {
+                                        ii.value.selected = false
+                                    }
+                                }
                             }
                         }
                         updateSelect()
