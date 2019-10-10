@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 import javafx.util.Callback
 import javafx.beans.property.StringProperty
+import teststucture.*
 
 
 /**
@@ -27,82 +28,114 @@ class MainController {
     lateinit var newGroupeName: TextArea
     lateinit var TestScene: Scene
 
-    var testGropes: Array<GroupeOfTests> = arrayOf()
+
     var _path = Paths.get("").toAbsolutePath().toString()
     var path = "$_path\\tests\\"
     val mainDir = File("$path\\meta.txt")
-    val treeTableView = TreeTableView<Test>()
-    private fun addNewTest(Group: String) {
-        lateinit var Gr: GroupeOfTests
-        for (gr in testGropes) {
-            if (gr.name.name == Group) {
-                Gr = gr
-                break
+    val treeTableView = TreeTableView<BaseTest>()
+
+    private val rootTest = object : BaseTest("TESTS")
+    {
+        override fun checkTest() {
+            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        var testGropes: Array<GroupeOfTests> = arrayOf()
+        init {
+            conclusion = TestResult.NT
+            type = TestType.group
+            mainDir.forEachLine {
+                testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
             }
         }
-        for (i in 1..1000) {
-            if (!Gr.exist("def$i")) {
-                Gr.addTest("def$i")
-                for (node in treeTableView.root.children) {
-                    if (node.value.name == Group) {
-                        node.children.addAll(TreeItem(Gr.Tests.last()))
-                    }
+
+        fun addNewTest(Group: String) {
+            lateinit var Gr: GroupeOfTests
+            for (gr in testGropes) {
+                if (gr.name == Group) {
+                    Gr = gr
+                    break
                 }
-                break
             }
+            for (i in 1..1000) {
+                if (!Gr.exist("def$i")) {
+                    Gr.addTest("def$i")
+                    for (node in treeTableView.root.children) {
+                        if (node.value.name == Group) {
+                            node.children.addAll(TreeItem<BaseTest>(Gr.Tests.last()))
+                        }
+                    }
+                    break
+                }
+            }
+
         }
+
+        fun addNewGroup(s: String) {
+            var flag = true
+            for (gr in testGropes) {
+                if (gr.name == s) {
+                    flag = false
+                    break
+                }
+            }
+            if (s.length > 0)
+                if (flag) {
+                    val name = newGroupeName.text
+                    val newDir = File("$path$name")
+                    if (testGropes.size > 0)
+                        mainDir.appendText("\n$name")
+                    else
+
+                        mainDir.appendText("$name")
+                    newDir.mkdir()
+                    val newFile = File("$path$name\\meta.txt")
+                    newFile.createNewFile()
+                    newFile.appendText("def1")
+                    val inDir = File("$path$name\\def1.in")
+                    val outDir = File("$path$name\\def1.out")
+                    inDir.createNewFile()
+                    outDir.createNewFile()
+                    inDir.appendText("\n")
+                    outDir.appendText("\n")
+
+                    testGropes += GroupeOfTests(path, s)
+                    var t = TreeItem<BaseTest>(testGropes.last())
+                    t.children.add(TreeItem<BaseTest>(testGropes.last().Tests.last()))
+                    treeTableView.root.children.addAll(t)
+                }
+        }
+
+        private var newStage: Stage? = null
+
+        fun checkTest(data: Test) {
+            if (newStage == null)
+                newStage = Stage()
+
+            newStage?.close()
+            TestsController.test = data
+            val scene = Scene(FXMLLoader.load<Parent?>(Main.javaClass.getResource(layout)))
+            newStage?.scene = scene
+            newStage?.show()
+            data.updaters += object : MyFunction {
+                override fun invoke() {
+                    updateTable()
+                }
+            }
+            newStage!!.setOnCloseRequest {
+                data.updaters = arrayOf()
+            }
+
+        }
+
 
     }
 
-    private fun addNewGroup(s: String) {
-        var flag = true
-        for (gr in testGropes) {
-            if (gr.name.name == s) {
-                flag = false
-                break
-            }
-        }
-        if (s.length > 0)
-            if (flag) {
-                val name = newGroupeName.text
-                val newDir = File("$path$name")
-                if (testGropes.size > 0)
-                    mainDir.appendText("\n$name")
-                else
 
-                    mainDir.appendText("$name")
-                newDir.mkdir()
-                val newFile = File("$path$name\\meta.txt")
-                newFile.createNewFile()
-                newFile.appendText("def1")
-                val inDir = File("$path$name\\def1.in")
-                val outDir = File("$path$name\\def1.out")
-                inDir.createNewFile()
-                outDir.createNewFile()
-                inDir.appendText("\n")
-                outDir.appendText("\n")
-
-                testGropes += GroupeOfTests(path, s)
-                var t = TreeItem(testGropes.last().name)
-                t.children.addAll(TreeItem(testGropes.last().Tests.last()))
-                treeTableView.root.children.addAll(t)
-            }
-    }
 
     val layout: String = "/res/testInfo.fxml"
-    var newStage: Stage? = null
-    private fun checkTest(data: Test) {
-        if (newStage == null)
-            newStage = Stage()
-
-        newStage?.close()
-        TestsController.test = data
-        val scene = Scene(FXMLLoader.load<Parent?>(Main.javaClass.getResource(layout)))
-        newStage?.scene = scene
-        newStage?.show()
 
 
-    }
 
     private fun updateTable() {
         for (column in treeTableView.getColumns())
@@ -112,29 +145,105 @@ class MainController {
         }
     }
 
-    private fun addButtonToTable() {
-        val colBtn = TreeTableColumn<Test, TestType>("Button Column")
 
-        val cellFactory = Callback<TreeTableColumn<Test, TestType>, TreeTableCell<Test, TestType>> {
-            object : TreeTableCell<Test, TestType>() {
+
+    fun initTable() {
+        val testnamec = TreeTableColumn<BaseTest, String>("Tests")
+        testnamec.minWidth = 150.0
+        val resultc = TreeTableColumn<BaseTest, String>("Result")
+        resultc.minWidth = 100.0
+        val choosec = TreeTableColumn<BaseTest, Boolean>("Selected")
+        val colBtn = TreeTableColumn<BaseTest, TestType>("Button Column")
+
+        val textCellFactory = Callback<TreeTableColumn<BaseTest, String>, TreeTableCell<BaseTest, String>> {
+            object : TreeTableCell<BaseTest, String>() {
+                private val text = Label("Action")
+
+                override fun updateItem(item: String?, empty: Boolean) {
+
+                    super.updateItem(item, empty)
+
+                    val data = treeTableView.getTreeItem(index)
+                    if (data != null) {
+                        if (tableColumn.text == "Tests") {
+                            text.text = data.value.name
+                        }
+                        if (tableColumn.text == "Result") {
+                            text.text = data.value.conclusion.toString()
+                        }
+/*
+                        if (tableColumn.text == "Tests")
+                        {
+                            text.text = data.value.name
+                        }*/
+                    }
+
+
+                    if (empty) {
+                        graphic = null
+                    } else {
+                        graphic = text
+                    }
+                }
+            }
+        }
+
+        val chooseCellFactory = Callback<TreeTableColumn<BaseTest, Boolean>, TreeTableCell<BaseTest, Boolean>> {
+            object : TreeTableCell<BaseTest, Boolean>() {
+                private val chooseBtn = CheckBox()
+                init {
+                    chooseBtn.setOnAction {
+                        val data = treeTableView.getTreeItem(index)
+                        data.value.selected = chooseBtn.isSelected
+                        if((data.parent != null) and !chooseBtn.isSelected)
+                        {
+                            data.parent.value.selected = false
+                            val data2 = data
+                            if((data2.parent != null) and !chooseBtn.isSelected)
+                            {
+                                data2.parent.value.selected = false
+                            }
+                        }
+                        updateSelect()
+                    }
+                }
+
+                override fun updateItem(item: Boolean?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    val data = treeTableView.getTreeItem(index)
+                    if (data!= null)
+                    chooseBtn.isSelected = data.value.selected
+                    if (empty) {
+                        graphic = null
+                    } else {
+                        graphic = chooseBtn
+                    }
+                }
+            }
+        }
+
+        treeTableView.columns.addAll(testnamec, resultc, choosec, colBtn)
+        testnamec.setCellFactory(textCellFactory)
+        resultc.setCellFactory(textCellFactory)
+        choosec.setCellFactory(chooseCellFactory)
+
+
+
+        val cellFactory = Callback<TreeTableColumn<BaseTest, TestType>, TreeTableCell<BaseTest, TestType>> {
+            object : TreeTableCell<BaseTest, TestType>() {
                 private val btn = Button("Action")
 
                 init {
 
                     btn.setOnAction { event: ActionEvent ->
                         val data = treeTableView.getTreeItem(index)
-
-                            if (data != null) {
-                                data.value.updater = { updateTable() }
-                            }
-
                         if (data.value.type == TestType.root) {
-                            addNewGroup(newGroupeName.text)
+                            rootTest.addNewGroup(newGroupeName.text)
                         } else {
                             if (data.value.type == TestType.test) {
-                                checkTest(data.value)
+                                rootTest.checkTest((data.value as Test))
                             } else {
-                                addNewTest(data.value.name)
+                                rootTest.addNewTest(data.value.name)
                             }
                         }
 
@@ -164,99 +273,7 @@ class MainController {
             }
         }
 
-        colBtn.cellFactory = cellFactory
-        treeTableView.columns.add(colBtn)
-    }
-
-
-    fun initTable() {
-        val testnamec = TreeTableColumn<Test, String>("Tests")
-        testnamec.minWidth = 150.0
-        val resultc = TreeTableColumn<Test, String>("Result")
-        resultc.minWidth = 10.0
-        val choosec = TreeTableColumn<Test, Boolean>("Selected")
-
-        val textCellFactory = Callback<TreeTableColumn<Test, String>, TreeTableCell<Test, String>> {
-            object : TreeTableCell<Test, String>() {
-                private val text = Label("Action")
-
-                override fun updateItem(item: String?, empty: Boolean) {
-
-                    super.updateItem(item, empty)
-
-                    val data = treeTableView.getTreeItem(index)
-                    if (data != null) {
-                        if (tableColumn.text == "Tests") {
-                            text.text = data.value.name
-                        }
-                        if (tableColumn.text == "Result") {
-                            text.text = data.value.mainTestResult
-                        }
-/*
-                        if (tableColumn.text == "Tests")
-                        {
-                            text.text = data.value.name
-                        }*/
-                    }
-
-
-                    if (empty) {
-                        graphic = null
-                    } else {
-                        graphic = text
-                    }
-                }
-            }
-        }
-
-        val chooseCellFactory = Callback<TreeTableColumn<Test, Boolean>, TreeTableCell<Test, Boolean>> {
-            object : TreeTableCell<Test, Boolean>() {
-                private val chooseBtn = CheckBox()
-                init {
-                    chooseBtn.setOnAction {
-                        val data = treeTableView.getTreeItem(index)
-                        data.value.choosen = chooseBtn.isSelected
-                        if((data.parent != null) and !chooseBtn.isSelected)
-                        {
-                            data.parent.value.choosen = false
-                            val data2 = data
-                            if((data2.parent != null) and !chooseBtn.isSelected)
-                            {
-                                data2.parent.value.choosen = false
-                            }
-                        }
-                        for (i in data.children)
-                        {
-                            i.value.choosen = chooseBtn.isSelected
-                            for(ii in i.children)
-                            {
-                                ii.value.choosen = chooseBtn.isSelected
-                            }
-                        }
-                        updateSelect()
-                    }
-                }
-
-                override fun updateItem(item: Boolean?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    val data = treeTableView.getTreeItem(index)
-                    if (data!= null)
-                    chooseBtn.isSelected = data.value.choosen
-                    if (empty) {
-                        graphic = null
-                    } else {
-                        graphic = chooseBtn
-                    }
-                }
-            }
-        }
-
-        treeTableView.columns.addAll(testnamec, resultc, choosec)
-        testnamec.setCellFactory(textCellFactory)
-        resultc.setCellFactory(textCellFactory)
-        choosec.setCellFactory(chooseCellFactory)
-
-        addButtonToTable()
+        colBtn.setCellFactory(cellFactory)
     }
 
     fun updateSelect()
@@ -265,29 +282,24 @@ class MainController {
         var flag1 = true
             for (i in data.children)
             {
-                i.value.choosen = data.value.choosen or i.value.choosen
+                i.value.selected = data.value.selected or i.value.selected
                 var flag2 = true
                 for (ii in i.children) {
-                    ii.value.choosen = ii.value.choosen or i.value.choosen
-                    flag2 = flag2 and ii.value.choosen
+                    ii.value.selected = ii.value.selected or i.value.selected
+                    flag2 = flag2 and ii.value.selected
                 }
-                i.value.choosen = flag2
-                flag1 = flag1 and i.value.choosen
+                i.value.selected = flag2
+                flag1 = flag1 and i.value.selected
             }
-        data.value.choosen = flag1
+        data.value.selected = flag1
         updateTable()
     }
 
     fun loadTable() {
-        testGropes = arrayOf()
-        mainDir.forEachLine {
-            testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
-        }
 
-
-        val root = TreeItem<Test>(Test(" ", "", null, null, TestType.root));
-        for (gr in testGropes) {
-            val subRoot = TreeItem<Test>(gr.name)
+        val root = TreeItem<BaseTest>(rootTest);
+        for (gr in rootTest.testGropes) {
+            val subRoot = TreeItem<BaseTest>(gr)
             for (test in gr.Tests) {
                 subRoot.children.add(TreeItem(test))
             }

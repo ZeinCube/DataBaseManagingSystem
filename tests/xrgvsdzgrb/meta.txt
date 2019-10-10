@@ -1,3 +1,0 @@
-def1
-def2
-def3

@@ -5,12 +5,12 @@ import javafx.geometry.Insets
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.layout.*
-import javafx.scene.layout.BorderPane
 import javafx.beans.property.StringProperty
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.text.Font
-import javax.swing.event.ChangeListener
+import teststucture.MyFunction
+import teststucture.Test
 
 
 class TestsController {
@@ -21,17 +21,17 @@ class TestsController {
     var inAreas : Array<TextArea> = arrayOf();
     var outAreas : Array<TextArea> = arrayOf();
     var resultAreas : Array<TextArea> = arrayOf();
-    var outputAreas : Array<Label> = arrayOf();
+    var conclusionAreas : Array<Label> = arrayOf();
     companion object {
         @JvmStatic
         var test : Test? = null
     }
         fun addNewTest(){
             val box = HBox()
-            if (inAreas.size>=test?._in?.size!!)
-                test?._in = test?._in!! + ""
+            if (inAreas.size>=test?.tests?.size!!)
+                test?.tests = test?.tests!! + Test.TestBlock("","'")
 
-            inAreas += TextArea(test?._in!![(inAreas.size)])
+            inAreas += TextArea(test?.tests!![(inAreas.size)].test)
             inAreas.last().maxWidth = 300.0-40.0
             inAreas.last().minWidth = 300.0-40.0
 
@@ -45,7 +45,7 @@ class TestsController {
                     (observable as StringProperty).value = oldValue else
                     (observable as StringProperty).value = newValue
             }
-            outAreas += TextArea()
+            outAreas += TextArea(test?.tests!![(inAreas.size-1)].expect)
             outAreas.last().maxWidth = 300.0-40.0
             outAreas.last().minWidth = 300.0-40.0
 
@@ -59,11 +59,7 @@ class TestsController {
                     (observable as StringProperty).value = oldValue else
                     (observable as StringProperty).value = newValue
             }
-            if(test?._out?.size!!>(inAreas.size-1))
-            {
-                outAreas.last().text = test?._out!![(inAreas.size-1)]
-            }
-            resultAreas += TextArea("")
+            resultAreas += TextArea(test?.tests!![(inAreas.size-1)].result)
             resultAreas.last().maxWidth = 300.0-40.0
             resultAreas.last().minWidth = 300.0-40.0
 
@@ -72,11 +68,6 @@ class TestsController {
             resultAreas.last().wrapTextProperty().set(true)
 
             resultAreas.last().isEditable = false
-
-            if(test?._results?.size!!>(inAreas.size-1))
-            {
-                resultAreas.last().text = test?._results!![(inAreas.size-1)]
-            }
 
             VBox.setMargin(inAreas.last(), Insets(10.0,0.0,0.0,3.0))
             VBox.setMargin(outAreas.last(), Insets(10.0,0.0,0.0,3.0))
@@ -89,13 +80,13 @@ class TestsController {
             val resLabel = Label("Get:")
             VBox.setMargin(resLabel, Insets(5.0,0.0,-8.0,10.0))
 
-            outputAreas += Label("Not tested")
-            if (test?._des?.size!!>(inAreas.size-1))
+            conclusionAreas += Label("Not tested")
+            if (test?.tests?.size!!>(inAreas.size-1))
             {
-                outputAreas.last().text = test?._des!![(inAreas.size-1)]
+                conclusionAreas.last().text = test?.tests!![(inAreas.size-1)].conclusion.toString()
             }
-            outputAreas.last().font= Font.font("System",14.0)
-            VBox.setMargin(outputAreas.last(),Insets(50.0,0.0,0.0,7.0))
+            conclusionAreas.last().font= Font.font("System",14.0)
+            VBox.setMargin(conclusionAreas.last(),Insets(50.0,0.0,0.0,7.0))
             val btnFix = Button("Fix test")
             btnFix.font = Font.font("System",13.0)
             VBox.setMargin(btnFix,Insets(50.0,0.0,0.0,10.0))
@@ -106,7 +97,7 @@ class TestsController {
                 if (outAreas[i].text.length>0)
                     outAreas[i].text = resultAreas[i].text
             }
-            val rightBox = VBox(outputAreas.last(), btnFix)
+            val rightBox = VBox(conclusionAreas.last(), btnFix)
             rightBox.minWidth = 120.0
             box.children.addAll(VBox(inLabel,inAreas.last()),
                     VBox(resLabel,resultAreas.last()),
@@ -128,11 +119,18 @@ class TestsController {
         fun retest(){
             save()
             test?.checkTest()
-            (1..test?._results?.size!!).forEach{
-                resultAreas[it].text = test?._results!![it]
-                outputAreas[it].text = test?._des!![it]
+            (1..test?.tests?.size!!).forEach{
+                resultAreas[it].text = test?.tests!![it].conclusion.toString()
+                conclusionAreas[it].text = test?.tests!![it].result
             }
         }
+
+        fun updateScene()
+        {
+            mainBox.isVisible = false
+            mainBox.isVisible = true
+        }
+
         fun initialize() {
             nameBox = TextArea(test?.name)
             nameBox.maxHeight = 26.0
@@ -140,12 +138,16 @@ class TestsController {
             nameBox.maxWidth = 150.0
             nameBox.textProperty().addListener {
                 observable, oldValue, newValue ->
-                (observable as StringProperty).value
                 (observable as StringProperty).value = newValue.filter {
-                    ("йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm"+" "+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm".toUpperCase()).contains(it) }
+                    ("1234567890"+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm"+" "+"йцукенгшзфывапролдячсмитьхъюжэqwertyuiopasdfghjklzxcvbnm".toUpperCase()).contains(it)
+                }
             }
             HBox.setMargin(nameBox, Insets(2.0, 0.0, 0.0, 13.0))
-
+            test?.updaters?.plus(object : MyFunction {
+                override fun invoke() {
+                    updateScene()
+                }
+            })!!
             val saveBtn = Button("Save Test")
             val retestBtn = Button("Save and Retest")
             saveBtn.setOnAction { save() }
@@ -164,14 +166,13 @@ class TestsController {
             mainBox.children.addAll(pane)
             mainBox.minWidth = 900.0
             mainBox.maxWidth = 900.0
-            if (!test?._in.isNullOrEmpty())
-            for (i in test?._in!!)
-            {
-                addNewTest()
-            }
 
             val addTestBtn = Button("Add Test")
             addTestBtn.setOnAction {
+                addNewTest()
+            }
+            for (i in test?.tests!!)
+            {
                 addNewTest()
             }
             mainBox.children.addAll(addTestBtn)
