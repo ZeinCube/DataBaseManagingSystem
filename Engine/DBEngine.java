@@ -1,10 +1,10 @@
-import Entity.MetaFile;
+import Entity.Meta.MetaColumn;
+import Entity.Meta.MetaFile;
+import Entity.Meta.MetaTable;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class DBEngine {
     private final String homeDirectory = System.getProperty("user.home") + "/.dbms";
@@ -14,14 +14,78 @@ public class DBEngine {
         checkDirectory();
     }
 
-    public void createDataBase(String name) throws Exception {
-        if (isDataBaseExist(name)) {
-            throw new Exception("Table with name \"" + name + "\" already exists");
+    public boolean createDataBase(String dataBaseName) throws Exception {
+        if (isDataBaseExist(dataBaseName)) {
+            throw new Exception("Data Base with name \"" + dataBaseName + "\" already exists");
         }
 
-        File meta = new File(homeDirectory + "/meta-" + name + ".dbms");
+        metaFile = new MetaFile(dataBaseName);
+        metaFile.saveToJSON();
 
+        return true;
+    }
 
+    public void connectToDataBase(String dataBaseName) throws Exception {
+        try {
+            isDataBaseExist(dataBaseName);
+            metaFile = new MetaFile().toObject(getMetaFileName(dataBaseName));
+        } catch (Exception e) {
+            throw new Exception("Such database not exist");
+        }
+
+        System.out.println("Connected to DataBase " + dataBaseName);
+    }
+
+    public void createTable(String tableName) throws Exception {
+        checkIfConnectedToDataBase();
+
+        MetaTable table = new MetaTable(tableName);
+        metaFile.addTable(table);
+
+        metaFile.saveToJSON();
+
+        System.out.println("Created table " + tableName);
+    }
+
+    public void createTable(String tableName, ArrayList<MetaColumn> columns, MetaColumn primaryKeyColumn) {
+        checkIfConnectedToDataBase();
+
+        MetaTable table = new MetaTable(tableName, columns, primaryKeyColumn);
+        try {
+            metaFile.addTable(table);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return;
+        }
+        metaFile.saveToJSON();
+
+        System.out.println("Created table " + tableName);
+    }
+
+    public void dropTable(String tableName) {
+        checkIfConnectedToDataBase();
+
+        try {
+            metaFile.dropTable(tableName);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+
+            return;
+        }
+
+        metaFile.saveToJSON();
+        System.out.println("Table " + tableName + " dropped");
+    }
+
+    public MetaTable getTable(String tableName) {
+        checkIfConnectedToDataBase();
+
+        try {
+            return metaFile.getMetaTable(tableName);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
 
     private void checkDirectory() throws FileNotFoundException {
@@ -32,21 +96,22 @@ public class DBEngine {
                 throw new FileNotFoundException("Could not create directory");
             }
         }
-
     }
 
-    private boolean isDataBaseExist(String name) throws Exception {
+    private boolean isDataBaseExist(String dataBaseName) throws Exception {
         checkDirectory();
-        File mFile = new File(homeDirectory + "/meta-" + name + ".dbms");
+        File mFile = new File(getMetaFileName(dataBaseName));
 
-        return !mFile.exists();
+        return mFile.exists();
     }
 
-    private String getContentOfFile(File file) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        fileInputStream.read(data);
-        fileInputStream.close();
-        return new String(data, StandardCharsets.UTF_8);
+    private String getMetaFileName(String dataBaseName) {
+        return homeDirectory + "/meta-" + dataBaseName + ".dbms";
+    }
+
+    private void checkIfConnectedToDataBase() {
+        if (metaFile == null) {
+            System.err.println("Not connected to Data Base");
+        }
     }
 }
