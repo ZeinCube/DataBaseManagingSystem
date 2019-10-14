@@ -9,8 +9,12 @@ K_FROM:                                          F R O M;
 K_UPDATE:                                        U P D A T E;
 K_SET:                                           S E T;
 K_NULL:                                          N U L L;
+K_INSERT:                                        I N S E R T;
+K_INTO:                                          I N T O;
+K_VALUES:                                        V A L U E S;
 
 //K_DEFAULT:           D E F A U L T; we need this for UPDATE, CREATE and, maybe, more. but i have paws for this;
+//INSERT got onli ".."
 
 SPACE:                                           [ \t\r\n]+  -> skip;
 K_PRIMARY_KEY:                                   P R I M A R Y SPACE K E Y;
@@ -21,7 +25,7 @@ T_CHAR:                                          C H A R;
 T_INT:                                           I N T;
 T_FLOAT:                                         F L O A T;
 
-fragment DIGIT:                                           [0-9];
+fragment DIGIT:                                  [0-9];
 NUMBER:                                          DIGIT+;
 op:                                              ('+' | '-' | '*' | '/');
 NUMERIC_LITERAL:                                 DIGIT+ ( '.' DIGIT* )?;
@@ -61,11 +65,15 @@ fragment Y:                                      [yY];
 fragment Z:                                      [zZ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-number:                                          (NUMERIC_LITERAL| NUMBER);
+
 parse:                                           sql_query (';')? EOF;
+
+
+number:                                          (NUMERIC_LITERAL| NUMBER);
+
 signed_number:                                   ( '+' | '-' )? number;
 
-mychar:                                          T_CHAR('['NUMBER ']')?;
+mychar:                                          T_CHAR('['number ']')?;
 type:                                            T_INT | T_FLOAT | mychar;
 
 select_idef:                                     ('*' | IDENTIFIER);
@@ -80,11 +88,19 @@ update_list:                                     update_constr (',' update_const
 update_idef:                                     name '=' update_list;
 update:                                          K_UPDATE name K_SET update_idef;
 
+value:                                           IDENTIFIER | number;
+insert_values:                                   value (',' value)*;
+insert_colums:                                   name (',' name)*;
+insert:                                          K_INSERT K_INTO name
+                                                 ('(' insert_colums ')')?
+                                                 K_VALUES '(' insert_values ')';
+
 sql_query:                                       create
                                                | drop
                                                | show_create
                                                | select
-                                               | update;
+                                               | update
+                                               | insert;
 
 show_create:                                     K_SHOW K_CREATE K_TABLE name;
 create:                                          K_CREATE table;
