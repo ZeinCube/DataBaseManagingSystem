@@ -3,3 +3,8 @@ Tester/.idea/
 /out
 /.idea
 DataBaseManagingSystem.iml
+/target/
+
+Logic/gen/
+
+
