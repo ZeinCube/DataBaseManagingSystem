@@ -24,9 +24,10 @@ NOT:                                             N O T;
 TRUE:                                           T R U E;
 FALSE:                                           F A L S E;
 
-
 EQ:   '==';
-MOR: [>];
+NEQ:   '!=';
+
+K_MORE: [>];
 LESS: [<];
 MOREEQ: [>=]|[=>];
 LESSEQ: [<=]|[=<];
@@ -43,8 +44,9 @@ T_FLOAT:                                          F L O A T;
 NUMBER:                                         DIGIT+;
 NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?;
 
-IDENTIFIER:                                     '"' (~'"' | '""')* '"'
-                                               |[a-zA-Z_] [a-zA-Z_0-9]* ;
+STRING:                                         '"' (~'"' | '""')* '"';
+
+IDENTIFIER:                                     [a-zA-Z_] [a-zA-Z_0-9]*;
 
 UNEXPECTED:                                     '.';
 
@@ -80,6 +82,8 @@ fragment X:                                     [xX];
 fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 
+mynumber: NUMBER | NUMERIC_LITERAL;
+mystring: STRING;
 
 parse:                                               sql_query (';')? EOF;
 
@@ -99,9 +103,7 @@ sql_query:                                           create
                                                      |show_create
                                                      |select
                                                      |update
-                                                     |arifm_expr
-                                                     |compare_expr
-                                                     |logic_expr;
+                                                     |const_expr;
 
 value:                                          name| mynumber| logic_expr;
 insert_value:                                    '('value (',' value)*')';
@@ -116,10 +118,10 @@ select_list:                                     select_idef (',' select_idef)*;
 select_table_list:                                name
                                                  |select
                                                  |'('select')';
-select:                                          K_SELECT select_list K_FROM select_table_list (K_WHERE logic_expr)?;
+select:                                          K_SELECT select_list K_FROM select_table_list (K_WHERE expr)?;
 
 update_operand:                                  name|signed_number;
-update_idef:                                     name '=' logic_expr;
+update_idef:                                     name '=' expr;
 update:                                          K_UPDATE name K_SET update_idef (K_WHERE logic_expr)?;
 
 
@@ -157,28 +159,62 @@ column_constraint:                              K_PRIMARY_KEY
 
 // Disable compiler warnings
 
-mynumber: NUMBER | NUMERIC_LITERAL;
 
+const_arifm_expr:
+                    const_arifm_expr op=(MUL | DIV) arifm_expr
+                    | const_arifm_expr op=(ADD | SUB) const_arifm_expr
+                    | mynumber
+                    | mystring
+                    | '(' const_arifm_expr ')'
+                    | K_NULL;
+sub_arifm_expr:SUB arifm_expr;
 arifm_expr:
     arifm_expr op=(MUL | DIV) arifm_expr
     | arifm_expr op=(ADD | SUB) arifm_expr
-    | mynumber
     | '(' arifm_expr ')'
     | name
-    | K_NULL
-    ;
+    | const_arifm_expr
+    | sub_arifm_expr;
 
-comp_op : MOREEQ| MOR|EQ|LESS|LESSEQ;
-compare_expr: compare_expr comp_op compare_expr
+comp_op1 : EQ|NEQ;
+comp_op2 : MOREEQ|K_MORE|LESS|LESSEQ;
+
+const_compare_expr:
+                const_compare_expr comp_op1 const_compare_expr
+                |const_compare_expr comp_op2 const_compare_expr
+                     | '('const_compare_expr')'
+                     | const_arifm_expr;
+
+compare_expr:
+                compare_expr comp_op1 compare_expr
+                |compare_expr comp_op2 compare_expr
                      | '('compare_expr')'
+                     | const_compare_expr
                      | arifm_expr;
 
 logic_literal:(TRUE | FALSE);
+
+not_const_logic_expr:NOT const_logic_expr;
+
+const_logic_expr:
+        const_logic_expr AND const_logic_expr
+        |const_logic_expr OR const_logic_expr
+        | logic_literal
+        | '('const_logic_expr')'
+        | not_const_logic_expr
+        | const_compare_expr
+        | const_arifm_expr;
+
+not_logic_expr:NOT logic_expr;
+
 logic_expr:
         logic_expr AND logic_expr
         |logic_expr OR logic_expr
-        | logic_literal
         | '('logic_expr')'
-        | NOT logic_expr
+        | not_logic_expr
+        | const_logic_expr
         | compare_expr
         | arifm_expr;
+
+const_expr: const_arifm_expr|const_compare_expr|const_logic_expr;
+expr: const_logic_expr|compare_expr|arifm_expr|logic_expr;
