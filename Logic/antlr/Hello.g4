@@ -9,6 +9,7 @@ K_SELECT:                                        S E L E C T;
 K_UPDATE:                                        U P D A T E;
 K_FROM:                                          F R O M;
 K_NULL:                                          N U L L;
+K_SET:                                           S E T;
 MUL: '*';
 DIV: '/';
 ADD: '+';
@@ -21,7 +22,13 @@ TRUE:                                           T R U E;
 FALSE:                                           F A L S E;
 
 
-SPACE:                                          [ \t\r]+  -> skip;
+EQ:   '==';
+MOR: [>];
+LESS: [<];
+MOREEQ: [>=]|[=>];
+LESSEQ: [<=]|[=<];
+
+SPACE:                                          [ \t\r\n]+  -> skip;
 ENTER:                                          [\n];
 K_PRIMARY_KEY:                                  P R I M A R Y SPACE K E Y;
 K_UNIQUE:                                       U N I Q U E;
@@ -71,7 +78,7 @@ fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 
 
-parse:                                               (sql_query (';')?)(ENTER sql_query(';')?)* EOF;
+parse:                                               sql_query (';')? EOF;
 
 
 signed_number:                                       ( '+' | '-' )? NUMERIC_LITERAL;
@@ -90,16 +97,19 @@ sql_query:                                           create
                                                      |select
                                                      |update
                                                      |arifm_expr
+                                                     |compare_expr
                                                      |logic_expr;
 
 select_idef:                                     ('*' | IDENTIFIER);
 select_list:                                     select_idef (',' select_idef)*;
-select_table_list:                               select | name;
+select_table_list:                                name
+                                                 |select
+                                                 |'('select')';
 select:                                          K_SELECT select_list K_FROM select_table_list (K_WHERE logic_expr)?;
 
 update_operand:                                  name|signed_number;
 update_idef:                                     name '=' logic_expr;
-update:                                          K_UPDATE name K_SET update_idef;
+update:                                          K_UPDATE name K_SET update_idef (K_WHERE logic_expr)?;
 
 
 
@@ -139,18 +149,17 @@ column_constraint:                              K_PRIMARY_KEY
 mynumber: NUMBER | NUMERIC_LITERAL;
 
 arifm_expr:
-    arifm_expr op=(MUL | DIV) arifm_expr         #mull
-    | arifm_expr op=(ADD | SUB) arifm_expr      #summ
-    | mynumber                                    #num
-    | '(' arifm_expr ')'                         #spades
-    | name                                        #nm
-    | K_NULL                                       #null
+    arifm_expr op=(MUL | DIV) arifm_expr
+    | arifm_expr op=(ADD | SUB) arifm_expr
+    | mynumber
+    | '(' arifm_expr ')'
+    | name
+    | K_NULL
     ;
 
-compare_expr: logic_expr AND logic_expr
-                     |logic_expr OR logic_expr
-                     | logic_literal
-                     | '('logic_expr')'
+comp_op : MOREEQ| MOR|EQ|LESS|LESSEQ;
+compare_expr: compare_expr comp_op compare_expr
+                     | '('compare_expr')'
                      | arifm_expr;
 
 logic_literal:(TRUE | FALSE);
@@ -159,4 +168,6 @@ logic_expr:
         |logic_expr OR logic_expr
         | logic_literal
         | '('logic_expr')'
+        | NOT logic_expr
+        | compare_expr
         | arifm_expr;
