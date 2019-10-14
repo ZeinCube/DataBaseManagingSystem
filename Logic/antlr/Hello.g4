@@ -55,51 +55,47 @@ fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 
 
-parse:                                               sql_query (';')? EOF;
+parse:                                               (sql_query (';')?)+ EOF;
 
 
 signed_number:                                       ( '+' | '-' )? NUMERIC_LITERAL;
 
 
 mychar:                                                T_CHAR('['NUMBER ']')?;
+myint:                                                T_INT;
+myfloat:                                              T_FLOAT;
 
-type:                                               T_INT | T_FLOAT | mychar;
+
+type:                                              myint | myfloat | mychar;
 
 sql_query:                                           create
                                                      |drop
                                                      |show_create;
 
-show_create:                                         K_SHOW K_CREATE K_TABLE table_name;
+show_create:                                         K_SHOW K_CREATE K_TABLE table_name_list;
 
 create:                                              K_CREATE table;
 
 drop:                                                K_DROP K_TABLE table_name_list;
 
-table_name_list:                                     table_name ( ',' table_name )*;
+table_name_list:                                     name ( ',' name )*;
 
 table:                                               K_TABLE table_definition;
 
-table_definition:                                     table_name
+table_definition:                                     name
                                                       '('
                                                       columns_def
                                                       ')';
 
-columns_def :                                         column_def ( ',' column_def )*;
+columns_def :                                         (column_def ( ',' column_def )*)?;
 
 create_constr: K_CREATE K_TABLE;
 
-any_name:                                       IDENTIFIER;
+name:                                           IDENTIFIER;
 
-name:                                           any_name;
-
-column_def:                                     IDENTIFIER
+column_def:                                     name
                                                 type
                                                 column_constraint?;
 
 column_constraint:                              K_PRIMARY_KEY
                                                |K_UNIQUE;
-
-keyword:                                        K_CREATE
-                                                K_TABLE;
-
-table_name:                                     IDENTIFIER;

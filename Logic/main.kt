@@ -1,10 +1,9 @@
 import antlr.*
-import com.sun.javafx.property.adapter.PropertyDescriptor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import visitors.CentralVisitor
+import visitors.SQLVisitor
 
 
 fun execute(str:String):String
@@ -25,8 +24,17 @@ fun execute(str:String):String
         println("Error: ${e.message}")
     }
 
-    val visitor = CentralVisitor()
-    val ex = visitor.visit(tree);
+    var res = ""
+    val mainwalker = object : HelloBaseListener()
+    {
+        override fun enterSql_query(ctx: HelloParser.Sql_queryContext?) {
+            val visitor = SQLVisitor()
+            val ex = visitor.visit(ctx);
+            res+= ex.execute()+ "\n";
+        }
+    }
+    val walker = ParseTreeWalker()
+    walker.walk(mainwalker, tree)
 
-    return ex.execute();
+    return res;
 }
