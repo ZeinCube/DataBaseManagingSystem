@@ -6,6 +6,11 @@ K_TABLE:                                         T A B L E;
 K_SHOW:                                          S H O W;
 K_SELECT:                                        S E L E C T;
 K_FROM:                                          F R O M;
+K_UPDATE:                                        U P D A T E;
+K_SET:                                           S E T;
+K_NULL:                                          N U L L;
+
+//K_DEFAULT:           D E F A U L T; we need this for UPDATE, CREATE and, maybe, more. but i have paws for this;
 
 SPACE:                                           [ \t\r\n]+  -> skip;
 K_PRIMARY_KEY:                                   P R I M A R Y SPACE K E Y;
@@ -16,8 +21,9 @@ T_CHAR:                                          C H A R;
 T_INT:                                           I N T;
 T_FLOAT:                                         F L O A T;
 
-DIGIT:                                           [0-9];
+fragment DIGIT:                                           [0-9];
 NUMBER:                                          DIGIT+;
+op:                                              ('+' | '-' | '*' | '/');
 NUMERIC_LITERAL:                                 DIGIT+ ( '.' DIGIT* )?;
 
 IDENTIFIER:                                      '"' (~'"' | '""')* '"'
@@ -55,23 +61,31 @@ fragment Y:                                      [yY];
 fragment Z:                                      [zZ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+number:                                          (NUMERIC_LITERAL| NUMBER);
 parse:                                           sql_query (';')? EOF;
-signed_number:                                   ( '+' | '-' )? NUMERIC_LITERAL;
+signed_number:                                   ( '+' | '-' )? number;
 
 mychar:                                          T_CHAR('['NUMBER ']')?;
 type:                                            T_INT | T_FLOAT | mychar;
 
 select_idef:                                     ('*' | IDENTIFIER);
 select_list:                                     select_idef (',' select_idef)*;
-select_table_list:                               IDENTIFIER;
+select_table_list:                               IDENTIFIER (',' IDENTIFIER)*;
 select:                                          K_SELECT select_list K_FROM select_table_list;
+
+update_operand:                                  name|signed_number;
+update_expression:                               (update_operand op)? update_operand;
+update_constr:                                   update_expression;
+update_list:                                     update_constr (',' update_constr)*;
+update_idef:                                     name '=' update_list;
+update:                                          K_UPDATE name K_SET update_idef;
 
 sql_query:                                       create
                                                | drop
                                                | show_create
-                                               | select;
-                                               
+                                               | select
+                                               | update;
+
 show_create:                                     K_SHOW K_CREATE K_TABLE name;
 create:                                          K_CREATE table;
 drop:                                            K_DROP K_TABLE name_list;
@@ -84,11 +98,12 @@ table_definition:                                name
                                                  ')';
 
 columns_def :                                    column_def ( ',' column_def )*;
-name:                                            IDENTIFIER;
 
 column_def:                                      IDENTIFIER
                                                  type
                                                  column_constraint?;
+
+name:                                            IDENTIFIER;
 
 column_constraint:                               K_PRIMARY_KEY
                                                | K_UNIQUE;
