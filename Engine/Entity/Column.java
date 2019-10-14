@@ -1,35 +1,65 @@
 package Entity;
 
-import java.util.HashMap;
+import Entity.Meta.MetaColumn;
 
-public class Column<K, V> {
-    private HashMap<K, V> objects; //K is primary key type
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Column implements Serializable {
 
     private String columnName;
     private boolean UNIQUE;
     private boolean PRIMARY_KEY;
+    private Class primaryKeyClass;
+    private Class valueClass;
 
-    public Column(boolean unique, boolean primary_key, String columnName) {
+    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean unique, boolean primary_key) {
         PRIMARY_KEY = primary_key;
 
-        if (primary_key) {
-            UNIQUE = true;
-        } else {
-            UNIQUE = unique;
+        this.primaryKeyClass = primaryKeyClass;
+        this.valueClass = valueClass;
+
+        UNIQUE = primary_key || unique;
+
+        this.columnName = columnName;
+    }
+
+
+    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean primary_key) {
+        PRIMARY_KEY = primary_key;
+
+        this.primaryKeyClass = primaryKeyClass;
+        this.valueClass = valueClass;
+
+        UNIQUE = primary_key;
+
+        this.columnName = columnName;
+    }
+
+    public Column(String columnName, boolean unique) {
+        this.columnName = columnName;
+        this.UNIQUE = unique;
+        this.PRIMARY_KEY = false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = false;
+
+        if (obj instanceof Column) {
+            result = Objects.equals(this.columnName, ((Column) obj).columnName);
         }
 
-        objects = new HashMap<>();
+        return result;
     }
 
-    public Column() {
-    }
-
-    public HashMap<K, V> getObjects() {
-        return objects;
-    }
-
-    public void setObjects(HashMap<K, V> objects) {
-        this.objects = objects;
+    public MetaColumn getMeta() {
+        MetaColumn meta = new MetaColumn();
+        meta.setPRIMARY_KEY(this.PRIMARY_KEY);
+        meta.setColumnName(this.columnName);
+        meta.setUNIQUE(this.UNIQUE);
+        meta.setType(this.getValueClass());
+        return meta;
     }
 
     public void setColumnName(String columnName) {
@@ -54,5 +84,21 @@ public class Column<K, V> {
 
     public void setPRIMARY_KEY(boolean PRIMARY_KEY) {
         this.PRIMARY_KEY = PRIMARY_KEY;
+    }
+
+    public Class getPrimaryKeyClass() {
+        return primaryKeyClass;
+    }
+
+    public void setPrimaryKeyClass(Class primaryKeyClass) {
+        this.primaryKeyClass = primaryKeyClass;
+    }
+
+    public Class getValueClass() {
+        return valueClass;
+    }
+
+    public void setValueClass(Class valueClass) {
+        this.valueClass = valueClass;
     }
 }
