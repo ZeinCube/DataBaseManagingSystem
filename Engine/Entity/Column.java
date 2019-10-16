@@ -13,13 +13,13 @@ public class Column implements Serializable {
     private Class primaryKeyClass;
     private Class valueClass;
 
-    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean unique, boolean primary_key) {
-        PRIMARY_KEY = primary_key;
+    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean unique, boolean primaryKey) {
+        PRIMARY_KEY = primaryKey;
 
         this.primaryKeyClass = primaryKeyClass;
         this.valueClass = valueClass;
 
-        UNIQUE = primary_key || unique;
+        UNIQUE = primaryKey || unique;
 
         this.columnName = columnName;
     }
@@ -34,12 +34,6 @@ public class Column implements Serializable {
         UNIQUE = primary_key;
 
         this.columnName = columnName;
-    }
-
-    public Column(String columnName, boolean unique) {
-        this.columnName = columnName;
-        this.UNIQUE = unique;
-        this.PRIMARY_KEY = false;
     }
 
     @Override
