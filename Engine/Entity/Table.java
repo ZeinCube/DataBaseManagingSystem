@@ -1,8 +1,6 @@
 package Entity;
 
-import Exceptions.DBMSException;
-import Exceptions.ExistingColumnException;
-import Exceptions.ExistingPrimaryKeyException;
+import Exceptions.*;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
@@ -12,11 +10,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class Table extends Commitable {
 
     private String name;
-    private HashSet<Column> columns;
+    private HashMap<String, Column> columns;
     private Class primaryKeyClass;
     private HashMap<Object, Row> rows;
 
@@ -31,10 +31,29 @@ public class Table extends Commitable {
             hasPrimaryKey = column.isPRIMARY_KEY();
         }
 
-        this.name = name;
-        this.columns = columns;
+        this.columns = new HashMap<>();
+
+        for (Column column : columns) {
+            this.columns.put(column.getColumnName(), column);
+        }
+
         this.primaryKeyClass = primaryKeyClass;
+        this.name = name;
+
         rows = new HashMap<>();
+    }
+
+    public void insert(List<Row> rows) throws NoSuchColumnException {
+        for (Row row : rows) {
+            for (Map.Entry<String, Cell> cell : row.getValues().entrySet()) {
+                if (!columns.containsKey(cell.getKey())) {
+                    throw new NoSuchColumnException("Error while inserting value \"" + cell.getValue().getValue() +
+                            "\" in non-existing column \"" + cell.getKey() + "\"");
+                }
+
+                this.rows.put(rows.size() - 1, row);
+            }
+        }
     }
 
     public String getName() {
@@ -45,19 +64,19 @@ public class Table extends Commitable {
         this.name = name;
     }
 
-    public HashSet<Column> getColumns() {
-        return columns;
-    }
-
     public void addColumn(Column column) throws ExistingColumnException {
-        if (columns.contains(column)) {
+        if (columns.containsKey(column.getColumnName())) {
             throw new ExistingColumnException("Column with name " + column.getColumnName() + " already exists");
         }
 
-        columns.add(column);
+        columns.put(column.getColumnName(), column);
     }
 
-    public void setColumns(HashSet<Column> columns) {
+    public HashMap<String, Column> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(HashMap<String, Column> columns) {
         this.columns = columns;
     }
 
@@ -76,6 +95,23 @@ public class Table extends Commitable {
     public void setRows(HashMap<Object, Row> rows) {
         this.rows = rows;
     }
+
+    public static String getPath(String tableName) {
+        return System.getProperty("user.home") + "/.dbms/tables/" + tableName + ".dbms";
+    }
+
+    public static Table load(String name) throws GetTableException {
+        byte[] data;
+
+        try {
+            data = Files.readAllBytes(Paths.get(getPath(name)));
+        } catch (IOException e) {
+            throw new GetTableException("Could not get table \"" + name + "\" cause : " + e.getMessage());
+        }
+
+        return SerializationUtils.deserialize(data);
+    }
+
 
     @Override
     public void commit() throws DBMSException {
