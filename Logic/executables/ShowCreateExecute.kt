@@ -5,9 +5,9 @@ import antlr.HelloParser
 import meta.ColumnDef
 import meta.TableDefinition
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import visitors.Executable
 
-class ShowCreateExecute(ctx: HelloParser.Show_createContext?) : Executable {
+
+class ShowCreateExecute(ctx: HelloParser.Show_createContext?) : Executable<String> {
     var names:Array<String> = arrayOf();
     init {
         val listener = object : HelloBaseListener()

@@ -3,9 +3,8 @@ package executables
 import antlr.HelloBaseListener
 import antlr.HelloParser
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import visitors.Executable
 
-class DropExecute(ctx: HelloParser.DropContext?) : Executable {
+class DropExecute(ctx: HelloParser.DropContext?) : Executable<String> {
     var names:Array<String> = arrayOf();
     init {
         val listener = object : HelloBaseListener()

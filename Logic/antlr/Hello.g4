@@ -10,27 +10,19 @@ K_UPDATE:                                        U P D A T E;
 K_FROM:                                          F R O M;
 K_NULL:                                          N U L L;
 K_SET:                                           S E T;
-K_INSERT: I N S E R T;
-K_INTO: I N T O;
-K_VALUES: V A L U E S;
-MUL: '*';
-DIV: '/';
-ADD: '+';
-SUB: '-';
+K_INSERT:                                        I N S E R T;
+K_INTO:                                          I N T O;
+K_VALUES:                                        V A L U E S;
 
 AND:                                             A N D;
-OR:                                                 O R;
+OR:                                              O R;
 NOT:                                             N O T;
-TRUE:                                           T R U E;
+TRUE:                                            T R U E;
 FALSE:                                           F A L S E;
 
-EQ:   '==';
-NEQ:   '!=';
 
-K_MORE: [>];
-LESS: [<];
-MOREEQ: [>=]|[=>];
-LESSEQ: [<=]|[=<];
+
+
 
 SPACE:                                          [ \t\r\n]+  -> skip;
 ENTER:                                          [\n];
@@ -41,7 +33,7 @@ T_CHAR:                                           C H A R;
 T_INT:                                            I N T;
 T_FLOAT:                                          F L O A T;
 
-NUMBER:                                         DIGIT+;
+fragment NUMBER:                                         DIGIT+;
 NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?;
 
 STRING:                                         '"' (~'"' | '""')* '"';
@@ -145,7 +137,8 @@ columns_def :                                         (column_def ( ',' column_d
 
 create_constr: K_CREATE K_TABLE;
 
-name:                                           IDENTIFIER;
+name:
+                            IDENTIFIER;
 
 column_def:                                     name
                                                 type
@@ -159,58 +152,89 @@ column_constraint:                              K_PRIMARY_KEY
 
 // Disable compiler warnings
 
+sub_const_arifm_expr:SUB const_arifm_expr;
 
-const_arifm_expr:
-                    const_arifm_expr op=(MUL | DIV) arifm_expr
-                    | const_arifm_expr op=(ADD | SUB) const_arifm_expr
-                    | mynumber
+b_const_arifm_expr: '(' const_arifm_expr ')';
+
+mul:'*';
+div:'/';
+add:'+';
+sub:'-';
+concate: '|';
+const_arifm_expr:   const_arifm_expr concate arifm_expr
+                    |const_arifm_expr (mul| div) arifm_expr
+                    | const_arifm_expr (add |sub) const_arifm_expr
                     | mystring
-                    | '(' const_arifm_expr ')'
+                    | mynumber
+                    | sub_const_arifm_expr
+                    | b_const_arifm_expr
                     | K_NULL;
+
 sub_arifm_expr:SUB arifm_expr;
+b_arifm_expr: '(' arifm_expr ')';
+
 arifm_expr:
-    arifm_expr op=(MUL | DIV) arifm_expr
-    | arifm_expr op=(ADD | SUB) arifm_expr
-    | '(' arifm_expr ')'
+    arifm_expr concate arifm_expr
+    |arifm_expr (mul| div) arifm_expr
+    | arifm_expr (add | sub) arifm_expr
+    | b_arifm_expr
     | name
     | const_arifm_expr
     | sub_arifm_expr;
 
-comp_op1 : EQ|NEQ;
-comp_op2 : MOREEQ|K_MORE|LESS|LESSEQ;
+eq:'==';
+neq:'!=';
+moreeq:'>='|'=>';
+more:'>';
+less:'<';
+lesseq:'<='|'=<';
+
+comp_op1 : eq|neq;
+comp_op2 : moreeq|more|less|lesseq;
+b_const_compare_expr:'('const_compare_expr')';
 
 const_compare_expr:
                 const_compare_expr comp_op1 const_compare_expr
                 |const_compare_expr comp_op2 const_compare_expr
-                     | '('const_compare_expr')'
-                     | const_arifm_expr;
+                | b_const_compare_expr
+                | const_arifm_expr;
+b_compare_expr:'('compare_expr')';
 
 compare_expr:
                 compare_expr comp_op1 compare_expr
                 |compare_expr comp_op2 compare_expr
-                     | '('compare_expr')'
-                     | const_compare_expr
-                     | arifm_expr;
+                | b_compare_expr
+                | const_compare_expr
+                | arifm_expr;
 
-logic_literal:(TRUE | FALSE);
+mytrue: TRUE;
+myfalse: FALSE;
 
-not_const_logic_expr:NOT const_logic_expr;
+logic_literal:(mytrue | myfalse);
+
+not_const_logic_expr:(NOT|'!') const_logic_expr;
+
+and: AND;
+or: OR;
+
+b_const_logic_expr: '('const_logic_expr')';
 
 const_logic_expr:
-        const_logic_expr AND const_logic_expr
-        |const_logic_expr OR const_logic_expr
+        const_logic_expr or const_logic_expr
+        |const_logic_expr and const_logic_expr
         | logic_literal
-        | '('const_logic_expr')'
+        | b_const_logic_expr
         | not_const_logic_expr
         | const_compare_expr
         | const_arifm_expr;
 
 not_logic_expr:NOT logic_expr;
+b_logic_expr: '('logic_expr')';
 
 logic_expr:
-        logic_expr AND logic_expr
-        |logic_expr OR logic_expr
-        | '('logic_expr')'
+        logic_expr or logic_expr
+        |logic_expr and logic_expr
+        | b_logic_expr
         | not_logic_expr
         | const_logic_expr
         | compare_expr

@@ -2,15 +2,15 @@ package visitors
 import antlr.HelloBaseVisitor
 import antlr.HelloParser
 import executables.DropExecute
+import executables.Executable
 import executables.ShowCreateExecute
+import expresions.ConstExprVisitor
+import expresions.ConstExpresion
 
-interface Executable
-{
-    fun execute():String;
-}
-abstract class BaseVisitor: HelloBaseVisitor<Executable>();
+
+abstract class BaseVisitor: HelloBaseVisitor<Executable<String>>();
 class SQLVisitor:BaseVisitor()  {
-    override fun visitSql_query(ctx: HelloParser.Sql_queryContext?): Executable {
+    override fun visitSql_query(ctx: HelloParser.Sql_queryContext?): Executable<String> {
         if (ctx != null) {
             return this.visit(ctx.children[0])
         }else
@@ -19,15 +19,19 @@ class SQLVisitor:BaseVisitor()  {
         }
     }
 
-    override fun visitCreate(ctx: HelloParser.CreateContext?): Executable {
+    override fun visitCreate(ctx: HelloParser.CreateContext?): Executable<String> {
         return CreateVisitor().visitCreate(ctx)
     }
 
-    override fun visitDrop(ctx: HelloParser.DropContext?): Executable {
+    override fun visitDrop(ctx: HelloParser.DropContext?): Executable<String> {
         return DropExecute(ctx);
     }
 
-    override fun visitShow_create(ctx: HelloParser.Show_createContext?): Executable {
+    override fun visitShow_create(ctx: HelloParser.Show_createContext?): Executable<String> {
         return ShowCreateExecute(ctx)
+    }
+
+    override fun visitConst_expr(ctx: HelloParser.Const_exprContext?): Executable<String> {
+        return ConstExprVisitor().visit(ctx).toExecutable();
     }
 }

@@ -4,11 +4,10 @@ import antlr.HelloBaseListener
 import antlr.HelloParser
 import meta.ColumnDef
 import meta.TableDefinition
-import visitors.Executable
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
 
-class CreateTableExecutable(ctx: HelloParser.Table_definitionContext) : Executable, TableDefinition() {
+class CreateTableExecutable(ctx: HelloParser.Table_definitionContext) : Executable<String>, TableDefinition() {
 
 
 
