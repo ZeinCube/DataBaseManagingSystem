@@ -10,13 +10,11 @@ public class Column implements Serializable {
     private String columnName;
     private boolean UNIQUE;
     private boolean PRIMARY_KEY;
-    private Class primaryKeyClass;
     private Class valueClass;
 
-    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean unique, boolean primaryKey) {
+    public Column(String columnName, Class valueClass, boolean unique, boolean primaryKey) {
         PRIMARY_KEY = primaryKey;
 
-        this.primaryKeyClass = primaryKeyClass;
         this.valueClass = valueClass;
 
         UNIQUE = primaryKey || unique;
@@ -25,10 +23,9 @@ public class Column implements Serializable {
     }
 
 
-    public Column(String columnName, Class primaryKeyClass, Class valueClass, boolean primary_key) {
+    public Column(String columnName, Class valueClass, boolean primary_key) {
         PRIMARY_KEY = primary_key;
 
-        this.primaryKeyClass = primaryKeyClass;
         this.valueClass = valueClass;
 
         UNIQUE = primary_key;
@@ -64,28 +61,16 @@ public class Column implements Serializable {
         return columnName;
     }
 
-    public boolean isUNIQUE() {
-        return UNIQUE;
-    }
-
-    public void setUNIQUE(boolean UNIQUE) {
-        this.UNIQUE = UNIQUE;
-    }
+//    public boolean isUNIQUE() {
+//        return UNIQUE;
+//    }
+//
+//    public void setUNIQUE(boolean UNIQUE) {
+//        this.UNIQUE = UNIQUE;
+//    }
 
     public boolean isPRIMARY_KEY() {
         return PRIMARY_KEY;
-    }
-
-    public void setPRIMARY_KEY(boolean PRIMARY_KEY) {
-        this.PRIMARY_KEY = PRIMARY_KEY;
-    }
-
-    public Class getPrimaryKeyClass() {
-        return primaryKeyClass;
-    }
-
-    public void setPrimaryKeyClass(Class primaryKeyClass) {
-        this.primaryKeyClass = primaryKeyClass;
     }
 
     public Class getValueClass() {

@@ -1,13 +1,14 @@
 import Entity.Commitable;
 import Entity.Meta.MetaFile;
 import Exceptions.DBMSException;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 public class DBEngine {
     private final String defaultDatabaseName = "main";
-    private final String homeDirectory = System.getProperty("user.home") + "/.dbms";
+    private static final String homeDirectory = System.getProperty("user.home") + "/.dbms";
     private final String homeTablesDirectory = System.getProperty("user.home") + "/.dbms/tables";
     private MetaFile metaFile;
 
@@ -78,5 +79,11 @@ public class DBEngine {
 
     public static void commit(Commitable object) throws DBMSException {
         object.commit();
+    }
+
+    protected static void deleteDB() throws Exception {
+        FileUtils.deleteDirectory(new File(homeDirectory));
+
+        new DBEngine();
     }
 }
