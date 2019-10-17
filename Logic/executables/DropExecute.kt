@@ -17,7 +17,7 @@ class DropExecute(ctx: HelloParser.DropContext?) : Executable<String> {
         walker.walk(listener, ctx)
     }
 
-    override fun execute(): String {
+    override fun execute(i:Any?): String {
         //todo Drop Table in Engine
         if (names.size==1)
             return "Table ${names[0]} was destroyed"

@@ -2,5 +2,5 @@ package executables
 
 interface Executable<T>
 {
-    fun execute():T;
+    fun execute(i:Any?):T;
 }

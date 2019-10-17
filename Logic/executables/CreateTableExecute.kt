@@ -11,8 +11,9 @@ class CreateTableExecutable(ctx: HelloParser.Table_definitionContext) : Executab
 
 
 
-    override fun execute(): String {
-        
+    override fun execute(i:Any?): String {
+
+
         return "Table ${name} created"
     }
 

@@ -25,7 +25,7 @@ open class ConstExpresion<T>():Expresion<T>
                 }
             }
 
-            override fun execute(): String {
+            override fun execute(i:Any?): String {
                 if (s==null)
                     return "NULL"
                 else
@@ -35,7 +35,7 @@ open class ConstExpresion<T>():Expresion<T>
     }
 
     protected var value:T? = null;
-    override fun execute(): T {
+    override fun execute(i:Any?): T {
         return value!!;
     }
 }

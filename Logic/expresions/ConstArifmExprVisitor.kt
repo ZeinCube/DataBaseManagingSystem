@@ -144,6 +144,6 @@ class ConstArifmExprVisitor: HelloBaseVisitor<Any?>() {
     }
 
     override fun visitMystring(ctx: HelloParser.MystringContext?): Any? {
-        return ctx!!.text;
+        return ctx!!.text.subSequence(1,ctx!!.text.length-2);
     }
 }

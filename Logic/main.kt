@@ -30,7 +30,7 @@ fun execute(str:String):String
         override fun enterSql_query(ctx: HelloParser.Sql_queryContext?) {
             val visitor = SQLVisitor()
             val ex = visitor.visit(ctx);
-            res+= ex.execute()+ "\n";
+            res+= ex.execute(1)+ "\n";
         }
     }
     val walker = ParseTreeWalker()
