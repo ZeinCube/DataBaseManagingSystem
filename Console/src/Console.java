@@ -1,3 +1,4 @@
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -6,9 +7,16 @@ import pars.HelloLexer;
 import pars.HelloParser;
 import pars.HelloWalker;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 public class Console {
 
     public static void main(String[] args) {
+
         // создаем объект лексера. В качестве входа используем стандартный
 // ввод.
         String str = "create table hui(kek int UNIQUE, lol int, kuk char[40] primary key, kuke char);" +
@@ -22,5 +30,9 @@ public class Console {
         ParseTree tree = parser.r();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new HelloWalker(), tree);
+    }
+}
+
+
     }
 }

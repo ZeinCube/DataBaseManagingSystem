@@ -28,3 +28,5 @@ Logic/antlr/HelloListener.java
 Logic/antlr/HelloParser.java
 
 Logic/antlr/HelloVisitor.java
+/.idea
+
