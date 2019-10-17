@@ -12,7 +12,7 @@ class CreateTableExecutable(ctx: HelloParser.Table_definitionContext) : Executab
 
 
     override fun execute(): String {
-        //todo Create Table in Engine
+        
         return "Table ${name} created"
     }
 

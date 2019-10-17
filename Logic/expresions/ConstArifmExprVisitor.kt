@@ -123,7 +123,7 @@ class ConstArifmExprVisitor: HelloBaseVisitor<Any?>() {
     }
 
     override fun visitB_const_arifm_expr(ctx: HelloParser.B_const_arifm_exprContext?): Any? {
-        return this.visit(ctx!!.children[0])
+        return this.visit(ctx!!.children[1])
     }
 
     override fun visitSub_const_arifm_expr(ctx: HelloParser.Sub_const_arifm_exprContext?): Any? {
