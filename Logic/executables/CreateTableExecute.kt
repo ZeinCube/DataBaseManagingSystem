@@ -1,5 +1,7 @@
 package executables
 
+import API
+import Entity.Column
 import antlr.HelloBaseListener
 import antlr.HelloParser
 import meta.ColumnDef
@@ -10,10 +12,15 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 class CreateTableExecutable(ctx: HelloParser.Table_definitionContext) : Executable<String>, TableDefinition() {
 
 
-
     override fun execute(i:Any?): String {
+        val api = i as API;
+        var cols = HashSet<Column>()
 
-
+        for (i in columns)
+        {
+            cols.add(Column(i.name,i.t.toClass(),i.sp==ColumnDef.Specificators.unique,i.sp==ColumnDef.Specificators.primary_key))
+        }
+        api.createTable(name,cols)
         return "Table ${name} created"
     }
 

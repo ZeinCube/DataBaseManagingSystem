@@ -1,5 +1,6 @@
 package executables
 
+import API
 import antlr.HelloBaseListener
 import antlr.HelloParser
 import org.antlr.v4.runtime.tree.ParseTreeWalker
@@ -18,7 +19,11 @@ class DropExecute(ctx: HelloParser.DropContext?) : Executable<String> {
     }
 
     override fun execute(i:Any?): String {
-        //todo Drop Table in Engine
+        val api = i as API;
+        for(i in names)
+        {
+            api.dropTable(i)
+        }
         if (names.size==1)
             return "Table ${names[0]} was destroyed"
         else

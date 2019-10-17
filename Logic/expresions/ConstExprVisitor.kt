@@ -12,6 +12,7 @@ class ConstExprVisitor: HelloBaseVisitor<Any?>() {
         return ConstLogicExprVisitor().visit(ctx)
     }
 
+
     override fun visitConst_compare_expr(ctx: HelloParser.Const_compare_exprContext?): Any? {
         return ConstCompExprVisitor().visit(ctx)
     }

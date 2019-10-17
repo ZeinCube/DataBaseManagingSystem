@@ -19,8 +19,8 @@ public class API {
         this.metaFile = metaFile;
     }
 
-    public String createTable(String tableName, Class primaryKeyClass, HashSet<Column> columns) throws DBMSException {
-        Table table = new Table(tableName, columns, primaryKeyClass);
+    public String createTable(String tableName, HashSet<Column> columns) throws DBMSException {
+        Table table = new Table(tableName, columns);
         MetaTable metaTable = new MetaTable(table);
 
         try {
@@ -34,6 +34,8 @@ public class API {
 
         return "Created table " + tableName;
     }
+
+
 
     public String showCreateTable(String tableName) throws Exception {
         return metaFile.getTable(tableName).getCreate();

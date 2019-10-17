@@ -10,6 +10,7 @@ class ColumnDef {
     var sp: Specificators? = null
     lateinit var t: MyType
     lateinit var name: String
+
     override fun toString(): String {
         if (sp == null)
             return name + " " + t.toString() + " "
@@ -27,6 +28,16 @@ class ColumnDef {
                 (int) ->{"int"}
                 (char) ->{"char[${length}]"}
                 (float) ->{"float"}
+                else -> throw Throwable("WFT")
+            }
+        }
+        fun toClass():Class<Any>
+        {
+            return when(this)
+            {
+                (int) ->{Int.javaClass}
+                (char) ->{String.javaClass}
+                (float) ->{Double.javaClass}
                 else -> throw Throwable("WFT")
             }
         }

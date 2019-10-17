@@ -1,5 +1,6 @@
 package executables
 
+import API
 import antlr.HelloBaseListener
 import antlr.HelloParser
 import meta.ColumnDef
@@ -22,10 +23,12 @@ class ShowCreateExecute(ctx: HelloParser.Show_createContext?) : Executable<Strin
 
     override fun execute(i:Any?): String {
         var tables = arrayOf<TableDefinition>()
+        val api = i as API;
+        return api.showCreateTable(names[0])
+        for(i in names)
+        {
 
-        //todo Load Meta from engine in Engine
-
-        
+        }
         var res = ""
         for (table in tables)
         {
