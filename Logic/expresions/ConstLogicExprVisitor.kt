@@ -83,11 +83,12 @@ class ConstLogicExprVisitor: HelloBaseVisitor<Boolean?>() {
         return ConstExprVisitor().visit(ctx) as Boolean?
     }
 
-    override fun visitMychar(ctx: HelloParser.MycharContext?): Boolean? {
-        return true;
-    }
 
     override fun visitMyfalse(ctx: HelloParser.MyfalseContext?): Boolean? {
         return false;
+    }
+
+    override fun visitMytrue(ctx: HelloParser.MytrueContext?): Boolean? {
+        return true
     }
 }

@@ -35,7 +35,7 @@ class ConstCompExprVisitor: HelloBaseVisitor<Boolean?>() {
                 if (i1==null || i2 == null)
                     return null
                 try {
-                    return i1 as Float >= i2 as Float
+                    return i1 as Double >= i2 as Double
                 }catch (ex:Throwable)
                 {
                     throw Throwable("Сравнение несрвнимых типов")
@@ -47,7 +47,7 @@ class ConstCompExprVisitor: HelloBaseVisitor<Boolean?>() {
                 if (i1==null || i2 == null)
                     return null
                 try {
-                    return i1 as Float > i2 as Float
+                    return i1 as Double > i2 as Double
                 }catch (ex:Throwable)
                 {
                     throw Throwable("Сравнение несрвнимых типов")
@@ -59,7 +59,7 @@ class ConstCompExprVisitor: HelloBaseVisitor<Boolean?>() {
                 if (i1==null || i2 == null)
                     return null
                 try {
-                    return (i1 as Float) < i2 as Float
+                    return (i1 as Double) < i2 as Double
                 }catch (ex:Throwable)
                 {
                     throw Throwable("Сравнение несрвнимых типов")
@@ -71,7 +71,7 @@ class ConstCompExprVisitor: HelloBaseVisitor<Boolean?>() {
                 if (i1==null || i2 == null)
                     return null
                 try {
-                    return i1 as Float <= i2 as Float
+                    return i1 as Double <= i2 as Double
                 }catch (ex:Throwable)
                 {
                     throw Throwable("Сравнение несрвнимых типов")
