@@ -6,6 +6,8 @@ import executables.Executable
 import executables.ShowCreateExecute
 import expresions.ConstExprVisitor
 import expresions.ConstExpresion
+import expresions.Expresion
+import java.lang.Exception
 
 
 abstract class BaseVisitor: HelloBaseVisitor<Executable<String>>();
@@ -32,6 +34,6 @@ class SQLVisitor:BaseVisitor()  {
     }
 
     override fun visitConst_expr(ctx: HelloParser.Const_exprContext?): Executable<String> {
-        return ConstExprVisitor().visit(ctx).toExecutable();
+        return ConstExpresion<Any?>(ConstExprVisitor().visit(ctx)).toExecutable();
     }
 }

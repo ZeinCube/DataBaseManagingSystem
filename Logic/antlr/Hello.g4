@@ -33,7 +33,7 @@ T_CHAR:                                           C H A R;
 T_INT:                                            I N T;
 T_FLOAT:                                          F L O A T;
 
-fragment NUMBER:                                         DIGIT+;
+NUMBER:                                         DIGIT+;
 NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?;
 
 STRING:                                         '"' (~'"' | '""')* '"';
@@ -161,22 +161,23 @@ div:'/';
 add:'+';
 sub:'-';
 concate: '|';
-const_arifm_expr:   const_arifm_expr concate arifm_expr
-                    |const_arifm_expr (mul| div) arifm_expr
+mynull: K_NULL;
+const_arifm_expr:   const_arifm_expr concate const_arifm_expr
+                    |const_arifm_expr (mul| div) const_arifm_expr
                     | const_arifm_expr (add |sub) const_arifm_expr
                     | mystring
                     | mynumber
                     | sub_const_arifm_expr
                     | b_const_arifm_expr
-                    | K_NULL;
+                    | mynull;
 
 sub_arifm_expr:SUB arifm_expr;
 b_arifm_expr: '(' arifm_expr ')';
 
 arifm_expr:
     arifm_expr concate arifm_expr
-    |arifm_expr (mul| div) arifm_expr
-    | arifm_expr (add | sub) arifm_expr
+    |arifm_expr (mul|div) arifm_expr
+    | arifm_expr (add|sub) arifm_expr
     | b_arifm_expr
     | name
     | const_arifm_expr
@@ -191,13 +192,14 @@ lesseq:'<='|'=<';
 
 comp_op1 : eq|neq;
 comp_op2 : moreeq|more|less|lesseq;
+
 b_const_compare_expr:'('const_compare_expr')';
 
 const_compare_expr:
-                const_compare_expr comp_op1 const_compare_expr
-                |const_compare_expr comp_op2 const_compare_expr
-                | b_const_compare_expr
-                | const_arifm_expr;
+                const_arifm_expr comp_op1 const_arifm_expr
+                |const_arifm_expr comp_op2 const_arifm_expr
+                | b_const_compare_expr;
+
 b_compare_expr:'('compare_expr')';
 
 compare_expr:
@@ -241,4 +243,4 @@ logic_expr:
         | arifm_expr;
 
 const_expr: const_arifm_expr|const_compare_expr|const_logic_expr;
-expr: const_logic_expr|compare_expr|arifm_expr|logic_expr;
+expr: const_expr|compare_expr|arifm_expr|logic_expr;

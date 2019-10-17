@@ -7,18 +7,29 @@ interface Expresion<T>:Executable<T>
 
 open class ConstExpresion<T>():Expresion<T>
 {
-
-    constructor(ce:ConstExpresion<out T>) : this() {
-        value = ce.value
+    constructor(ce:T) : this() {
+        value = ce
     }
 
     fun toExecutable():Executable<String>
     {
         return object :Executable<String>
         {
-            var s:String = value.toString()
+            var s:String? = null
+            init {
+                if (value!=null)
+                {
+                    s=value.toString()
+                }else{
+                    s=null
+                }
+            }
+
             override fun execute(): String {
-                return s;
+                if (s==null)
+                    return "NULL"
+                else
+                    return s!!;
             }
         }
     }
@@ -31,18 +42,14 @@ open class ConstExpresion<T>():Expresion<T>
 
 
 
-class LogicConstExpr:ConstExpresion<Boolean>
+class CompConstExpr:ConstExpresion<Boolean>
 {
     constructor(b:Boolean)
     {
         value = b
     }
-    fun not():LogicConstExpr
-    {
-        value = ! value!!
-        return this;
-    }
+
     constructor(ctx:HelloParser.Const_logic_exprContext) {
-        value = LogicConstExprVisitor().visit(ctx).execute()
+        value = ConstLogicExprVisitor().visit(ctx)
     }
 }
