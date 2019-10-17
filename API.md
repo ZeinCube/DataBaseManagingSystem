@@ -5,9 +5,8 @@ Example :
 `DBEngine engine = new DBEngine();`
 `API api = new API();`
 API has the next methods:
-* `createTable(String tableName, Class primaryKeyClass, HashSet<Column> colums)`
+* `createTable(String tableName, HashSet<Column> colums)`
     * tableName - is just name of new table
-    * primaryKeyClass - is just type (e.g. int, string, ...) of primary key of table, it should be provided once or 
     exception will be thrown.
     * columns - unique array with columns. Column could be created with: `new Column(columnName, Class primaryKeyClass
     , Class valueClass, boolean unique, boolean primaryKey`.

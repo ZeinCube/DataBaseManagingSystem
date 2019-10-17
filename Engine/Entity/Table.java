@@ -18,9 +18,9 @@ public class Table extends Commitable {
     private String name;
     private HashMap<String, Column> columns;
     private Class primaryKeyClass;
-    private HashMap<Object, Row> rows;
+    private HashMap<Integer, Row> rows;
 
-    public Table(String name, HashSet<Column> columns, Class primaryKeyClass) throws ExistingPrimaryKeyException {
+    public Table(String name, HashSet<Column> columns) throws ExistingPrimaryKeyException {
         boolean hasPrimaryKey = false;
 
         for (Column column : columns) {
@@ -37,7 +37,6 @@ public class Table extends Commitable {
             this.columns.put(column.getColumnName(), column);
         }
 
-        this.primaryKeyClass = primaryKeyClass;
         this.name = name;
 
         rows = new HashMap<>();
@@ -55,6 +54,10 @@ public class Table extends Commitable {
             }
         }
     }
+//
+//    public List<Row> select(HashSet<Column> columns, ) {
+//
+//    }
 
     public String getName() {
         return name;
@@ -88,11 +91,11 @@ public class Table extends Commitable {
         this.primaryKeyClass = primaryKeyClass;
     }
 
-    public HashMap<Object, Row> getRows() {
+    public HashMap<Integer, Row> getRows() {
         return rows;
     }
 
-    public void setRows(HashMap<Object, Row> rows) {
+    public void setRows(HashMap<Integer, Row> rows) {
         this.rows = rows;
     }
 

@@ -4,7 +4,10 @@ import Entity.Meta.MetaFile;
 import Entity.Meta.MetaTable;
 import Entity.Row;
 import Entity.Table;
-import Exceptions.*;
+import Exceptions.DBMSException;
+import Exceptions.DropException;
+import Exceptions.GetTableException;
+import Exceptions.NoTableException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +55,13 @@ public class API {
         }
 
         return "Table " + tableName + " dropped";
+    }
+
+    @Deprecated
+    public String dropAll() throws Exception {
+        DBEngine.deleteDB();
+
+        return "Database dropped";
     }
 
     private void commit(Commitable object) throws DBMSException {
