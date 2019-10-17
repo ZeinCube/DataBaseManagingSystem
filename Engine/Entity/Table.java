@@ -20,7 +20,7 @@ public class Table extends Commitable {
     private Class primaryKeyClass;
     private HashMap<Integer, Row> rows;
 
-    public Table(String name, HashSet<Column> columns) throws ExistingPrimaryKeyException {
+    public Table(String name, HashSet<Column> columns) throws ExistingPrimaryKeyException, NoPrimaryKeyException {
         boolean hasPrimaryKey = false;
 
         for (Column column : columns) {
@@ -29,6 +29,10 @@ public class Table extends Commitable {
             }
 
             hasPrimaryKey = column.isPRIMARY_KEY();
+        }
+
+        if (!hasPrimaryKey) {
+            throw new NoPrimaryKeyException();
         }
 
         this.columns = new HashMap<>();
@@ -54,10 +58,6 @@ public class Table extends Commitable {
             }
         }
     }
-//
-//    public List<Row> select(HashSet<Column> columns, ) {
-//
-//    }
 
     public String getName() {
         return name;
