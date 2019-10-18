@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 public class Table extends Commitable {
 
@@ -28,7 +27,7 @@ public class Table extends Commitable {
                 throw new ExistingPrimaryKeyException(column.getMeta(), name);
             }
 
-            hasPrimaryKey = column.isPRIMARY_KEY();
+            hasPrimaryKey = hasPrimaryKey || column.isPRIMARY_KEY();
         }
 
         if (!hasPrimaryKey) {
@@ -46,17 +45,13 @@ public class Table extends Commitable {
         rows = new HashMap<>();
     }
 
-    public void insert(List<Row> rows) throws NoSuchColumnException {
-        for (Row row : rows) {
-            for (Map.Entry<String, Cell> cell : row.getValues().entrySet()) {
-                if (!columns.containsKey(cell.getKey())) {
-                    throw new NoSuchColumnException("Error while inserting value \"" + cell.getValue().getValue() +
-                            "\" in non-existing column \"" + cell.getKey() + "\"");
-                }
-
-                this.rows.put(rows.size() - 1, row);
-            }
+    public void insert(List<Column> toColumns, List<Row> rows) throws NoSuchColumnException {
+        String checkResult = checkColumns(toColumns);
+        if (!checkResult.equals("ok")) {
+            throw new NoSuchColumnException("Error while inserting : No such column \"" + checkResult + "\"");
         }
+
+
     }
 
     public String getName() {
@@ -130,6 +125,7 @@ public class Table extends Commitable {
         }
 
         Path path = Paths.get(getPath());
+
         try {
             Files.write(path, bytes);
         } catch (IOException e) {
@@ -138,7 +134,19 @@ public class Table extends Commitable {
     }
 
     @Override
-    protected String getPath() {
+    public String getPath() {
         return System.getProperty("user.home") + "/.dbms/tables/" + name + ".dbms";
+    }
+
+    private String checkColumns(List<Column> checkColumns) {
+        String result = "ok";
+
+        for (Column column : checkColumns) {
+            if (!columns.containsValue(column)) {
+                return column.getColumnName();
+            }
+        }
+
+        return result;
     }
 }

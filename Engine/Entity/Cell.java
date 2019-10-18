@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class Cell implements Serializable {
     private Class type;
-    private Column columnContain;
+    private String columnName;
     private Object value;
 
-    public Cell(Class type, Column columnContain, Object value) {
+    public Cell(Class type, String columnName, Object value) {
         this.type = type;
-        this.columnContain = columnContain;
+        this.columnName = columnName;
         this.value = value;
     }
 
@@ -21,19 +21,19 @@ public class Cell implements Serializable {
         this.type = type;
     }
 
-    public Column getColumnContain() {
-        return columnContain;
-    }
-
-    public void setColumnContain(Column columnContain) {
-        this.columnContain = columnContain;
-    }
-
     public Object getValue() {
-        return value;
+        return type.cast(value);
     }
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 }

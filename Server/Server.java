@@ -13,9 +13,9 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         setAddress();
-
+        System.out.println(ADDRESS.getHostAddress());
         try {
-            mainSocket = new ServerSocket();
+            mainSocket = new ServerSocket(3309, 0, ADDRESS);
         } catch (IOException e) {
             System.err.println("Could not start server " + e.getMessage());
         }

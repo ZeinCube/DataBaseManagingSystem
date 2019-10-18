@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @JsonRootName(value = "MetaTable")
 @JsonIgnoreProperties(value = {"create"})
@@ -23,12 +24,12 @@ public class MetaTable {
         this.name = table.getName();
         columns = new ArrayList<>();
 
-        for (Column column : table.getColumns()) {
-            columns.add(column.getMeta());
+        for (Map.Entry<String, Column> entry : table.getColumns().entrySet()) {
+            columns.add(entry.getValue().getMeta());
         }
 
         this.primaryKeyClass = table.getPrimaryKeyClass();
-        fileTable = name + ".dbms";
+        fileTable = table.getPath();
     }
 
     public MetaTable(String name, List<MetaColumn> columns, Class primaryKeyClass, String fileTable) {

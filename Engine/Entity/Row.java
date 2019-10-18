@@ -18,7 +18,7 @@ public class Row implements Serializable {
         this.values = values;
     }
 
-    public Object getValueByColumnName(String name) {
+    public Cell getValueByColumnName(String name) {
         return values.get(name);
     }
 }

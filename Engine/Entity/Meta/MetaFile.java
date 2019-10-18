@@ -5,6 +5,7 @@ import Exceptions.DBMSException;
 import Exceptions.DropException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class MetaFile extends Commitable {
             throw new DropException("Table with name \"" + tableName + "does not exist\"");
         }
 
+        FileUtils.forceDelete(new File(tables.get(tableName).getFileTable()));
         tables.remove(tableName);
     }
 

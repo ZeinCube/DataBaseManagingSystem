@@ -11,8 +11,9 @@ public class Client {
     private static ServerListener listener;
 
     public static void main(String[] args) {
+        connect("10.193.50.153");
         try {
-            os.writeUTF("create table ...");
+            os.writeUTF("test");
         } catch (IOException e) {
             listener.interrupt();
             System.err.println(e.getMessage());
