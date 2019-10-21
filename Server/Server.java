@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class Server {
 
 
     public static void main(String[] args) throws IOException {
-        setAddress();
+        setAddress("localhost");
         System.out.println(ADDRESS.getHostAddress());
         try {
             mainSocket = new ServerSocket(3309, 0, ADDRESS);
@@ -28,6 +29,14 @@ public class Server {
                 mainSocket.close();
                 System.exit(1);
             }
+        }
+    }
+
+    public static void setAddress(String address) {
+        try {
+            ADDRESS = InetAddress.getByName(address);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 

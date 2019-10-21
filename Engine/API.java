@@ -26,7 +26,7 @@ public class API {
         try {
             metaFile.addTable(metaTable);
         } catch (Exception e) {
-            throw new DBMSException("Could not create database " + e.getMessage());
+            throw new DBMSException("Could not create table " + e.getMessage());
         }
 
         commit(metaFile);
@@ -35,15 +35,13 @@ public class API {
         return "Created table " + tableName;
     }
 
-
-
     public String showCreateTable(String tableName) throws Exception {
         return metaFile.getTable(tableName).getCreate();
     }
 
-    public String insert(String tableName, List<Row> rows) throws DBMSException {
+    public String insert(String tableName, List<Column> columns, List<Row> rows) throws DBMSException {
         Table table = getTable(tableName);
-        table.insert(rows);
+        table.insert(columns, rows);
         commit(table);
 
         return rows.size() + " rows inserted to \"" + table.getName() + " successfully finished";

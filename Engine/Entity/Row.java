@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Row implements Serializable {
+
     private HashMap<String, Cell> values;
 
     public Row(HashMap<String, Cell> values) {
