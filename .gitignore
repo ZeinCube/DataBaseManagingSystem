@@ -30,3 +30,23 @@ Logic/antlr/HelloParser.java
 Logic/antlr/HelloVisitor.java
 /.idea
 
+
+Tester/src/parser/TestGrammar.interp
+
+Tester/src/parser/TestGrammar.tokens
+
+Tester/src/parser/TestGrammarBaseListener.java
+
+Tester/src/parser/TestGrammarBaseVisitor.java
+
+Tester/src/parser/TestGrammarLexer.interp
+
+Tester/src/parser/TestGrammarLexer.java
+
+Tester/src/parser/TestGrammarLexer.tokens
+
+Tester/src/parser/TestGrammarListener.java
+
+Tester/src/parser/TestGrammarParser.java
+
+Tester/src/parser/TestGrammarVisitor.java

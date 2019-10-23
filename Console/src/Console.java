@@ -6,7 +6,7 @@ public class Console {
         // создаем объект лексера. В качестве входа используем стандартный
 // ввод.
         String str = "\"dfmndkfnm\"|\"dfmndkfnm\"";
-        System.out.println(MainKt.execute(str));
+        //System.out.println(MainKt.execute(str));
 
     }
 }
