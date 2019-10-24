@@ -33,6 +33,7 @@ fragment DIGIT :                                [0-9];
 fragment ENTER:                                 [\n];
 
 K_TEST: COMAND T E S T;
+K_CHECK: COMAND C H E C K;
 K_FOR: COMAND F O R;
 K_VAR: COMAND V A R;
 K_RESULT: COMAND R E S U L T;
@@ -72,24 +73,25 @@ id
  ;
 apropriation: id ':=' expr;
 
-parse:parseIn|parseOut|expr;
+testName:myString;
 
-parseIn: K_TEST STRING_LITERAL
-         (K_VAR ':'id (','id)*)?
+parseIn: K_TEST testName
        (test_block)+  EOF;
 
 parseOut:  result*;
 
 result: K_RESULT STRING_LITERAL;
 
+open_block:'{';
+close_block:'}';
 
-test_block: '{'
+test_block: open_block
                (test|myFor|apropriation|test_block)*
-                '}';
+            close_block;
 
-test: K_TEST ':' expr;
+test: K_TEST ':' expr K_CHECK?;
 
-myFor: K_FOR '('id '=' expr';' expr';' apropriation ')'
+myFor: K_FOR '('(apropriation)?';' expr ';' apropriation ')'
         test_block;
 
 unary_operator

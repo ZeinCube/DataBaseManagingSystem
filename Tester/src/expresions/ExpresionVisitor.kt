@@ -41,7 +41,7 @@ class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBa
     }
 
     override fun visitMyString(ctx: TestGrammarParser.MyStringContext?): Variable {
-        return StringVar(ctx!!.text)
+        return StringVar(ctx!!.text.substring(1,ctx!!.text.length-1))
     }
 
     override fun visitMyDouble(ctx: TestGrammarParser.MyDoubleContext?): Variable {

@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree
 import parser.TestGrammarLexer
 import parser.TestGrammarParser
 
-class Tester {
+private class ExpressionsTester {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
@@ -22,7 +22,7 @@ class Tester {
                 var tree: ParseTree? = null
                 try {
                     // вызываем парсинг по правилу
-                    tree = parser.parse()
+                    tree = parser.expr()
                 } catch (e: Exception) {
                     // обрабатываем ошибки
                     println("Error: ${e.message}")
@@ -30,7 +30,7 @@ class Tester {
 
                 var res = ""
                 val visitor = ExpresionVisitor(HashMap())
-                val ex = visitor.visit(tree!!.getChild(0));
+                val ex = visitor.visit(tree);
                 res += ex.getValue().toString();
 
                 println(res)
