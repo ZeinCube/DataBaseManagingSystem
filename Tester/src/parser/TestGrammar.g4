@@ -38,7 +38,7 @@ K_VAR: COMAND V A R;
 K_RESULT: COMAND R E S U L T;
 
 
-K_NOT: COMAND N O T;
+K_NOT: N O T;
 K_AND: A N D;
 K_OR: O R;
 K_CAST: COMAND C A S T;
@@ -50,10 +50,10 @@ K_BOOL:  (B O O L E A N )|( B O O L);
 K_TRUE: T R U E;
 K_FALSE: F A L S E;
 
-
+NUMBER: DIGIT+;
 NUMERIC_LITERAL
- : DIGIT+ ( '.' DIGIT* )? ( E [-+]? DIGIT+ )?
- | '.' DIGIT+ ( E [-+]? DIGIT+ )?
+ : NUMBER '.' DIGIT*  ( E [-+]? NUMBER )?
+ | '.' DIGIT+ ( E [-+]? NUMBER )?
  ;
 
 STRING_LITERAL
@@ -84,12 +84,12 @@ result: K_RESULT STRING_LITERAL;
 
 
 test_block: '{'
-               (test|myfor|apropriation|test_block)*
+               (test|myFor|apropriation|test_block)*
                 '}';
 
 test: K_TEST ':' expr;
 
-myfor: K_FOR '('id '=' expr';' expr';' apropriation ')'
+myFor: K_FOR '('id '=' expr';' expr';' apropriation ')'
         test_block;
 
 unary_operator
@@ -110,20 +110,26 @@ expr
  | expr '||' expr
  | expr ( '*' | '/' | '%' ) expr
  | expr ( '+' | '-' ) expr
+ | expr ( '<' | '<=' | '>' | '>=' ) expr
+ | expr ( '==' | '!=' ) expr
  | expr ( '&' | '|' ) expr
  | expr K_AND expr
  | expr K_OR expr
- | expr ( '<' | '<=' | '>' | '>=' ) expr
- | expr ( '==' | '!=' ) expr
  | b_expr
  ;
 
+myString: STRING_LITERAL;
+myDouble: NUMERIC_LITERAL;
+myInt: NUMBER;
+myTrue: K_TRUE;
+myFalse: K_FALSE;
 
 literal_value
- : NUMERIC_LITERAL
- | STRING_LITERAL
- | K_TRUE
- | K_FALSE
+ : myDouble
+ | myInt
+ | myString
+ | myTrue
+ | myFalse
  | id
  ;
 
