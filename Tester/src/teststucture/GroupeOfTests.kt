@@ -1,39 +1,45 @@
 package teststucture
 
+import teststucture.tests.BaseTest
+import teststucture.tests.TestResult
 import java.io.File
 
-class GroupeOfTests : BaseTest {
-    override fun checkTest() {
-        conclusion = TestResult.NT
-        if (selected)
-            for (i in Tests)
-            {
-                i.checkTest()
-                conclusion = conclusion and i.conclusion
-            }
-    }
+class GroupeOfTests(dir: String, name: String) : TestsHierarchy(name) {
 
-    var Tests: Array<Test> = arrayOf()
+    var testScripts: Array<TestScript> = arrayOf()
     lateinit var dirr: String
 
-    constructor(dir: String, n: String):super(n) {
-        println("$dir$n\\meta.txt")
+    override fun checkTests() {
+        conclusion = TestResult.NT
+        if (selected) {
+        }
+        for (i in testScripts) {
+
+            i.checkTests()
+            conclusion = conclusion and i.conclusion
+        }
+    }
+
+
+
+    init {
+        println("$dir$name\\meta.txt")
         println("$dir")
-        dirr = "$dir$n"
-        val meta = File("$dir$n\\meta.txt")
+        dirr = "$dir$name"
+        val meta = File("$dir$name\\meta.txt")
         print(meta.exists())
         meta.forEachLine {
             if (it.length > 0) {
-                Tests += Test(it, "$dir$n", name)
+                testScripts += TestScript(it, "$dir$name", name)
             }
         }
-        type = TestType.group
+        type = HierarchyType.group
     }
 
 
     fun exist(s: String): Boolean {
         var flag = true;
-        for (t in Tests) {
+        for (t in testScripts) {
             if (t.name == s) {
                 flag = false
             }
@@ -44,7 +50,7 @@ class GroupeOfTests : BaseTest {
     fun addTest(s: String) {
         val meta = File("$dirr\\meta.txt")
         meta.appendText("\n$s")
-        Tests += Test(s, "$dirr\\",name)
+        testScripts += TestScript(s, "$dirr\\", name)
     }
 
 

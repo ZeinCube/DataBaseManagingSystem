@@ -1,31 +1,19 @@
-serdhgxzJ
-asrgfawesr
-zdvmkasmv
-asrgvmasldk;v
-fvadfv
-adfvsd
-fva
-create
-CREATE
-CREATE DROP
-CREATE CREATE
-CREATE SHOW
-CREATE DROP SHOW
-SHOW CREATE
-SHOW TABLE
-CREATE SELECT
-DROP SELECT
-DROP SHOW
-DROP SHOW CREATE
-DROP DROP DROP
-CREATE CREATE CREATE CREATE
-CREATE TABLE( T5 (INT I, CHAR[20] NAME UNIQUE, INT U PRIMARYKEY))
-CREATE TABLE T5() (INT I, CHAR[20] NAME UNIQUE, INT U PRIMARYKEY)
-CREATE TABLE T5 (INT I(), CHAR[20] NAME UNIQUE, INT U PRIMARYKEY)
-CREATE TABLE T5 (INT I, CHAR[20]() NAME UNIQUE, INT U PRIMARYKEY)
-CREATE TABLE T5 (INT I, CHAR[20] (NAME UNIQUE, INT U PRIMARYKEY))
-CREATE TABLE T5 (INT I, CHAR[20] (NAME UNIQUE), INT U PRIMARYKEY)
-CREATE TABLE T5 (INT I, CHAR[20] NAME UNIQUE(), INT U PRIMARYKEY())
-CREATE TABLE T5 (INT[25] I, CHAR[20] NAME UNIQUE, INT U PRIMARYKEY)
-NKJLJNLN
-
+@test "Test 1"
+{ 
+    @test: "scsc"+"("+")"
+    @for(@i:=0; @i<5; @i:=@i+1)
+    { 
+        @cols := "i1 int unique" 
+        @for(@j:=0;@j<@i;@j:=@j+1) 
+        { 
+           @cols := @cols + ",i"+ @cast @j+2 as string +" int unique"
+        } 
+        @test: "create table t"+ @cast @i as string +"("+ @cols+")"
+    }
+    @for( @i:=0;@i<5;@i:=@i+1)
+    {
+    @test:  "INSERT t2(i1, i2, i3)
+             VALUES ("+@i+", "+(@i+2)+", "+-(@i+5)+")"
+    }
+    @test: "select * from t2"
+}

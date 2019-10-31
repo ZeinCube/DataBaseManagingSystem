@@ -1,37 +1,54 @@
 package visitors
 
-import expresions.ExpresionVisitor
-import expresions.StringVar
-import expresions.Variable
-import org.antlr.v4.runtime.tree.ParseTree
+import visitors.expresions.ExpresionVisitor
+import visitors.expresions.StringVar
+import visitors.expresions.Variable
 import parser.TestGrammarBaseVisitor
 import parser.TestGrammarParser
+import teststucture.tests.BaseTest
+import teststucture.tests.SkipTest
 import java.util.*
 import kotlin.collections.HashMap
 
-class StartCodeVisitor : TestGrammarBaseVisitor<Any?>() {
+class CodeVisitor(exp:Array<BaseTest>) : TestGrammarBaseVisitor<Any?>() {
     lateinit var name: String
     val variables: HashMap<String, Variable> = hashMapOf();
     val varNameList: Stack<String> = Stack()
     val varLevelNum: Stack<Int> = Stack()
+    var curTest:Int = 0
+    var tests:Array<BaseTest> =  exp;
+
     private fun sentToSQL(s: String, isNeedCheck: Boolean) {
         //todo
-        println(s)
+        if (isNeedCheck)
+        {
+            if(tests.size<curTest)
+            {
+                tests[curTest].checkTest(s)
+            }else
+            {
+                tests=tests+(SkipTest())
+                tests[curTest].checkTest(s)
+            }
+        curTest++
+        }else
+            DataBase.SendToSQL(s)
+
     }
 
     override fun visitParseIn(ctx: TestGrammarParser.ParseInContext?): Any? {
         for (i in ctx!!.children) {
             this.visit(i)
         }
-        return null
+        return tests
     }
 
     override fun visitTestName(ctx: TestGrammarParser.TestNameContext?): Any? {
-        name = ctx!!.text.substring(1, ctx!!.text.length - 2)
+        name = ctx!!.text.substring(1, ctx.text.length - 1)
         return null
     }
 
-    override fun visitTest_block(ctx: TestGrammarParser.Test_blockContext?): Any? {
+    override fun visitCode_block(ctx: TestGrammarParser.Code_blockContext?): Any? {
         for (i in ctx!!.children) {
             this.visit(i)
         }
@@ -45,7 +62,7 @@ class StartCodeVisitor : TestGrammarBaseVisitor<Any?>() {
 
     override fun visitClose_block(ctx: TestGrammarParser.Close_blockContext?): Any? {
 
-        var ii = varLevelNum.pop()
+        val ii = varLevelNum.pop()
         for (i in 1..ii) {
             val s = varNameList.pop()
             variables.remove(s)
@@ -53,15 +70,15 @@ class StartCodeVisitor : TestGrammarBaseVisitor<Any?>() {
         return null
     }
 
-    override fun visitApropriation(ctx: TestGrammarParser.ApropriationContext?): Any? {
+    override fun visitAssignment(ctx: TestGrammarParser.AssignmentContext?): Any? {
         if (variables.containsKey(ctx!!.id().text)) {
-            variables[ctx!!.id().text] = ExpresionVisitor(variables).visit(ctx!!.expr())
+            variables[ctx.id().text] = ExpresionVisitor(variables).visit(ctx.expr())
         } else {
             var i = varLevelNum.pop()
             i++
             varLevelNum.push(i)
-            varNameList.push(ctx!!.id().text)
-            variables[ctx!!.id().text] = ExpresionVisitor(variables).visit(ctx!!.expr())
+            varNameList.push(ctx.id().text)
+            variables[ctx.id().text] = ExpresionVisitor(variables).visit(ctx.expr())
         }
         return null
     }
@@ -69,20 +86,26 @@ class StartCodeVisitor : TestGrammarBaseVisitor<Any?>() {
     override fun visitTest(ctx: TestGrammarParser.TestContext?): Any? {
         sentToSQL((ExpresionVisitor(variables).visit(ctx!!.expr())
                 .castAs("string") as StringVar).value
-                , ctx.childCount == 3)
+                , true)
+        return null
+    }
 
+    override fun visitSql(ctx: TestGrammarParser.SqlContext?): Any? {
+        sentToSQL((ExpresionVisitor(variables).visit(ctx!!.expr())
+                .castAs("string") as StringVar).value
+                , false)
         return null
     }
 
     override fun visitMyFor(ctx: TestGrammarParser.MyForContext?): Any? {
         var i = 0
         if (ctx!!.childCount == 9) {
-            this.visit(ctx.apropriation(0))
+            this.visit(ctx.assignment(0))
             i = 1
         }
         while ((ExpresionVisitor(variables).visit(ctx.expr()).castAs("bool").getValue() as Boolean)) {
-            this.visit(ctx.test_block())
-            this.visit(ctx.apropriation(i))
+            this.visit(ctx.code_block())
+            this.visit(ctx.assignment(i))
         }
         if (ctx!!.childCount == 9) {
             val ii = varLevelNum.pop()
@@ -92,8 +115,6 @@ class StartCodeVisitor : TestGrammarBaseVisitor<Any?>() {
         }
         return null
     }
-
-
 }
 
 /*

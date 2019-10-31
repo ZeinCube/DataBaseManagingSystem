@@ -1,6 +1,5 @@
 package visitors
 
-import expresions.ExpresionVisitor
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
@@ -17,11 +16,11 @@ class Tester {
                     "    @for( @i:=0;@i<5;@i:=@i+1)\n" +
                     "    {\n" +
                     "        @cols := \"i1 int unique\"\n" +
-                    "        @for(@j:=0;@j<@i+1;@j:=@j+1)\n" +
+                    "        @for(@j:=0;@j<@i;@j:=@j+1)\n" +
                     "        {\n" +
-                    "           @cols := @cols + \",i\"+ @cast @j+1 as string +\" int unique\"\n" +
+                    "           @cols := @cols + \",i\"+ @cast @j+2 as string +\" int unique\"\n" +
                     "        }\n" +
-                    "        @test: \"create table t\"+ @cast @i as string +\"(\"+ @cols+\")\"\n" +
+                    "        @test: \"create table t\"+ @cast @i as string +\"(\"+ @cols+\")\"\n @check" +
                     "    }\n" +
                     "}"
             val lexer = TestGrammarLexer(CharStreams.fromString(str))
@@ -41,7 +40,7 @@ class Tester {
             }
 
             var res = ""
-            val visitor = StartCodeVisitor()
+            val visitor = CodeVisitor(arrayOf())
             visitor.visit(tree);
 
             println(res)

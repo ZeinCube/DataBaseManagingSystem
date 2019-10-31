@@ -33,16 +33,19 @@ fragment DIGIT :                                [0-9];
 fragment ENTER:                                 [\n];
 
 K_TEST: COMAND T E S T;
+K_SQL: COMAND S Q L;
 K_CHECK: COMAND C H E C K;
 K_FOR: COMAND F O R;
 K_VAR: COMAND V A R;
-K_RESULT: COMAND R E S U L T;
+K_SKIP: COMAND S K I P;
 
+K_CSTRING:COMAND S T R I N G;
 
 K_NOT: N O T;
 K_AND: A N D;
 K_OR: O R;
 K_CAST: COMAND C A S T;
+K_ERROR: COMAND E R R O R;
 K_AS:  A S ;
 K_INT: I N T;
 K_DOUBLE: D O U B L E;
@@ -69,30 +72,44 @@ WS: [ \u000B\t\r\n] -> skip;
 
 id
  :  IDENTIFIER
- | '(' IDENTIFIER ')'
  ;
-apropriation: id ':=' expr;
+
+assignment: id ':=' expr;
 
 testName:myString;
 
 parseIn: K_TEST testName
-       (test_block)+  EOF;
+       (code_block)+  EOF;
 
 parseOut:  result*;
 
-result: K_RESULT STRING_LITERAL;
+rt_string:K_CSTRING STRING_LITERAL;
+
+rt_skip:K_SKIP;
+
+rt_error:K_ERROR expr ','|';' expr;
+
+result:
+         rt_error
+        |rt_skip
+        |rt_string
+        ;
 
 open_block:'{';
 close_block:'}';
 
-test_block: open_block
-               (test|myFor|apropriation|test_block)*
+code_block: open_block
+               (test
+               |myFor
+               |assignment
+               |code_block)*
             close_block;
 
-test: K_TEST ':' expr K_CHECK?;
+test: K_TEST ':' expr;
+sql: K_SQL ':' expr;
 
-myFor: K_FOR '('(apropriation)?';' expr ';' apropriation ')'
-        test_block;
+myFor: K_FOR '('(assignment)?';' expr ';' assignment ')'
+        code_block;
 
 unary_operator
  : '-'
@@ -118,7 +135,7 @@ expr
  | expr K_AND expr
  | expr K_OR expr
  | b_expr
- ;
+  ;
 
 myString: STRING_LITERAL;
 myDouble: NUMERIC_LITERAL;

@@ -8,13 +8,16 @@ import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeTableColumn
 import javafx.event.ActionEvent
 import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 import javafx.util.Callback
 import javafx.beans.property.StringProperty
+import javafx.scene.layout.AnchorPane
 import teststucture.*
+import javafx.scene.layout.FlowPane
+import teststucture.tests.TestResult
+import teststucture.tests.TestType
 
 
 /**
@@ -26,22 +29,22 @@ class MainController {
     lateinit var testButton: Button
     lateinit var MainPane: BorderPane
     lateinit var newGroupeName: TextArea
-    lateinit var TestScene: Scene
 
 
     var _path = Paths.get("").toAbsolutePath().toString()
     var path = "$_path\\tests\\"
     val mainDir = File("$path\\meta.txt")
-    val treeTableView = TreeTableView<BaseTest>()
+    val treeTableView = TreeTableView<TestsHierarchy>()
 
-    private val rootTest = object : BaseTest("TESTS")
+    private val rootTest = object : TestsHierarchy("TESTS")
     {
-        override fun checkTest() {
+        override fun checkTests() {
             conclusion = TestResult.NT
             if (selected)
                 for (i in testGropes)
                 {
-                    i.checkTest()
+                    if (i.selected)
+                        i.checkTests()
                     conclusion = conclusion and i.conclusion
                 }
         }
@@ -49,7 +52,7 @@ class MainController {
         var testGropes: Array<GroupeOfTests> = arrayOf()
         init {
             conclusion = TestResult.NT
-            type = TestType.root
+            type = HierarchyType.root
             mainDir.forEachLine {
                 testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
             }
@@ -68,7 +71,7 @@ class MainController {
                     Gr.addTest("def$i")
                     for (node in treeTableView.root.children) {
                         if (node.value.name == Group) {
-                            node.children.addAll(TreeItem<BaseTest>(Gr.Tests.last()))
+                            node.children.addAll(TreeItem<TestsHierarchy>(Gr.testScripts.last()))
                         }
                     }
                     break
@@ -87,7 +90,7 @@ class MainController {
             }
             if (s.length > 0)
                 if (flag) {
-                    val name = newGroupeName.text
+                    val name = newGroupeName.text.trim()
                     val newDir = File("$path$name")
                     if (testGropes.size > 0)
                         mainDir.appendText("\n$name")
@@ -106,29 +109,37 @@ class MainController {
                     outDir.appendText("\n")
 
                     testGropes += GroupeOfTests(path, s)
-                    var t = TreeItem<BaseTest>(testGropes.last())
-                    t.children.add(TreeItem<BaseTest>(testGropes.last().Tests.last()))
+                    var t = TreeItem<TestsHierarchy>(testGropes.last())
+                    t.children.add(TreeItem<TestsHierarchy>(testGropes.last().testScripts.last()))
                     treeTableView.root.children.addAll(t)
                 }
         }
 
-        private var newStage: Stage? = null
+        private var testStage: Stage?=null
+        
+        val layout: String = "/res/testInfo.fxml"
+        
+        fun checkTest(data: TestScript) {
 
-        fun checkTest(data: Test) {
-            if (newStage == null)
-                newStage = Stage()
+            testStage?.close()
+            
+            val loader = FXMLLoader(javaClass.getResource(layout))
 
-            newStage?.close()
-            TestsController.test = data
-            val scene = Scene(FXMLLoader.load<Parent?>(Main.javaClass.getResource(layout)))
-            newStage?.scene = scene
-            newStage?.show()
+            // Create a controller instance
+            val controller = TestsController(data)
+            // Set it in the FXMLLoader
+            loader.setController(controller)
+            val flowPane = loader.load<AnchorPane>()
+            val scene = Scene(flowPane)
+            testStage = Stage()
+            testStage?.scene = scene
+            testStage?.show()
             data.updaters += object : MyFunction {
                 override fun invoke() {
                     updateTable()
                 }
             }
-            newStage!!.setOnCloseRequest {
+            testStage?.setOnCloseRequest {
                 data.updaters = arrayOf()
             }
 
@@ -139,7 +150,7 @@ class MainController {
 
 
 
-    val layout: String = "/res/testInfo.fxml"
+    
 
 
 
@@ -154,15 +165,15 @@ class MainController {
 
 
     fun initTable() {
-        val testnamec = TreeTableColumn<BaseTest, String>("Tests")
+        val testnamec = TreeTableColumn<TestsHierarchy, String>("Tests")
         testnamec.minWidth = 150.0
-        val resultc = TreeTableColumn<BaseTest, String>("Result")
+        val resultc = TreeTableColumn<TestsHierarchy, String>("Result")
         resultc.minWidth = 100.0
-        val choosec = TreeTableColumn<BaseTest, Boolean>("Selected")
-        val colBtn = TreeTableColumn<BaseTest, TestType>("Button Column")
+        val choosec = TreeTableColumn<TestsHierarchy, Boolean>("Selected")
+        val colBtn = TreeTableColumn<TestsHierarchy, TestType>("Button Column")
 
-        val textCellFactory = Callback<TreeTableColumn<BaseTest, String>, TreeTableCell<BaseTest, String>> {
-            object : TreeTableCell<BaseTest, String>() {
+        val textCellFactory = Callback<TreeTableColumn<TestsHierarchy, String>, TreeTableCell<TestsHierarchy, String>> {
+            object : TreeTableCell<TestsHierarchy, String>() {
                 private val text = Label("Action")
 
                 override fun updateItem(item: String?, empty: Boolean) {
@@ -194,8 +205,8 @@ class MainController {
             }
         }
 
-        val chooseCellFactory = Callback<TreeTableColumn<BaseTest, Boolean>, TreeTableCell<BaseTest, Boolean>> {
-            object : TreeTableCell<BaseTest, Boolean>() {
+        val chooseCellFactory = Callback<TreeTableColumn<TestsHierarchy, Boolean>, TreeTableCell<TestsHierarchy, Boolean>> {
+            object : TreeTableCell<TestsHierarchy, Boolean>() {
                 private val chooseBtn = CheckBox()
                 init {
                     chooseBtn.setOnAction {
@@ -247,19 +258,19 @@ class MainController {
 
 
 
-        val cellFactory = Callback<TreeTableColumn<BaseTest, TestType>, TreeTableCell<BaseTest, TestType>> {
-            object : TreeTableCell<BaseTest, TestType>() {
+        val cellFactory = Callback<TreeTableColumn<TestsHierarchy, TestType>, TreeTableCell<TestsHierarchy, TestType>> {
+            object : TreeTableCell<TestsHierarchy, TestType>() {
                 private val btn = Button("Action")
 
                 init {
 
                     btn.setOnAction { event: ActionEvent ->
                         val data = treeTableView.getTreeItem(index)
-                        if (data.value.type == TestType.root) {
+                        if (data.value.type == HierarchyType.root) {
                             rootTest.addNewGroup(newGroupeName.text)
                         } else {
-                            if (data.value.type == TestType.test) {
-                                rootTest.checkTest((data.value as Test))
+                            if (data.value.type == HierarchyType.script) {
+                                rootTest.checkTest((data.value as TestScript))
                             } else {
                                 rootTest.addNewTest(data.value.name)
                             }
@@ -272,10 +283,10 @@ class MainController {
                     super.updateItem(item, empty)
                     val data = treeTableView.getTreeItem(index)
                     if (data != null)
-                        if (data.value.type == TestType.root) {
+                        if (data.value.type == HierarchyType.root) {
                             btn.text = "Add new Group"
                         } else {
-                            if (data.value.type == TestType.test) {
+                            if (data.value.type == HierarchyType.script) {
                                 btn.text = "Check Test"
                             } else {
                                 btn.text = "Add new Test"
@@ -315,10 +326,10 @@ class MainController {
 
     fun loadTable() {
 
-        val root = TreeItem<BaseTest>(rootTest);
+        val root = TreeItem<TestsHierarchy>(rootTest);
         for (gr in rootTest.testGropes) {
-            val subRoot = TreeItem<BaseTest>(gr)
-            for (test in gr.Tests) {
+            val subRoot = TreeItem<TestsHierarchy>(gr)
+            for (test in gr.testScripts) {
                 subRoot.children.add(TreeItem(test))
             }
             root.children.add(subRoot)
@@ -331,11 +342,16 @@ class MainController {
 
         initTable()
         loadTable()
+        testButton.setOnAction {
+            event ->
+            rootTest.checkTests()
+        }
         newGroupeName.textProperty().addListener { observable, oldValue, newValue ->
             if (newValue.contains('\n'))
                 (observable as StringProperty).value = oldValue else
                 (observable as StringProperty).value = newValue
         }
+
 
 
         MainPane.center = (treeTableView)

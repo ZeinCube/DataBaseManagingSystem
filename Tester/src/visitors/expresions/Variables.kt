@@ -1,4 +1,4 @@
-package expresions
+package visitors.expresions
 
 abstract class Variable {
     fun operation(other: Variable, op: String): Variable {

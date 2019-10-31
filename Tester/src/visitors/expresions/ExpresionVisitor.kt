@@ -1,6 +1,5 @@
-package expresions
+package visitors.expresions
 
-import org.antlr.v4.runtime.tree.TerminalNode
 import parser.TestGrammarBaseVisitor
 import parser.TestGrammarParser
 
@@ -41,7 +40,7 @@ class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBa
     }
 
     override fun visitMyString(ctx: TestGrammarParser.MyStringContext?): Variable {
-        return StringVar(ctx!!.text.substring(1,ctx!!.text.length-1))
+        return StringVar(ctx!!.text.substring(1,ctx!!.text.length-1).replace("\\\"","\""))
     }
 
     override fun visitMyDouble(ctx: TestGrammarParser.MyDoubleContext?): Variable {
