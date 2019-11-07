@@ -1,10 +1,10 @@
-package Entity.Meta;
+package Engine.Entity.Meta;
 
-import Entity.Column;
-import Entity.Table;
-import Exceptions.DBMSException;
-import Exceptions.ExistingColumnException;
-import Exceptions.ExistingPrimaryKeyException;
+import Engine.Entity.Column;
+import Engine.Entity.Table;
+import Engine.Exceptions.DBMSException;
+import Engine.Exceptions.ExistingColumnException;
+import Engine.Exceptions.ExistingPrimaryKeyException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -19,6 +19,7 @@ public class MetaTable {
     private List<MetaColumn> columns;
     private Class primaryKeyClass;
     private String fileTable;
+    private int rowSize; //size of row in bytes
 
     public MetaTable(Table table) {
         this.name = table.getName();
@@ -30,6 +31,7 @@ public class MetaTable {
 
         this.primaryKeyClass = table.getPrimaryKeyClass();
         fileTable = table.getPath();
+//        rowSize =
     }
 
     public MetaTable(String name, List<MetaColumn> columns, Class primaryKeyClass, String fileTable) {
@@ -68,7 +70,7 @@ public class MetaTable {
                     .append(columnClass.substring(columnClass.lastIndexOf(".") + 1))
             ;
 
-            if (column.isUNIQUE()) {
+            if (column.isUNIQUE() && !column.isPRIMARY_KEY()) {
                 builder.append(" UNIQUE");
             }
 
@@ -117,4 +119,17 @@ public class MetaTable {
     public void setFileTable(String fileTable) {
         this.fileTable = fileTable;
     }
+
+    public int getRowSize() {
+        return rowSize;
+    }
+
+    public void setRowSize(int rowSize) {
+        this.rowSize = rowSize;
+    }
+
+//    public int calculateRowSize()
+//    {
+//        for (Map.Entry<>)
+//    }
 }

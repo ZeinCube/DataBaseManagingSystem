@@ -1,6 +1,6 @@
-package Entity;
+package Engine.Entity;
 
-import Exceptions.*;
+import Engine.Exceptions.*;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class Table extends Commitable {
 
@@ -47,10 +48,16 @@ public class Table extends Commitable {
 
     public void insert(List<Column> toColumns, List<Row> rows) throws NoSuchColumnException {
         String checkResult = checkColumns(toColumns);
+
         if (!checkResult.equals("ok")) {
             throw new NoSuchColumnException("Error while inserting : No such column \"" + checkResult + "\"");
         }
 
+        for (Row row : rows) {
+            for (Map.Entry<String, Column> columnEntry : columns.entrySet()) {
+                row.getValueByColumnName(columnEntry.getKey());
+            }
+        }
 
     }
 
@@ -109,7 +116,6 @@ public class Table extends Commitable {
 
         return SerializationUtils.deserialize(data);
     }
-
 
     @Override
     public void commit() throws DBMSException {

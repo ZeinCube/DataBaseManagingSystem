@@ -1,6 +1,7 @@
-package Exceptions;
+package Engine.Exceptions;
 
-import Entity.Meta.MetaColumn;
+
+import Engine.Entity.Meta.MetaColumn;
 
 public class ExistingPrimaryKeyException extends DBMSException {
 

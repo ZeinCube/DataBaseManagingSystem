@@ -1,6 +1,6 @@
-package Entity;
+package Engine.Entity;
 
-import Entity.Meta.MetaColumn;
+import Engine.Entity.Meta.MetaColumn;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -61,13 +61,13 @@ public class Column implements Serializable {
         return columnName;
     }
 
-//    public boolean isUNIQUE() {
-//        return UNIQUE;
-//    }
-//
-//    public void setUNIQUE(boolean UNIQUE) {
-//        this.UNIQUE = UNIQUE;
-//    }
+    public boolean isUNIQUE() {
+        return UNIQUE;
+    }
+
+    public void setUNIQUE(boolean UNIQUE) {
+        this.UNIQUE = UNIQUE;
+    }
 
     public boolean isPRIMARY_KEY() {
         return PRIMARY_KEY;

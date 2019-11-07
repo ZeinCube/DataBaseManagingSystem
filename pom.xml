@@ -103,8 +103,8 @@
                         <configuration>
                             <sourceDirs>
                                 <source>src/main/java</source>
-                                <source>Console</source>
-                                <source>Engine</source>
+                                <source>src/Console</source>
+                                <source>src/Engine</source>
                                 <source>Tester</source>
                             </sourceDirs>
                         </configuration>

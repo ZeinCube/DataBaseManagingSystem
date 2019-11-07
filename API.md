@@ -7,7 +7,6 @@ Example :
 API has the next methods:
 * `createTable(String tableName, HashSet<Column> colums)`
     * tableName - is just name of new table
-    exception will be thrown.
     * columns - unique array with columns. Column could be created with: `new Column(columnName, Class primaryKeyClass
     , Class valueClass, boolean unique, boolean primaryKey`.
         Note that unique is not needed if you already provided primary key = true

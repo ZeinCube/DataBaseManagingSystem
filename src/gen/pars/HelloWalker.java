@@ -1,4 +1,4 @@
-package pars;
+package gen.pars;
 
 public class HelloWalker extends HelloBaseListener {
     public void enterR(HelloParser.RContext ctx ) {

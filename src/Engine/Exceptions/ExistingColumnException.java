@@ -1,7 +1,8 @@
-package Exceptions;
+package Engine.Exceptions;
 
-import Entity.Meta.MetaColumn;
-import Entity.Meta.MetaTable;
+
+import Engine.Entity.Meta.MetaColumn;
+import Engine.Entity.Meta.MetaTable;
 
 public class ExistingColumnException extends DBMSException {
 

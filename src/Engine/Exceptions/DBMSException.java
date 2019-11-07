@@ -1,4 +1,4 @@
-package Exceptions;
+package Engine.Exceptions;
 
 public class DBMSException extends Exception {
     private String className;

@@ -1,6 +1,6 @@
-package Entity;
+package Engine.Entity;
 
-import Exceptions.DBMSException;
+import Engine.Exceptions.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
