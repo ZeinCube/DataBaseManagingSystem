@@ -3,10 +3,11 @@ package Logic;
 import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
+import Engine.Entity.Table;
 import Engine.Exceptions.DBMSException;
-import Engine.Exceptions.DropException;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class Listener extends HelloBaseListener {
@@ -22,6 +23,7 @@ public class Listener extends HelloBaseListener {
             e.printStackTrace();
         }
     }
+
 
     private enum InquiryMode {
         Undefined,
@@ -48,15 +50,6 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterShow_create(HelloParser.Show_createContext ctx) {
-        super.enterShow_create(ctx);
-        if (ctx.getChildCount() > 1) {
-            mode = InquiryMode.What;
-        }
-        branchType = BranchType.ShowCreate;
-    }
-
-    @Override
     public void enterCreate(HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
@@ -75,42 +68,20 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
+    public void enterSelect_table_list(HelloParser.Select_table_listContext ctx) {
+        super.enterSelect_table_list(ctx);
+        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
+
+        }
+    }
+
+    @Override
     public void enterTable(HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
         }
         branchType = BranchType.Table_sources;
-    }
-
-    @Override
-    public void enterTable_name_list(HelloParser.Table_name_listContext ctx) {
-        super.enterTable_name_list(ctx);
-        int i = ctx.getChildCount();
-        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
-            while (i > 0) {
-                try {
-                    String string = ctx.name(i - 1).getText();
-                    api.dropTable(string);
-                } catch (DropException e) {
-                    System.err.println(e.getMessage());
-                } finally {
-                    System.out.println("table droped");
-                }
-                i--;
-            }
-        }
-        if (mode == InquiryMode.What && branchType == BranchType.ShowCreate) {
-            while (i > 0) {
-                String string = ctx.name(i - 1).getText();
-                try {
-                    System.out.println(api.showCreateTable(string));
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                }
-                i--;
-            }
-        }
     }
 
     @Override
@@ -124,33 +95,23 @@ public class Listener extends HelloBaseListener {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
-        HashMap<String, Column> columnHashMap = new HashMap<>();
+        HashSet<Column> hashSet = new HashSet<>();
         boolean unique = false;
-        while (i > 0 && branchType == BranchType.Table_sources) {
-            if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
-                    !ctx.column_def(i - 1).getStop().getText().equals("primary key")) {
-                unique = true;
+        try {
+            while (i > 0 && branchType == BranchType.Table_sources) {
+                if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
+                        ctx.column_def(i - 1).getStop().getText() != "primary key") {
+                    unique = true;
+                }
+                hashSet.add(new Column(ctx.column_def(i - 1).name().getText(), Class.forName(ctx.column_def(i - 1).type().getText()), unique));
+                i--;
             }
-            String columnName = ctx.column_def(i - 1).name().getText();
-            Class columnContainsClass = null;
-            String className = ctx.column_def(i - 1).type().getText();
-            className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1);
-            try {
-                columnContainsClass = Class.forName(className);
-            } catch (ClassNotFoundException e1) {
-                e1.printStackTrace();
-            }
-            Column k = new Column(columnName, columnContainsClass, unique);
-            columnHashMap.put(columnName, k);
-            i--;
+        } catch (ClassNotFoundException e) {
         }
         try {
-            String kek = hashMap.get("Table_name").toString();
-            api.createTable(kek, columnHashMap);
+            api.createTable(hashMap.get("Table_name").toString(), hashSet);
         } catch (DBMSException e) {
-            System.err.println(e.getMessage());
-        } finally {
-            System.out.println("table created");
+            e.printStackTrace();
         }
     }
 }
