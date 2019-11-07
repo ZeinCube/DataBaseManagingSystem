@@ -46,6 +46,10 @@ public class Table extends Commitable {
         rows = new HashMap<>();
     }
 
+    public Table(String name) {
+        this.name = name;
+    }
+
     public void insert(List<Column> toColumns, List<Row> rows) throws NoSuchColumnException {
         String checkResult = checkColumns(toColumns);
 
