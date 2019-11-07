@@ -20,15 +20,11 @@ NOT:                                             N O T;
 TRUE:                                            T R U E;
 FALSE:                                           F A L S E;
 
-
-
-
-
 SPACE:                                          [ \t\r\n]+  -> skip;
 ENTER:                                          [\n];
 K_PRIMARY_KEY:                                  P R I M A R Y SPACE K E Y;
 K_UNIQUE:                                       U N I Q U E;
-//types
+
 T_CHAR:                                         C H A R;
 T_INT:                                          I N T;
 T_FLOAT:                                        F L O A T;
@@ -42,11 +38,9 @@ IDENTIFIER:                                     [a-zA-Z_] [a-zA-Z_0-9]*;
 
 UNEXPECTED:                                     '.';
 
-
-
+//fragments
 fragment DIGIT: [0-9];
 fragment LETTER: [a-zA-Z];
-//fragments
 fragment A:                                     [aA];
 fragment B:                                     [bB];
 fragment C:                                     [cC];
@@ -79,14 +73,13 @@ mystring:                                       STRING;
 
 parse:                                          sql_query (';')? EOF;
 
-
 signed_number:                                  ( '+' | '-' )? NUMERIC_LITERAL;
 
 name:                                            IDENTIFIER;
 
 mychar:                                         T_CHAR('['NUMBER ']')?;
-myint:                                          T_INT;
-myfloat:                                        T_FLOAT;
+myint:                                          T_INT('('NUMBER ')')?;
+myfloat:                                        T_FLOAT('('NUMBER ')')?;
 
 type:                                           myint | myfloat | mychar;
 
@@ -129,10 +122,10 @@ table:                                           K_TABLE table_definition;
 
 table_definition:                                name
                                                  '('
-                                                 columns_def
+                                                 columns_sourse
                                                  ')';
 
-columns_def :                                    (column_def ( ',' column_def )*)?;
+columns_sourse :                                 (column_def ( ',' column_def )*)?;
 
 column_def:                                      name
                                                  type
@@ -140,15 +133,6 @@ column_def:                                      name
 
 column_constraint:                               K_PRIMARY_KEY
                                                 |K_UNIQUE;
-
-
-
-
-
-
-
-
-
 
 sub_const_arifm_expr:                           SUB const_arifm_expr;
 
@@ -160,6 +144,7 @@ add:                                            '+';
 sub:                                            '-';
 concate:                                        '|';
 mynull:                                         K_NULL;
+
 const_arifm_expr:                               const_arifm_expr concate const_arifm_expr
                                                 |const_arifm_expr (mul| div) const_arifm_expr
                                                 | const_arifm_expr (add |sub) const_arifm_expr
