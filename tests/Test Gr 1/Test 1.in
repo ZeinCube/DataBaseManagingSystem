@@ -16,4 +16,5 @@
              VALUES ("+@i+", "+(@i+2)+", "+-(@i+5)+")"
     }
     @test: "select * from t2"
+    @test:"show create table t2"
 }

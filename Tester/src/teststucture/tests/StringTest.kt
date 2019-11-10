@@ -1,7 +1,6 @@
 package teststucture.tests
 
-class SimpleTest( val expect:String): BaseTest() {
-
+class StringTest(val expect:String): BaseTest() {
 
     override fun getExpected(): String {
         return expect

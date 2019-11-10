@@ -91,11 +91,34 @@ open class TestScript : TestsHierarchy {
             results = ""
         }
         type = HierarchyType.script
+        try {
+            val lexerOut = TestGrammarLexer(CharStreams.fromString(results))
+            val commonTokenStreamOut = CommonTokenStream(lexerOut)
+            commonTokenStreamOut.fill()
+            val parserOut = TestGrammarParser(commonTokenStreamOut)
+            var treeOut: ParseTree? = null
+            try {
+                // вызываем парсинг по правилу
+                treeOut = parserOut.parseOut()
+
+            } catch (e: Exception) {
+                // обрабатываем ошибки
+                println("Error: ${e.message}")
+                throw e
+            }
+            tests = ResVisitor().visit(treeOut)
+        }catch (ex:Exception)
+        {
+            throw ex
+        }
+
+
     }
 
-    fun update(_name: String, newCode: String,newResults:Array<String>) {
+    fun update(_name: String?, newCode: String?, newResults: List<String>?) {
         var _path = Paths.get("").toAbsolutePath().toString()
         var path = "$_path\\tests\\$gr"
+        if (_name != null)
         if (_name != name) {
             var meta = File("$path\\meta.txt")
             var testsList = meta.readLines()
@@ -118,19 +141,23 @@ open class TestScript : TestsHierarchy {
 
             name = _name.trim()
         }
-        if (newCode != code) {
+        if (newCode != null) {
             var inFile = File("$path\\$name.in")
-            var outFile = File("$path\\$name.out")
 
             inFile.delete()
-            outFile.delete()
             inFile.createNewFile()
-            outFile.createNewFile()
 
             inFile.writeText(code)
-            for (i in newResults)
-                outFile.writeText(i+"\n")
 
+        }
+        if (newResults!= null)
+        {
+            var outFile = File("$path\\$name.out")
+            outFile.delete()
+            outFile.createNewFile()
+            var i = ""
+            newResults.forEach { i=i+it+"\n" }
+            outFile.writeText(i)
         }
         updaters.forEach { it.invoke() }
     }

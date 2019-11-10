@@ -5,11 +5,16 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
 import parser.TestGrammarLexer
 import parser.TestGrammarParser
+class test<T>(t:T) {
+    var value:T = t
+}
 
 class Tester {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
+            var t = test(5)
+
             val str = "@test \"sdvcs\"\n" +
                     "{\n" +
                     "    @test: \"scsc\"+\"(\"+\")\"\n" +

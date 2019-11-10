@@ -8,12 +8,17 @@ class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBa
     override fun visitExpr(ctx: TestGrammarParser.ExprContext?): Variable {
         return when (ctx!!.childCount) {
             (1) -> this.visit(ctx.getChild(0))
-            (2) -> this.visit(ctx.getChild(1)).unOp(ctx.unary_operator().text)
-            (3) -> this.visit(ctx.getChild(0)).operation(this.visit(ctx.getChild(2)), ctx.getChild(1).text)
-            (4) -> this.visit(ctx.getChild(1)).castAs(ctx.type_name().text)
+            (2) -> this.visit(ctx.expr(0)).unOp(ctx.unary_operator().text)
+            (3) -> this.visit(ctx.left_op).operation(this.visit(ctx.right_op), ctx.op.text)
             else -> throw Throwable("Parser wrong")
         }
     }
+
+    override fun visitCast_operation(ctx: TestGrammarParser.Cast_operationContext?): Variable {
+        return this.visit(ctx!!.expr()).castAs(ctx.type_name().text)
+    }
+
+
 
     override fun visitB_expr(ctx: TestGrammarParser.B_exprContext?): Variable {
         return this.visit(ctx!!.getChild(1))

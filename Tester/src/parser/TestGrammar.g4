@@ -27,25 +27,27 @@ fragment X:                                     [xX];
 fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 fragment COMAND:                                '@';
-fragment DIGIT :                                [0-9];
-
-
+fragment DIGIT:                                 [0-9];
 fragment ENTER:                                 [\n];
 
 K_TEST: COMAND T E S T;
 K_SQL: COMAND S Q L;
 K_CHECK: COMAND C H E C K;
 K_FOR: COMAND F O R;
+K_IF: COMAND I F;
+K_ELSE: COMAND E L S E;
 K_VAR: COMAND V A R;
 K_SKIP: COMAND S K I P;
 
+
+K_CAST: COMAND C A S T;
+K_ERROR: COMAND E R R O R;
 K_CSTRING:COMAND S T R I N G;
+K_TABLE: COMAND T A B L E;
 
 K_NOT: N O T;
 K_AND: A N D;
 K_OR: O R;
-K_CAST: COMAND C A S T;
-K_ERROR: COMAND E R R O R;
 K_AS:  A S ;
 K_INT: I N T;
 K_DOUBLE: D O U B L E;
@@ -70,9 +72,8 @@ IDENTIFIER
 
 WS: [ \u000B\t\r\n] -> skip;
 
-id
- :  IDENTIFIER
- ;
+
+id:  IDENTIFIER;
 
 assignment: id ':=' expr;
 
@@ -83,16 +84,20 @@ parseIn: K_TEST testName
 
 parseOut:  result*;
 
-rt_string:K_CSTRING STRING_LITERAL;
-
+rt_string:K_CSTRING res=myString;
+rt_table: K_TABLE table;
 rt_skip:K_SKIP;
+rt_error:K_ERROR error=myString (','|';') what=myString;
 
-rt_error:K_ERROR expr ','|';' expr;
-
+table: columns
+       record+;
+columns: id+;
+record: literal_value+;
 result:
          rt_error
         |rt_skip
         |rt_string
+        |rt_table
         ;
 
 open_block:'{';
@@ -102,7 +107,8 @@ code_block: open_block
                (test
                |myFor
                |assignment
-               |code_block)*
+               |code_block
+               |myIf)*
             close_block;
 
 test: K_TEST ':' expr;
@@ -110,7 +116,7 @@ sql: K_SQL ':' expr;
 
 myFor: K_FOR '('(assignment)?';' expr ';' assignment ')'
         code_block;
-
+myIf: K_IF '('expr')' code_block (K_ELSE code_block)?;
 unary_operator
  : '-'
  | '+'
@@ -122,18 +128,21 @@ type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;
 
 b_expr:  '(' expr ')';
 
+
+cast_operation: K_CAST expr K_AS type_name;
 expr
  : literal_value
- | K_CAST expr K_AS type_name
+ | id
+ | cast_operation
  | unary_operator expr
- | expr '||' expr
- | expr ( '*' | '/' | '%' ) expr
- | expr ( '+' | '-' ) expr
- | expr ( '<' | '<=' | '>' | '>=' ) expr
- | expr ( '==' | '!=' ) expr
- | expr ( '&' | '|' ) expr
- | expr K_AND expr
- | expr K_OR expr
+ | left_op=expr op='||' right_op=expr
+ | left_op=expr op=( '*' | '/' | '%' ) right_op=expr
+ | left_op=expr op=( '+' | '-' ) right_op=expr
+ | left_op=expr op=( '<' | '<=' | '>' | '>=' ) right_op=expr
+ | left_op=expr op=( '==' | '!=' ) right_op=expr
+ | left_op=expr op=( '&' | '|' ) right_op=expr
+ | left_op=expr op=K_AND right_op=expr
+ | left_op=expr op=K_OR right_op=expr
  | b_expr
   ;
 
@@ -149,7 +158,6 @@ literal_value
  | myString
  | myTrue
  | myFalse
- | id
  ;
 
 

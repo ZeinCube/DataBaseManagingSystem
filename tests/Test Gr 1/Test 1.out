@@ -1,0 +1,53 @@
+@error "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException";"You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'scsc()' at line 1"
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@string 
+" t2 Table,  CREATE TABLE `t2` (
+  `i1` int(11) DEFAULT NULL,
+  `i2` int(11) DEFAULT NULL,
+  `i3` int(11) DEFAULT NULL,
+  UNIQUE KEY `i1` (`i1`),
+  UNIQUE KEY `i2` (`i2`),
+  UNIQUE KEY `i3` (`i3`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci Create Table
+"
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+
+@skip
+

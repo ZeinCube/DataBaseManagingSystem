@@ -1,35 +1,42 @@
 package myjavafxblocks
 
-import controller.TestsController
-import javafx.beans.property.DoubleProperty
 import javafx.beans.property.StringProperty
 import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import teststucture.tests.BaseTest
-import teststucture.tests.SimpleTest
 
 class TestDescription(val test:BaseTest): HBox() {
     
     val sqlQuery: TextArea = TextArea()
     val expected: TextArea= TextArea()
     val resOfQuery: TextArea = TextArea()
+    val mySqlResOfQuery: TextArea = TextArea()
+    val blocks = arrayOf(sqlQuery,expected,resOfQuery,mySqlResOfQuery)
 
+    val numOfBlocks  = blocks.size
     val conclusion: Label = Label()
+    fun getExpected():String
+    {
+        return expected.text
+    }
+
     lateinit var btnFix:Button;
     init
     {
+        HBox.setHgrow(this,Priority.ALWAYS)
         this.widthProperty().addListener { obs, oldVal, newVal ->
-            sqlQuery.maxWidth = 1000/3-40.0
-            sqlQuery.minWidth = 1000/3-40.0
-            expected.maxWidth = 1000/3-40.0
-            expected.minWidth = 1000/3-40.0
-            resOfQuery.maxWidth = 1000/3-40.0
-            resOfQuery.minWidth = 1000/3-40.0
+            for (i in blocks)
+            {
+                i.maxWidth=width/blocks.size
+                i.minWidth=width/blocks.size
+            }
+
         };
 
         val box = this

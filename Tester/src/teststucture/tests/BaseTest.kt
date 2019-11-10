@@ -1,6 +1,9 @@
 package teststucture.tests
 
 import java.lang.Exception
+import DataBase
+import javafx.scene.Node
+import javafx.scene.layout.Region
 
 enum class TestType {
     skip,
@@ -81,12 +84,11 @@ enum class TestResult {
 }
 
 
-abstract class BaseTest() {
-    lateinit var exception: String
-    lateinit var what: String
-    lateinit var sqlquery: String
-    lateinit var result: String
-
+abstract class BaseTest {
+    var exception: String = TestResult.NT.toString()
+    var what: String = TestResult.NT.toString()
+    var sqlquery: String = TestResult.NT.toString()
+    var result: String = TestResult.NT.toString()
     var conclusion: TestResult = TestResult.NT
     lateinit var type: TestType
     var selected: Boolean = true
@@ -94,25 +96,26 @@ abstract class BaseTest() {
     open fun checkTest(sqlquery: String) {
         this.sqlquery = sqlquery
         try {
-            result = "@string \n\" ${DataBase.SendToSQL(sqlquery).replace("@", "\"@\"")}\""
+            result = "@string \n\" ${DataBase.SendToSQL(sqlquery)}\""
             exception = ""
             what = ""
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             exception = e.javaClass.name
             what = e.message.toString()
             result = "@error \n\"${e.javaClass.name}\";\n\"${e.message}\""
         }
     }
 
-    fun getSQLQuery(): String {
+    open fun getSQLQuery(): String {
         return sqlquery
     }
 
-    fun getSQLQueryResult(): String {
+    open fun getSQLQueryResult(): String {
         return result
     }
 
-    abstract fun getExpected(): String
+    abstract fun getExpected():String
+
 }
 
 

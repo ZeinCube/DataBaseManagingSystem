@@ -32,13 +32,22 @@ object DataBase{
     fun SendToSQL(s:String):String
     {
         var stmt: Statement? = null
-        var resultset: ResultSet? = null
+        var rs: ResultSet? = null
         var res:String = ""
         try {
             stmt = conn.createStatement()
             try {
-                resultset = stmt!!.executeQuery(s)
-                res = resultset.toString()
+                rs = stmt!!.executeQuery(s)
+                val rsmd = rs?.getMetaData()
+                val columnsNumber = rsmd?.getColumnCount()
+                while (rs!!.next()) {
+                    for (i in 1..columnsNumber!!) {
+                        if (i > 1) res = res + (",  ")
+                        val columnValue = rs.getString(i)
+                        res= res+(columnValue + " " + rsmd.getColumnName(i))
+                    }
+                    res = res+ "\n"
+                }
             }catch (ex:SQLException)
             {
                 if (ex.message == "Can not issue data manipulation statements with executeQuery().")
@@ -53,8 +62,7 @@ object DataBase{
                             stmt!!.executeUpdate("drop database if exists test")
                             stmt!!.executeUpdate("create database test")
                             stmt!!.executeUpdate("use test")
-                            stmt!!.executeUpdate(s)
-                            res = "executed"
+                            res = this.SendToSQL(s)
                         }
                     }
                 }else
@@ -62,8 +70,6 @@ object DataBase{
             }
 
         } catch (ex: SQLException) {
-            // handle any errors
-            ex.printStackTrace()
             throw ex
         }
         return res
