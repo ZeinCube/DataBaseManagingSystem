@@ -1,4 +1,4 @@
-grammar  TestGrammar;
+grammar  TestScript;
 
 fragment A:                                     [aA];
 fragment B:                                     [bB];
@@ -52,7 +52,7 @@ K_AS:  A S ;
 K_INT: I N T;
 K_DOUBLE: D O U B L E;
 K_STRING: S T R I N G;
-K_BOOL:  (B O O L E A N )|( B O O L);
+K_BOOL:  (B O O L E A N)|(B O O L);
 K_TRUE: T R U E;
 K_FALSE: F A L S E;
 
@@ -73,32 +73,14 @@ IDENTIFIER
 WS: [ \u000B\t\r\n] -> skip;
 
 
-id:  IDENTIFIER;
+parse: K_TEST testName
+       (code_block)+  EOF;
+
+
 
 assignment: id ':=' expr;
 
 testName:myString;
-
-parseIn: K_TEST testName
-       (code_block)+  EOF;
-
-parseOut:  result*;
-
-rt_string:K_CSTRING res=myString;
-rt_table: K_TABLE table;
-rt_skip:K_SKIP;
-rt_error:K_ERROR error=myString (','|';') what=myString;
-
-table: columns
-       record+;
-columns: id+;
-record: literal_value+;
-result:
-         rt_error
-        |rt_skip
-        |rt_string
-        |rt_table
-        ;
 
 open_block:'{';
 close_block:'}';
@@ -108,7 +90,8 @@ code_block: open_block
                |myFor
                |assignment
                |code_block
-               |myIf)*
+               |myIf
+               |sql)*
             close_block;
 
 test: K_TEST ':' expr;
@@ -117,24 +100,17 @@ sql: K_SQL ':' expr;
 myFor: K_FOR '('(assignment)?';' expr ';' assignment ')'
         code_block;
 myIf: K_IF '('expr')' code_block (K_ELSE code_block)?;
-unary_operator
- : '-'
- | '+'
- | '~'
- | K_NOT
- ;
 
-type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;
 
 b_expr:  '(' expr ')';
-
-
 cast_operation: K_CAST expr K_AS type_name;
+
 expr
  : literal_value
  | id
  | cast_operation
  | unary_operator expr
+ | b_expr
  | left_op=expr op='||' right_op=expr
  | left_op=expr op=( '*' | '/' | '%' ) right_op=expr
  | left_op=expr op=( '+' | '-' ) right_op=expr
@@ -143,23 +119,28 @@ expr
  | left_op=expr op=( '&' | '|' ) right_op=expr
  | left_op=expr op=K_AND right_op=expr
  | left_op=expr op=K_OR right_op=expr
- | b_expr
-  ;
-
-myString: STRING_LITERAL;
-myDouble: NUMERIC_LITERAL;
-myInt: NUMBER;
-myTrue: K_TRUE;
-myFalse: K_FALSE;
+ ;
 
 literal_value
  : myDouble
  | myInt
  | myString
- | myTrue
- | myFalse
+ | myBool
  ;
 
+id:  IDENTIFIER;
+myString returns [String val]: r=STRING_LITERAL  {$val = ($r.text.substring(0, $r.text.length()-1).replace("\\\"", "\""));};
+myDouble  returns [Double val]: r=NUMERIC_LITERAL{$val = Double.valueOf($r.text);};
+myInt  returns [Integer val]: r=NUMBER               {$val = Integer.valueOf($r.text);};
+myBool  returns [Boolean val]: r=(K_TRUE|K_FALSE)          {$val = Boolean.valueOf($r.text);};
+type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;
+
+unary_operator
+ : '-'
+ | '+'
+ | '~'
+ | K_NOT
+ ;
 
 
 
