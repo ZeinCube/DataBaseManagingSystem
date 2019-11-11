@@ -1,11 +1,11 @@
 package visitors.expresions
 
-import parser.TestGrammarBaseVisitor
-import parser.TestGrammarParser
+import parser.testscriptparser.TestScriptBaseVisitor
+import parser.testscriptparser.TestScriptParser
 
 
-class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBaseVisitor<Variable>() {
-    override fun visitExpr(ctx: TestGrammarParser.ExprContext?): Variable {
+class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestScriptBaseVisitor<Variable>() {
+    override fun visitExpr(ctx: TestScriptParser.ExprContext?): Variable {
         return when (ctx!!.childCount) {
             (1) -> this.visit(ctx.getChild(0))
             (2) -> this.visit(ctx.expr(0)).unOp(ctx.unary_operator().text)
@@ -14,21 +14,21 @@ class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBa
         }
     }
 
-    override fun visitCast_operation(ctx: TestGrammarParser.Cast_operationContext?): Variable {
+    override fun visitCast_operation(ctx: TestScriptParser.Cast_operationContext?): Variable {
         return this.visit(ctx!!.expr()).castAs(ctx.type_name().text)
     }
 
 
 
-    override fun visitB_expr(ctx: TestGrammarParser.B_exprContext?): Variable {
+    override fun visitB_expr(ctx: TestScriptParser.B_exprContext?): Variable {
         return this.visit(ctx!!.getChild(1))
     }
 
-    override fun visitLiteral_value(ctx: TestGrammarParser.Literal_valueContext?): Variable {
+    override fun visitLiteral_value(ctx: TestScriptParser.Literal_valueContext?): Variable {
         return this.visit(ctx!!.children[0])
     }
 
-    override fun visitId(ctx: TestGrammarParser.IdContext?): Variable {
+    override fun visitId(ctx: TestScriptParser.IdContext?): Variable {
         if (variables[ctx!!.text] != null)
             return variables[ctx.text]!!
         else {
@@ -36,24 +36,20 @@ class ExpresionVisitor(val variables: HashMap<String, Variable>) : TestGrammarBa
         }
     }
 
-    override fun visitMyFalse(ctx: TestGrammarParser.MyFalseContext?): Variable {
-        return BoolVar(false)
+    override fun visitMyBool(ctx: TestScriptParser.MyBoolContext?): Variable {
+        return BoolVar(ctx!!.`val`)
     }
 
-    override fun visitMyTrue(ctx: TestGrammarParser.MyTrueContext?): Variable {
-        return BoolVar(true)
+    override fun visitMyString(ctx: TestScriptParser.MyStringContext?): Variable {
+        return StringVar(ctx!!.`val`)
     }
 
-    override fun visitMyString(ctx: TestGrammarParser.MyStringContext?): Variable {
-        return StringVar(ctx!!.text.substring(1,ctx!!.text.length-1).replace("\\\"","\""))
+    override fun visitMyDouble(ctx: TestScriptParser.MyDoubleContext?): Variable {
+        return DoubleVar(ctx!!.`val`)
     }
 
-    override fun visitMyDouble(ctx: TestGrammarParser.MyDoubleContext?): Variable {
-        return DoubleVar(ctx!!.text.toDouble())
-    }
-
-    override fun visitMyInt(ctx: TestGrammarParser.MyIntContext?): Variable {
-        return IntVar(ctx!!.text.toInt())
+    override fun visitMyInt(ctx: TestScriptParser.MyIntContext?): Variable {
+        return IntVar(ctx!!.`val`)
     }
 
 }

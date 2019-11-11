@@ -4,11 +4,11 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Button
 import javafx.scene.control.TextArea
-import teststucture.TestScript
+import teststucture.hierarchy.TestScript
 import java.net.URL
 import java.util.*
 
-class CodeController(val test:TestScript): Initializable {
+class CodeController(val test: TestScript): Initializable {
     @FXML
     lateinit var codearea: TextArea
     @FXML

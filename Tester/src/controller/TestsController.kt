@@ -14,9 +14,9 @@ import javafx.scene.control.Button
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.stage.Stage
-import myjavafxblocks.TestDescription
-import teststucture.MyFunction
-import teststucture.TestScript
+import myjavafxblocks.SingleTestDescription
+import teststucture.hierarchy.MyFunction
+import teststucture.hierarchy.TestScript
 import java.net.URL
 import java.util.*
 
@@ -29,7 +29,7 @@ class TestsController(var testScript: TestScript):Initializable {
     @FXML
     lateinit var mainBox: VBox
 
-    private var testDescrAreas : Array<TestDescription> = arrayOf();
+    private var testsDescrAreas : Array<Region> = arrayOf();
 
         lateinit var nameBox : TextArea
 
@@ -56,12 +56,12 @@ class TestsController(var testScript: TestScript):Initializable {
         }
 
         fun save(){
-            testScript.update(nameBox.text.trim(),null , testDescrAreas.map{ it.getExpected() })
+            //todo testScript.update(nameBox.text.trim(),null)
         }
 
         fun retest(){
             save()
-            testScript.checkTests()
+            testScript.checkTests(true)
         }
 
         fun updateScene()
@@ -69,10 +69,10 @@ class TestsController(var testScript: TestScript):Initializable {
             val c = mainBox.children[0];
             mainBox.children.removeAll(mainBox.children)
             mainBox.children.add(c)
-            testDescrAreas= arrayOf()
+            testsDescrAreas= arrayOf()
             for (i in testScript.tests)
-                testDescrAreas= testDescrAreas+ TestDescription(i)
-            mainBox.children.addAll(testDescrAreas)
+                testsDescrAreas= testsDescrAreas+i.getView()
+            mainBox.children.addAll(testsDescrAreas)
             mainBox.children.addAll(Text(" "))
             mainBox.isVisible = false
             mainBox.isVisible = true

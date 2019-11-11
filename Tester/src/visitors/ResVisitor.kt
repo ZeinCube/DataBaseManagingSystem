@@ -1,39 +1,47 @@
 package visitors
 
-import parser.*
-import teststucture.tests.BaseTest
-import teststucture.tests.ErrorTest
-import teststucture.tests.StringTest
-import teststucture.tests.SkipTest
+import parser.sqlqueryresultparser.QueryResultBaseVisitor
+import parser.sqlqueryresultparser.QueryResultParser
+import teststucture.queryresults.*
 
-class ResVisitor: TestGrammarBaseVisitor<Array<BaseTest>>()
-{
-    private fun stringTransform(s:String):String
-    {
-        return s.substring(1, s.length-1).replace("\\\"","\"")
+
+class ResVisitor : QueryResultBaseVisitor<Array<BaseRes>>() {
+    private fun stringTransform(s: String): String {
+        return s.substring(1, s.length - 1).replace("\\\"", "\"")
     }
-    override fun visitParseOut(ctx: TestGrammarParser.ParseOutContext?): Array<BaseTest> {
-        var out = arrayOf<BaseTest>()
-        if (ctx!!.childCount>0)
-        for (i in ctx!!.children)
-            out+= this.visit(i)[0]
+
+    override fun visitParse(ctx: QueryResultParser.ParseContext?): Array<BaseRes> {
+        var out = arrayOf<BaseRes>()
+        if (ctx!!.childCount > 0)
+            for (i in ctx.children) {
+                val res = this.visit(i)
+                if (res != null)
+                    out += res[0]
+            }
         return out;
     }
 
-    override fun visitResult(ctx: TestGrammarParser.ResultContext?): Array<BaseTest> {
+    override fun visitQuery_result(ctx: QueryResultParser.Query_resultContext?): Array<BaseRes> {
         return this.visit(ctx!!.children[0])
     }
-
-    override fun visitRt_error(ctx: TestGrammarParser.Rt_errorContext?): Array<BaseTest> {
-        return arrayOf(ErrorTest(stringTransform(ctx!!.error!!.text),stringTransform(ctx!!.what!!.text)))
+    override fun visitRq_error(ctx: QueryResultParser.Rq_errorContext?): Array<BaseRes> {
+        return arrayOf(ErrorRes(ctx!!.ex.`val`, ctx.what.`val`))
     }
 
-    override fun visitRt_skip(ctx: TestGrammarParser.Rt_skipContext?): Array<BaseTest> {
-        return arrayOf(SkipTest())
+    override fun visitRq_executed(ctx: QueryResultParser.Rq_executedContext?): Array<BaseRes> {
+        return arrayOf(ExecutedRes())
     }
 
-    override fun visitRt_string(ctx: TestGrammarParser.Rt_stringContext?): Array<BaseTest> {
-        return arrayOf(StringTest(stringTransform(ctx!!.res.text)))
+    override fun visitRq_string(ctx: QueryResultParser.Rq_stringContext?): Array<BaseRes> {
+        return arrayOf(StringRes(ctx!!.myString().`val`))
+    }
+
+    override fun visitRq_table(ctx: QueryResultParser.Rq_tableContext?): Array<BaseRes> {
+        return arrayOf(TableRes(TableVisitor().visit(ctx)))
+    }
+
+    override fun visitRq_void(ctx: QueryResultParser.Rq_voidContext?): Array<BaseRes> {
+        return arrayOf(VoidRes())
     }
 
 }

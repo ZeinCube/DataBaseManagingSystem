@@ -3,8 +3,9 @@ package visitors.expresions
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
-import parser.TestGrammarLexer
-import parser.TestGrammarParser
+import parser.testscriptparser.TestScriptLexer
+import parser.testscriptparser.TestScriptParser
+import teststucture.hierarchy.TestScript
 
 private class ExpressionsTester {
     companion object {
@@ -12,12 +13,12 @@ private class ExpressionsTester {
         fun main(args: Array<String>) {
             for (i in 1..1000) {
                 val str = readLine()
-                val lexer = TestGrammarLexer(CharStreams.fromString(str))
+                val lexer = TestScriptLexer(CharStreams.fromString(str))
 
 
                 val commonTokenStream = CommonTokenStream(lexer)
                 commonTokenStream.fill()
-                val parser = TestGrammarParser(commonTokenStream)
+                val parser = TestScriptParser(commonTokenStream)
 
                 var tree: ParseTree? = null
                 try {

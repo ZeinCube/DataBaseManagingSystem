@@ -14,10 +14,8 @@ import javafx.stage.Stage
 import javafx.util.Callback
 import javafx.beans.property.StringProperty
 import javafx.scene.layout.AnchorPane
-import teststucture.*
-import javafx.scene.layout.FlowPane
-import teststucture.tests.TestResult
-import teststucture.tests.TestType
+import teststucture.hierarchy.*
+import teststucture.tests.BaseTest
 
 
 /**
@@ -38,20 +36,20 @@ class MainController {
 
     private val rootTest = object : TestsHierarchy("TESTS")
     {
-        override fun checkTests() {
-            conclusion = TestResult.NT
+        override fun checkTests(necessarily:Boolean) {
+            conclusion = BaseTest.TestResult.NT
             if (selected)
                 for (i in testGropes)
                 {
                     if (i.selected)
-                        i.checkTests()
+                        i.checkTests(necessarily)
                     conclusion = conclusion and i.conclusion
                 }
         }
 
         var testGropes: Array<GroupeOfTests> = arrayOf()
         init {
-            conclusion = TestResult.NT
+            conclusion = BaseTest.TestResult.NT
             type = HierarchyType.root
             mainDir.forEachLine {
                 testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
@@ -170,7 +168,7 @@ class MainController {
         val resultc = TreeTableColumn<TestsHierarchy, String>("Result")
         resultc.minWidth = 100.0
         val choosec = TreeTableColumn<TestsHierarchy, Boolean>("Selected")
-        val colBtn = TreeTableColumn<TestsHierarchy, TestType>("Button Column")
+        val colBtn = TreeTableColumn<TestsHierarchy, HierarchyType>("Button Column")
 
         val textCellFactory = Callback<TreeTableColumn<TestsHierarchy, String>, TreeTableCell<TestsHierarchy, String>> {
             object : TreeTableCell<TestsHierarchy, String>() {
@@ -258,8 +256,8 @@ class MainController {
 
 
 
-        val cellFactory = Callback<TreeTableColumn<TestsHierarchy, TestType>, TreeTableCell<TestsHierarchy, TestType>> {
-            object : TreeTableCell<TestsHierarchy, TestType>() {
+        val cellFactory = Callback<TreeTableColumn<TestsHierarchy, HierarchyType>, TreeTableCell<TestsHierarchy, HierarchyType>> {
+            object : TreeTableCell<TestsHierarchy, HierarchyType>() {
                 private val btn = Button("Action")
 
                 init {
@@ -279,7 +277,7 @@ class MainController {
                     }
                 }
 
-                override fun updateItem(item: TestType?, empty: Boolean) {
+                override fun updateItem(item: HierarchyType?, empty: Boolean) {
                     super.updateItem(item, empty)
                     val data = treeTableView.getTreeItem(index)
                     if (data != null)
@@ -344,7 +342,7 @@ class MainController {
         loadTable()
         testButton.setOnAction {
             event ->
-            rootTest.checkTests()
+            rootTest.checkTests(false)
         }
         newGroupeName.textProperty().addListener { observable, oldValue, newValue ->
             if (newValue.contains('\n'))

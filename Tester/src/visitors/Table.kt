@@ -1,7 +1,15 @@
-package source
+package visitors
 
 class Table {
-    private var columns :Array<String> = arrayOf()
+    enum class ColumnType
+    {
+
+    }
+    class Column(var name:String,var type:ColumnType)
+    {
+
+    }
+    private var columns :Array<ColumnType> = arrayOf()
     private var records :Array<Array<String>> = arrayOf()
     constructor(ctx:String)
     {

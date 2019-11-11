@@ -5,7 +5,7 @@ abstract class Variable {
         return other._operation(this, op);
     }
 
-    abstract fun getValue(): Any;
+    abstract fun getValue(): Any?;
     abstract fun castAs(type: String): Variable
     abstract fun unOp(op: String): Variable
     abstract fun _operation(other: Variable, op: String): Variable;
@@ -13,6 +13,7 @@ abstract class Variable {
     abstract fun _operation(other: IntVar, op: String): Variable;
     abstract fun _operation(other: DoubleVar, op: String): Variable;
     abstract fun _operation(other: BoolVar, op: String): Variable;
+    abstract fun _operation(other: NullVar, op: String): Variable;
     /*
     operator fun plus(other:Variable):Variable
     operator fun div(other:Variable):Variable
@@ -26,9 +27,49 @@ abstract class Variable {
 
 }
 
+class NullVar():Variable()
+{
+    override fun getValue(): Any? {
+        return null;
+    }
+
+    override fun castAs(type: String): Variable {
+        return this
+    }
+
+    override fun unOp(op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: Variable, op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: StringVar, op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: IntVar, op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: DoubleVar, op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: BoolVar, op: String): Variable {
+        return this
+    }
+
+    override fun _operation(other: NullVar, op: String): Variable {
+        return this
+    }
+
+}
 
 class StringVar(var value: String) : Variable() {
-    override fun getValue(): Any {
+
+    override fun getValue(): Any? {
         return value;
     }
 
@@ -96,10 +137,13 @@ class StringVar(var value: String) : Variable() {
         }
     }
 
+    override fun _operation(other: NullVar, op: String): Variable {
+        return other
+    }
 }
 
 class IntVar(var value: Int) : Variable() {
-    override fun getValue(): Any {
+    override fun getValue(): Any? {
         return value;
     }
 
@@ -193,6 +237,9 @@ class IntVar(var value: Int) : Variable() {
         }
     }
 
+    override fun _operation(other: NullVar, op: String): Variable {
+        return other
+    }
 }
 
 class DoubleVar(var value: Double) : Variable() {
@@ -290,6 +337,9 @@ class DoubleVar(var value: Double) : Variable() {
         }
     }
 
+    override fun _operation(other: NullVar, op: String): Variable {
+        return other
+    }
 }
 
 class BoolVar(var value: Boolean) : Variable() {
@@ -362,7 +412,9 @@ class BoolVar(var value: Boolean) : Variable() {
         }
     }
 
-
+    override fun _operation(other: NullVar, op: String): Variable {
+        return other
+    }
 }
 
 

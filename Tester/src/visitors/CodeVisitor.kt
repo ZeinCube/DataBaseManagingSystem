@@ -1,66 +1,71 @@
 package visitors
 
+import parser.testscriptparser.TestScriptBaseVisitor
+import parser.testscriptparser.TestScriptParser
+import teststucture.queryresults.BaseRes
+import teststucture.queryresults.VoidRes
 import visitors.expresions.ExpresionVisitor
 import visitors.expresions.StringVar
 import visitors.expresions.Variable
-import parser.TestGrammarBaseVisitor
-import parser.TestGrammarParser
 import teststucture.tests.BaseTest
-import teststucture.tests.SkipTest
+import teststucture.tests.SQLQuery
+import teststucture.tests.SingleQueryTest
 import java.util.*
 import kotlin.collections.HashMap
 
-class CodeVisitor(exp:Array<BaseTest>) : TestGrammarBaseVisitor<Any?>() {
+class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>() {
     lateinit var name: String
+    var tests: Array<BaseTest> = arrayOf()
+
     val variables: HashMap<String, Variable> = hashMapOf();
     val varNameList: Stack<String> = Stack()
     val varLevelNum: Stack<Int> = Stack()
     var curTest:Int = 0
-    var tests:Array<BaseTest> =  exp;
+    var results:Array<BaseRes> =  exp;
 
     private fun sentToSQL(s: String, isNeedCheck: Boolean) {
         //todo
         if (isNeedCheck)
         {
-            if(tests.size<curTest)
+            if(results.size>curTest)
             {
-                tests[curTest].checkTest(s)
+                tests+=SingleQueryTest(s,results[curTest])
+                curTest++
             }else
             {
-                tests=tests+(SkipTest())
-                tests[curTest].checkTest(s)
+                tests+=SingleQueryTest(s, VoidRes())
             }
         curTest++
         }else
-            DataBase.SendToSQL(s)
+           tests.last().addSQLQuery(SQLQuery(s))
 
     }
 
-    override fun visitParseIn(ctx: TestGrammarParser.ParseInContext?): Any? {
+    override fun visitParse(ctx: TestScriptParser.ParseContext?): Array<BaseTest>? {
         for (i in ctx!!.children) {
             this.visit(i)
         }
         return tests
     }
 
-    override fun visitTestName(ctx: TestGrammarParser.TestNameContext?): Any? {
+    override fun visitTestName(ctx: TestScriptParser.TestNameContext?): Array<BaseTest>? {
         name = ctx!!.text.substring(1, ctx.text.length - 1)
         return null
     }
 
-    override fun visitCode_block(ctx: TestGrammarParser.Code_blockContext?): Any? {
+    override fun visitCode_block(ctx: TestScriptParser.Code_blockContext?): Array<BaseTest>? {
         for (i in ctx!!.children) {
             this.visit(i)
         }
         return null
     }
 
-    override fun visitOpen_block(ctx: TestGrammarParser.Open_blockContext?): Any? {
+    override fun visitOpen_block(ctx: TestScriptParser.Open_blockContext?): Array<BaseTest>? {
         varLevelNum.push(0)
         return null
     }
 
-    override fun visitClose_block(ctx: TestGrammarParser.Close_blockContext?): Any? {
+    override fun visitClose_block(ctx: TestScriptParser.Close_blockContext?): Array<BaseTest>? {
 
         val ii = varLevelNum.pop()
         for (i in 1..ii) {
@@ -70,7 +75,7 @@ class CodeVisitor(exp:Array<BaseTest>) : TestGrammarBaseVisitor<Any?>() {
         return null
     }
 
-    override fun visitAssignment(ctx: TestGrammarParser.AssignmentContext?): Any? {
+    override fun visitAssignment(ctx: TestScriptParser.AssignmentContext?): Array<BaseTest>? {
         if (variables.containsKey(ctx!!.id().text)) {
             variables[ctx.id().text] = ExpresionVisitor(variables).visit(ctx.expr())
         } else {
@@ -83,21 +88,21 @@ class CodeVisitor(exp:Array<BaseTest>) : TestGrammarBaseVisitor<Any?>() {
         return null
     }
 
-    override fun visitTest(ctx: TestGrammarParser.TestContext?): Any? {
+    override fun visitTest(ctx: TestScriptParser.TestContext?): Array<BaseTest>? {
         sentToSQL((ExpresionVisitor(variables).visit(ctx!!.expr())
                 .castAs("string") as StringVar).value
                 , true)
         return null
     }
 
-    override fun visitSql(ctx: TestGrammarParser.SqlContext?): Any? {
+    override fun visitSql(ctx: TestScriptParser.SqlContext?): Array<BaseTest>? {
         sentToSQL((ExpresionVisitor(variables).visit(ctx!!.expr())
                 .castAs("string") as StringVar).value
                 , false)
         return null
     }
 
-    override fun visitMyFor(ctx: TestGrammarParser.MyForContext?): Any? {
+    override fun visitMyFor(ctx: TestScriptParser.MyForContext?): Array<BaseTest>? {
         var i = 0
         if (ctx!!.childCount == 9) {
             this.visit(ctx.assignment(0))
@@ -107,7 +112,7 @@ class CodeVisitor(exp:Array<BaseTest>) : TestGrammarBaseVisitor<Any?>() {
             this.visit(ctx.code_block())
             this.visit(ctx.assignment(i))
         }
-        if (ctx!!.childCount == 9) {
+        if (ctx.childCount == 9) {
             val ii = varLevelNum.pop()
             varLevelNum.push(ii - 1)
             val s = varNameList.pop()

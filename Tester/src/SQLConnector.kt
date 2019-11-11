@@ -1,7 +1,7 @@
 import java.sql.*
 import java.util.*
 
-object DataBase{
+class DataBase{
 
     lateinit var conn:Connection;
 
@@ -20,6 +20,10 @@ object DataBase{
                             ":" + "3306" + "/" +
                             "",
                     connectionProps)
+            val stmt = conn.createStatement()
+            stmt!!.executeUpdate("drop database if exists test")
+            stmt.executeUpdate("create database test")
+            stmt.executeUpdate("use test")
         } catch (ex: SQLException) {
             // handle any errors
             ex.printStackTrace()
@@ -29,50 +33,23 @@ object DataBase{
         }
     }
 
-    fun SendToSQL(s:String):String
+    fun SendToSQL(s:String):Any
     {
         var stmt: Statement? = null
         var rs: ResultSet? = null
-        var res:String = ""
-        try {
             stmt = conn.createStatement()
             try {
                 rs = stmt!!.executeQuery(s)
-                val rsmd = rs?.getMetaData()
-                val columnsNumber = rsmd?.getColumnCount()
-                while (rs!!.next()) {
-                    for (i in 1..columnsNumber!!) {
-                        if (i > 1) res = res + (",  ")
-                        val columnValue = rs.getString(i)
-                        res= res+(columnValue + " " + rsmd.getColumnName(i))
-                    }
-                    res = res+ "\n"
-                }
+                return rs!!;
             }catch (ex:SQLException)
             {
                 if (ex.message == "Can not issue data manipulation statements with executeQuery().")
                 {
-                    try {
-                        stmt!!.executeUpdate(s)
-                        res = "executed"
-                    }catch (ex:SQLException)
-                    {
-                        if(ex.message=="No database selected")
-                        {
-                            stmt!!.executeUpdate("drop database if exists test")
-                            stmt!!.executeUpdate("create database test")
-                            stmt!!.executeUpdate("use test")
-                            res = this.SendToSQL(s)
-                        }
-                    }
+                    stmt!!.executeUpdate(s)
+                    return true;
                 }else
-                throw ex
+                return ex
             }
-
-        } catch (ex: SQLException) {
-            throw ex
-        }
-        return res
     }
 
 

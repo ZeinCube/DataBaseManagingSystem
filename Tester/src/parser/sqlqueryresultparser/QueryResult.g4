@@ -1,4 +1,8 @@
 grammar  QueryResult;
+@header {
+import com.sun.istack.internal.Nullable;
+}
+
 fragment A:                                     [aA];
 fragment B:                                     [bB];
 fragment C:                                     [cC];
@@ -34,11 +38,13 @@ K_EXECUTED: COMAND E X E C U T E D;
 K_ERROR: COMAND E R R O R;
 K_CSTRING:COMAND S T R I N G;
 K_TABLE: COMAND T A B L E;
+K_VOID: (COMAND V O I D)|(COMAND S K I P);
 
 K_INT: I N T;
 K_DOUBLE: D O U B L E;
 K_STRING: S T R I N G;
 K_BOOL:  (B O O L E A N)|(B O O L);
+K_NULL: N U L L;
 
 IDENTIFIER
  : [a-zA-Z] [a-zA-Z_0-9]*
@@ -50,44 +56,61 @@ NUMERIC_LITERAL
  | '.' DIGIT+ ( E [-+]? NUMBER )?
  ;
 
+fragment
+SCharSequence
+    :   SChar+
+    ;
+fragment
+SChar
+    :   ~["]
+    |   '\\' ["]
+    |   '\\\n'   // Added line
+    |   '\\\r\n' // Added line
+    ;
+
 STRING_LITERAL
- : '"' (~'"' | '""'|'\\"')* '"' ;
+    :   '"' SCharSequence? '"'
+    ;
 
 
 
-WS: [ \u000B\t\r] -> skip;
+WS: [ \t\r] -> skip;
 
-parse: query_result+ EOF;
+parse: (query_result ENTER*)* EOF;
+
 rq_executed: K_EXECUTED;
-rq_string: K_CSTRING ':' myString;
-
+rq_void: K_VOID;
+rq_string: K_CSTRING (ENTER*) ':'? myString;
 rq_table:
-         K_TABLE
+         K_TABLE ENTER?
          (column_name_list)
-         (ENTER record)+ ENTER*;
+         (ENTER+ record)+ ;
+rq_error: K_ERROR ':'? ex=myString what=myString;
+
 
 column_name_list: (column_name)+;
 column_name: id type_name?;
 record: literal_value+;
 
-query_result:  (rq_executed
+query_result:
+        rq_executed
         |rq_string
         |rq_table
-        |rq_error)
-        ENTER*
+        |rq_error
+        |rq_void
         ;
 
-rq_error: K_ERROR ':' myString myString;
 literal_value
  : myDouble
  | myInt
  | myString
+ | myNull
  ;
 
 
-myString returns [String text]: r=STRING_LITERAL {$text = ($r.text.substring(0, $r.text.length()-1).replace("\\\"", "\""));};
+myString returns [String val]: r=STRING_LITERAL  {$val = ($r.text.substring(1, $r.text.length()-1).replace("\\\"", "\""));};
 myDouble  returns [Double val]: r=NUMERIC_LITERAL{$val = Double.valueOf($r.text);};
 myInt  returns [Integer val]: r=NUMBER           {$val = Integer.valueOf($r.text);};
-
+myNull returns [@Nullable Object val = null]: K_NULL;
 id:IDENTIFIER;
 type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;

@@ -3,8 +3,7 @@ package visitors
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.tree.ParseTree
-import parser.TestGrammarLexer
-import parser.TestGrammarParser
+
 class test<T>(t:T) {
     var value:T = t
 }
@@ -28,27 +27,10 @@ class Tester {
                     "        @test: \"create table t\"+ @cast @i as string +\"(\"+ @cols+\")\"\n @check" +
                     "    }\n" +
                     "}"
-            val lexer = TestGrammarLexer(CharStreams.fromString(str))
 
+        //    visitor.visit(tree);
 
-            val commonTokenStream = CommonTokenStream(lexer)
-            commonTokenStream.fill()
-            val parser = TestGrammarParser(commonTokenStream)
-
-            var tree: ParseTree? = null
-            try {
-                // вызываем парсинг по правилу
-                tree = parser.parseIn()
-            } catch (e: Exception) {
-                // обрабатываем ошибки
-                println("Error: ${e.message}")
-            }
-
-            var res = ""
-            val visitor = CodeVisitor(arrayOf())
-            visitor.visit(tree);
-
-            println(res)
+        //    println(res)
 
         }
     }
