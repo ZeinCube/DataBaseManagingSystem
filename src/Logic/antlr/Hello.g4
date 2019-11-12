@@ -25,8 +25,8 @@ ENTER:                                          [\n];
 K_PRIMARY_KEY:                                  P R I M A R Y SPACE K E Y;
 K_UNIQUE:                                       U N I Q U E;
 
-T_CHAR:                                         C H A R;
-T_INT:                                          I N T;
+T_CHAR:                                         C H A R A C H T E R;
+T_INT:                                          I N T E G E R;
 T_FLOAT:                                        F L O A T;
 
 NUMBER:                                         DIGIT+;
