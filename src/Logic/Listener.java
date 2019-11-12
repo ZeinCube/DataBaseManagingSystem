@@ -3,8 +3,9 @@ package Logic;
 import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
-import Engine.Entity.Table;
 import Engine.Exceptions.DBMSException;
+import Logic.pars.HelloBaseListener;
+import Logic.pars.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,7 +102,7 @@ public class Listener extends HelloBaseListener {
         try {
             while (i > 0 && branchType == BranchType.Table_sources) {
                 if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
-                        ctx.column_def(i - 1).getStop().getText() != "primary key") {
+                        !ctx.column_def(i - 1).getStop().getText().equals("primary key")) {
                     unique = true;
                 }
                 hashSet.add(new Column(ctx.column_def(i - 1).name().getText(), Class.forName(ctx.column_def(i - 1).type().getText()), unique));
