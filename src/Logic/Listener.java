@@ -4,8 +4,6 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
-import Logic.pars.HelloBaseListener;
-import Logic.pars.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,16 +97,24 @@ public class Listener extends HelloBaseListener {
         List<HelloParser.Column_defContext> columns = null;
         HashSet<Column> hashSet = new HashSet<>();
         boolean unique = false;
-        try {
-            while (i > 0 && branchType == BranchType.Table_sources) {
-                if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
-                        !ctx.column_def(i - 1).getStop().getText().equals("primary key")) {
-                    unique = true;
-                }
-                hashSet.add(new Column(ctx.column_def(i - 1).name().getText(), Class.forName(ctx.column_def(i - 1).type().getText()), unique));
-                i--;
+        while (i > 0 && branchType == BranchType.Table_sources) {
+            if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
+                    !ctx.column_def(i - 1).getStop().getText().equals("primary key")) {
+                unique = true;
             }
-        } catch (ClassNotFoundException e) {
+            String columnName = ctx.column_def(i - 1).name().getText();
+            System.out.println(ctx.column_def(i - 1).type().getText());
+            Class columnContainsClass = null;
+            String className = ctx.column_def(i - 1).type().getText();
+            className = className.substring(0, 1).toUpperCase() + className.substring(1);
+            try {
+                columnContainsClass = Class.forName(ctx.column_def(i - 1).type().getText());
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            Column k = new Column(columnName, columnContainsClass, unique);
+            hashSet.add(k);
+            i--;
         }
         try {
             api.createTable(hashMap.get("Table_name").toString(), hashSet);
