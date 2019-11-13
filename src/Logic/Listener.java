@@ -26,6 +26,7 @@ public class Listener extends HelloBaseListener {
         }
     }
 
+
     private enum InquiryMode {
         Undefined,
         What,
@@ -46,7 +47,7 @@ public class Listener extends HelloBaseListener {
     private BranchType branchType;
 
     @Override
-    public void enterSql_query(Logic.gen.HelloParser.Sql_queryContext ctx) {
+    public void enterSql_query(HelloParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
@@ -61,7 +62,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterCreate(Logic.gen.HelloParser.CreateContext ctx) {
+    public void enterCreate(HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -70,7 +71,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterDrop(Logic.gen.HelloParser.DropContext ctx) {
+    public void enterDrop(HelloParser.DropContext ctx) {
         super.enterDrop(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -79,7 +80,15 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable(Logic.gen.HelloParser.TableContext ctx) {
+    public void enterSelect_table_list(HelloParser.Select_table_listContext ctx) {
+        super.enterSelect_table_list(ctx);
+        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
+
+        }
+    }
+
+    @Override
+    public void enterTable(HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
@@ -116,13 +125,13 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable_definition(Logic.gen.HelloParser.Table_definitionContext ctx) {
+    public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
 
     @Override
-    public void enterColumns_sourse(Logic.gen.HelloParser.Columns_sourseContext ctx) {
+    public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
