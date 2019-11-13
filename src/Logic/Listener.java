@@ -4,8 +4,6 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
-import Logic.gen.HelloBaseListener;
-import Logic.gen.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,13 +43,13 @@ public class Listener extends HelloBaseListener {
     private BranchType branchType;
 
     @Override
-    public void enterSql_query(Logic.gen.HelloParser.Sql_queryContext ctx) {
+    public void enterSql_query(HelloParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
 
     @Override
-    public void enterCreate(Logic.gen.HelloParser.CreateContext ctx) {
+    public void enterCreate(HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -60,7 +58,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterDrop(Logic.gen.HelloParser.DropContext ctx) {
+    public void enterDrop(HelloParser.DropContext ctx) {
         super.enterDrop(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -69,7 +67,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterSelect_table_list(Logic.gen.HelloParser.Select_table_listContext ctx) {
+    public void enterSelect_table_list(HelloParser.Select_table_listContext ctx) {
         super.enterSelect_table_list(ctx);
         if (mode == InquiryMode.What && branchType == BranchType.Drop) {
 
@@ -77,7 +75,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable(Logic.gen.HelloParser.TableContext ctx) {
+    public void enterTable(HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
@@ -86,13 +84,13 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable_definition(Logic.gen.HelloParser.Table_definitionContext ctx) {
+    public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
 
     @Override
-    public void enterColumns_sourse(Logic.gen.HelloParser.Columns_sourseContext ctx) {
+    public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
@@ -104,7 +102,6 @@ public class Listener extends HelloBaseListener {
                 unique = true;
             }
             String columnName = ctx.column_def(i - 1).name().getText();
-//            System.out.println(ctx.column_def(i - 1).type().getText());
             Class columnContainsClass = null;
             String className = ctx.column_def(i - 1).type().getText();
             className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1);
