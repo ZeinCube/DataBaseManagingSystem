@@ -4,6 +4,8 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
+import Logic.gen.HelloBaseListener;
+import Logic.gen.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,13 +45,13 @@ public class Listener extends HelloBaseListener {
     private BranchType branchType;
 
     @Override
-    public void enterSql_query(HelloParser.Sql_queryContext ctx) {
+    public void enterSql_query(Logic.gen.HelloParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
 
     @Override
-    public void enterCreate(HelloParser.CreateContext ctx) {
+    public void enterCreate(Logic.gen.HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -58,7 +60,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterDrop(HelloParser.DropContext ctx) {
+    public void enterDrop(Logic.gen.HelloParser.DropContext ctx) {
         super.enterDrop(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -67,7 +69,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterSelect_table_list(HelloParser.Select_table_listContext ctx) {
+    public void enterSelect_table_list(Logic.gen.HelloParser.Select_table_listContext ctx) {
         super.enterSelect_table_list(ctx);
         if (mode == InquiryMode.What && branchType == BranchType.Drop) {
 
@@ -75,7 +77,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable(HelloParser.TableContext ctx) {
+    public void enterTable(Logic.gen.HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
@@ -84,17 +86,17 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
+    public void enterTable_definition(Logic.gen.HelloParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
 
     @Override
-    public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
+    public void enterColumns_sourse(Logic.gen.HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
-        HashSet<Column> hashSet = new HashSet<>();
+        HashSet<Column> hashSet = new HashSet<Column>();
         boolean unique = false;
         while (i > 0 && branchType == BranchType.Table_sources) {
             if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
@@ -102,12 +104,12 @@ public class Listener extends HelloBaseListener {
                 unique = true;
             }
             String columnName = ctx.column_def(i - 1).name().getText();
-            System.out.println(ctx.column_def(i - 1).type().getText());
+//            System.out.println(ctx.column_def(i - 1).type().getText());
             Class columnContainsClass = null;
             String className = ctx.column_def(i - 1).type().getText();
-            className = className.substring(0, 1).toUpperCase() + className.substring(1);
+            className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1);
             try {
-                columnContainsClass = Class.forName(ctx.column_def(i - 1).type().getText());
+                columnContainsClass = Class.forName(className);
             } catch (ClassNotFoundException e1) {
                 e1.printStackTrace();
             }
@@ -116,7 +118,8 @@ public class Listener extends HelloBaseListener {
             i--;
         }
         try {
-            api.createTable(hashMap.get("Table_name").toString(), hashSet);
+            String kek = hashMap.get("Table_name").toString();
+            api.createTable(kek, hashSet);
         } catch (DBMSException e) {
             e.printStackTrace();
         }
