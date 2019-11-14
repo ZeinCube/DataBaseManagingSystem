@@ -97,7 +97,9 @@ public class Listener extends HelloBaseListener {
                     String string = ctx.name(i - 1).getText();
                     api.dropTable(string);
                 } catch (DropException e) {
-                    e.printStackTrace();
+                    System.err.println(e.getMessage());
+                } finally {
+                    System.out.println("table droped");
                 }
                 i--;
             }
@@ -108,7 +110,7 @@ public class Listener extends HelloBaseListener {
                 try {
                     System.out.println(api.showCreateTable(string));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println(e.getMessage());
                 }
                 i--;
             }
@@ -150,7 +152,9 @@ public class Listener extends HelloBaseListener {
             String kek = hashMap.get("Table_name").toString();
             api.createTable(kek, hashSet);
         } catch (DBMSException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+        } finally {
+            System.out.println("table created");
         }
     }
 }
