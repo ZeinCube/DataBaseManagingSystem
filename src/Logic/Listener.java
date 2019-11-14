@@ -4,6 +4,7 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
+import Engine.Exceptions.DropException;
 import Logic.gen.HelloBaseListener;
 import Logic.gen.HelloParser;
 
@@ -25,11 +26,11 @@ public class Listener extends HelloBaseListener {
         }
     }
 
-
     private enum InquiryMode {
         Undefined,
         What,
         Content
+
     }
 
     private InquiryMode mode;
@@ -51,6 +52,15 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
+    public void enterShow_create(HelloParser.Show_createContext ctx) {
+        super.enterShow_create(ctx);
+        if (ctx.getChildCount() > 1) {
+            mode = InquiryMode.What;
+        }
+        branchType = BranchType.ShowCreate;
+    }
+
+    @Override
     public void enterCreate(Logic.gen.HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
@@ -69,20 +79,40 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterSelect_table_list(Logic.gen.HelloParser.Select_table_listContext ctx) {
-        super.enterSelect_table_list(ctx);
-        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
-
-        }
-    }
-
-    @Override
     public void enterTable(Logic.gen.HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
         }
         branchType = BranchType.Table_sources;
+    }
+
+    @Override
+    public void enterTable_name_list(HelloParser.Table_name_listContext ctx) {
+        super.enterTable_name_list(ctx);
+        int i = ctx.getChildCount();
+        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
+            while (i > 0) {
+                try {
+                    String string = ctx.name(i - 1).getText();
+                    api.dropTable(string);
+                } catch (DropException e) {
+                    e.printStackTrace();
+                }
+                i--;
+            }
+        }
+        if (mode == InquiryMode.What && branchType == BranchType.ShowCreate) {
+            while (i > 0) {
+                String string = ctx.name(i - 1).getText();
+                try {
+                    System.out.println(api.showCreateTable(string));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                i--;
+            }
+        }
     }
 
     @Override
@@ -104,7 +134,6 @@ public class Listener extends HelloBaseListener {
                 unique = true;
             }
             String columnName = ctx.column_def(i - 1).name().getText();
-//            System.out.println(ctx.column_def(i - 1).type().getText());
             Class columnContainsClass = null;
             String className = ctx.column_def(i - 1).type().getText();
             className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1);
