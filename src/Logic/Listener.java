@@ -26,7 +26,6 @@ public class Listener extends HelloBaseListener {
         }
     }
 
-
     private enum InquiryMode {
         Undefined,
         What,
