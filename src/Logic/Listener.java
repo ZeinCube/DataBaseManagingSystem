@@ -4,6 +4,9 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
+import Engine.Exceptions.DropException;
+import Logic.gen.HelloBaseListener;
+import Logic.gen.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,11 +26,11 @@ public class Listener extends HelloBaseListener {
         }
     }
 
-
     private enum InquiryMode {
         Undefined,
         What,
         Content
+
     }
 
     private InquiryMode mode;
@@ -43,13 +46,22 @@ public class Listener extends HelloBaseListener {
     private BranchType branchType;
 
     @Override
-    public void enterSql_query(HelloParser.Sql_queryContext ctx) {
+    public void enterSql_query(Logic.gen.HelloParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
 
     @Override
-    public void enterCreate(HelloParser.CreateContext ctx) {
+    public void enterShow_create(HelloParser.Show_createContext ctx) {
+        super.enterShow_create(ctx);
+        if (ctx.getChildCount() > 1) {
+            mode = InquiryMode.What;
+        }
+        branchType = BranchType.ShowCreate;
+    }
+
+    @Override
+    public void enterCreate(Logic.gen.HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -58,7 +70,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterDrop(HelloParser.DropContext ctx) {
+    public void enterDrop(Logic.gen.HelloParser.DropContext ctx) {
         super.enterDrop(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -67,15 +79,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterSelect_table_list(HelloParser.Select_table_listContext ctx) {
-        super.enterSelect_table_list(ctx);
-        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
-
-        }
-    }
-
-    @Override
-    public void enterTable(HelloParser.TableContext ctx) {
+    public void enterTable(Logic.gen.HelloParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
@@ -84,13 +88,41 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
+    public void enterTable_name_list(HelloParser.Table_name_listContext ctx) {
+        super.enterTable_name_list(ctx);
+        int i = ctx.getChildCount();
+        if (mode == InquiryMode.What && branchType == BranchType.Drop) {
+            while (i > 0) {
+                try {
+                    String string = ctx.name(i - 1).getText();
+                    api.dropTable(string);
+                } catch (DropException e) {
+                    e.printStackTrace();
+                }
+                i--;
+            }
+        }
+        if (mode == InquiryMode.What && branchType == BranchType.ShowCreate) {
+            while (i > 0) {
+                String string = ctx.name(i - 1).getText();
+                try {
+                    System.out.println(api.showCreateTable(string));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                i--;
+            }
+        }
+    }
+
+    @Override
+    public void enterTable_definition(Logic.gen.HelloParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
 
     @Override
-    public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
+    public void enterColumns_sourse(Logic.gen.HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
