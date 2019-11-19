@@ -6,6 +6,10 @@ DataBaseManagingSystem.iml
 /target/
 
 Logic/gen/
+Logic/antlr/Hello.tokens
+Logic/antlr/HelloBaseListener.java
+Logic/antlr/HelloBaseVisitor.java
+Logic/gen/
 
 
 
@@ -132,3 +136,11 @@ gen/parser/TestScriptListener.java
 gen/parser/TestScriptParser.java
 
 gen/parser/TestScriptVisitor.java
+
+Logic/antlr/Hello.interp
+Logic/antlr/HelloLexer.interp
+Logic/antlr/HelloLexer.java
+Logic/antlr/HelloLexer.tokens
+Logic/antlr/HelloListener.java
+Logic/antlr/HelloParser.java
+Logic/antlr/HelloVisitor.java
