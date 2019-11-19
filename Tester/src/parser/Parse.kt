@@ -2,10 +2,6 @@ package parser
 
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.tree.ParseTree
-import parser.sqlqueryresultparser.QueryResultLexer
-import parser.sqlqueryresultparser.QueryResultParser
-import parser.testscriptparser.TestScriptLexer
-import parser.testscriptparser.TestScriptParser
 
 fun ParseToTree(s:String, parser: Class<out Parser>,lexer:Class<out Lexer>): ParseTree
 {

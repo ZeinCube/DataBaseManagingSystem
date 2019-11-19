@@ -72,7 +72,7 @@ class SingleTestDescription(val test: SingleQueryTest) : HBox() {
         sqlQuery.isEditable = false
 
 
-        expected.text = test.expected.getExpected()
+        expected.text = test.expected.getExpected().toString()
         expected.maxHeight = 26.0 * 5
         expected.maxHeight = 26.0 * 5
         expected.wrapTextProperty().set(true)
@@ -82,24 +82,24 @@ class SingleTestDescription(val test: SingleQueryTest) : HBox() {
             show(test.expected, true)
         }
 
-        resultDBMS.text = test.resultDBMS.getExpected()
+        resultDBMS.text = test.resultDBMS.getExpected().toString()
         resultDBMS.maxHeight = 26.0 * 5
         resultDBMS.maxHeight = 26.0 * 5
         resultDBMS.wrapTextProperty().set(true)
         resultDBMS.isEditable = false
 
         buttonsShow[1].setOnAction {
-            show(test.expected, false)
+            show(test.resultDBMS, false)
         }
 
-        resultMySQL.text = test.resultMySQL.getExpected()
+        resultMySQL.text = test.resultMySQL.getExpected().toString()
         resultMySQL.maxHeight = 26.0 * 5
         resultMySQL.maxHeight = 26.0 * 5
         resultMySQL.wrapTextProperty().set(true)
         resultMySQL.isEditable = false
 
         buttonsShow[2].setOnAction {
-            show(test.expected, false)
+            show(test.resultMySQL, false)
         }
 
         VBox.setMargin(sqlQuery, Insets(10.0, 0.0, 0.0, 3.0))

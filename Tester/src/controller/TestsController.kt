@@ -37,8 +37,6 @@ class TestsController(var testScript: TestScript):Initializable {
         val layout: String = "/res/codeInfo.fxml"
         fun showcode()
         {
-
-
                 testStage?.close()
 
                 val loader = FXMLLoader(javaClass.getResource(layout))
@@ -56,7 +54,7 @@ class TestsController(var testScript: TestScript):Initializable {
         }
 
         fun save(){
-            //todo testScript.update(nameBox.text.trim(),null)
+            testScript.update(nameBox.text.trim(),null,true)
         }
 
         fun retest(){

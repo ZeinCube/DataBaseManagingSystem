@@ -16,7 +16,7 @@ class CodeController(val test: TestScript): Initializable {
 
     fun save()
     {
-        test.update(null,codearea.text,null);
+        test.update(null,codearea.text);
     }
 
 

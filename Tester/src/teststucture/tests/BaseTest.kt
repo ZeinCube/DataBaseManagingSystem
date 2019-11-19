@@ -78,4 +78,5 @@ abstract class BaseTest {
     {
         postSQLQueries+=sql
     }
+    abstract fun getResult():String
 }

@@ -1,7 +1,7 @@
 package teststucture.queryresults
 
 class VoidRes: BaseRes() {
-    override fun _getExepected(): String {
+    override fun toString(): String {
         return "@void"
     }
 }

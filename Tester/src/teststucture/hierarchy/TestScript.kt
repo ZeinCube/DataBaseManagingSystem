@@ -18,7 +18,7 @@ open class TestScript : TestsHierarchy {
     lateinit var results: String
 
 
-    override fun checkTests(necessarily:Boolean) {
+    override fun checkTests(necessarily: Boolean) {
         conclusion = BaseTest.TestResult.NT
         if (selected or necessarily) {
             val database = DataBase()
@@ -37,7 +37,7 @@ open class TestScript : TestsHierarchy {
             code = inDir.readText()
         else {
             inDir.createNewFile()
-            code="@test \"${name}\"\n{\n}"
+            code = "@test \"${name}\"\n{\n}"
         }
         if (outDir.exists())
             results = outDir.readText()
@@ -48,41 +48,38 @@ open class TestScript : TestsHierarchy {
         type = HierarchyType.script
         try {
             tests = CodeVisitor(ResVisitor().visit(parseQueryResult(results))).visit(parseTestScript(code))!!
-        }catch (ex:Exception)
-        {
+        } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        //todo
-
 
     }
 
-    fun update(_name: String?, newCode: String?, newResults: List<String>?) {
+    fun update(_name: String?, newCode: String?,updRes:Boolean=false) {
         var _path = Paths.get("").toAbsolutePath().toString()
         var path = "$_path\\tests\\$gr"
         if (_name != null)
-        if (_name != name) {
-            var meta = File("$path\\meta.txt")
-            var testsList = meta.readLines()
-            meta.delete()
-            meta.createNewFile()
-            var flag = true
-            for (s in testsList)
-                if (s != name)
-                    if (flag) {
-                        flag = false
-                        meta.appendText(s)
-                    } else
-                        meta.appendText("\n$s")
-                else
-                    if (flag) {
-                        flag = false
-                        meta.appendText(_name.trim())
-                    } else
-                        meta.appendText("\n" + _name.trim())
+            if (_name != name) {
+                var meta = File("$path\\meta.txt")
+                var testsList = meta.readLines()
+                meta.delete()
+                meta.createNewFile()
+                var flag = true
+                for (s in testsList)
+                    if (s != name)
+                        if (flag) {
+                            flag = false
+                            meta.appendText(s)
+                        } else
+                            meta.appendText("\n$s")
+                    else
+                        if (flag) {
+                            flag = false
+                            meta.appendText(_name.trim())
+                        } else
+                            meta.appendText("\n" + _name.trim())
 
-            name = _name.trim()
-        }
+                name = _name.trim()
+            }
         if (newCode != null) {
             var inFile = File("$path\\$name.in")
 
@@ -92,14 +89,14 @@ open class TestScript : TestsHierarchy {
             inFile.writeText(code)
 
         }
-        if (newResults!= null)
-        {
+        if (updRes) {
             var outFile = File("$path\\$name.out")
             outFile.delete()
             outFile.createNewFile()
             var i = ""
-            newResults.forEach { i=i+it+"\n" }
+            tests.forEach { i = i + it.getResult()+"\n" }
             outFile.writeText(i)
+            results = i
         }
         updaters.forEach { it.invoke() }
     }

@@ -18,9 +18,7 @@ import teststucture.hierarchy.*
 import teststucture.tests.BaseTest
 
 
-/**
- * Created by naik on 06.02.16.
- */
+
 class MainController {
 
     @FXML

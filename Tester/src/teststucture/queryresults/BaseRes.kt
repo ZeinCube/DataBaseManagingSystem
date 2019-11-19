@@ -17,35 +17,32 @@ abstract class BaseRes {
     var sqlquery: String = TestResult.NT.toString()
     var result: String = TestResult.NT.toString()
 */
-    abstract protected fun _getExepected():String
-
     var newExpected : BaseRes? = null;
 
     fun setExpected(s:String)
     {
         try {
-
             newExpected = parseMyResult(s)
         }catch (ex:Exception)
         {
             newExpected = null
         }
     }
-
     fun setExpected(e: BaseRes)
     {
         newExpected = e
     }
 
-    fun getExpected():String
+    fun getExpected():BaseRes
     {
         if (newExpected != null)
         {
-            return newExpected!!._getExepected()
+            return newExpected!!
         }
-        return _getExepected()
+        return this
     }
 
+    abstract override fun toString(): String
     companion object{
         fun parseDBMSResult(s:String):BaseRes?
         {
@@ -64,7 +61,7 @@ abstract class BaseRes {
                 while (rs.next()) {
                     for (i in 1..columnsNumber!!) {
                         if (i > 1) res = res + (",  ")
-                        val columnValue = rs.getString(i)
+                        val columnValue = rs.getObject(i).toString()
                         res = res + (columnValue + " " + rsmd.getColumnName(i))
                     }
                     res = res + "\n"

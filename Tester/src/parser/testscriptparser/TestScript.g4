@@ -1,7 +1,4 @@
 grammar  TestScript;
-@header {
-import com.sun.istack.internal.Nullable;
-}
 
 fragment A:                                     [aA];
 fragment B:                                     [bB];
@@ -66,22 +63,10 @@ NUMERIC_LITERAL
  | '.' DIGIT+ ( E [-+]? NUMBER )?
  ;
 
-
-fragment
-SCharSequence
-    :   SChar+
-    ;
-fragment
-SChar
-    :   ~["]
-    |   '\\' ["]
-    |   '\\\n'   // Added line
-    |   '\\\r\n' // Added line
-    ;
-
 STRING_LITERAL
-    :   '"' SCharSequence? '"'
-    ;
+ :'"' ( '\\'. | '""' | ~('"'| '\\') )* '"'
+ ;
+
 
 IDENTIFIER
  : COMAND[a-zA-Z] [a-zA-Z_0-9]*
@@ -147,12 +132,12 @@ literal_value
  ;
 
 id:  IDENTIFIER;
-myString returns [String val]: r=STRING_LITERAL  {$val = ($r.text.substring(1, $r.text.length()-1).replace("\\\"", "\\"));};
+myString returns [String val]: r=STRING_LITERAL  {$val = $r.text.substring(1, $r.text.length()-1);};
 myDouble  returns [Double val]: r=NUMERIC_LITERAL{$val = Double.valueOf($r.text);};
 myInt  returns [Integer val]: r=NUMBER               {$val = Integer.valueOf($r.text);};
 myBool  returns [Boolean val]: r=(K_TRUE|K_FALSE)          {$val = Boolean.valueOf($r.text);};
 type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;
-myNull returns [@Nullable Object val = null]: K_NULL;
+myNull returns [Object val = null]: K_NULL;
 
 unary_operator
  : '-'
