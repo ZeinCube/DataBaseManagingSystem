@@ -14,8 +14,6 @@ import javafx.scene.control.Button
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.stage.Stage
-import myjavafxblocks.SingleTestDescription
-import teststucture.hierarchy.MyFunction
 import teststucture.hierarchy.TestScript
 import java.net.URL
 import java.util.*
@@ -90,21 +88,18 @@ class TestsController(var testScript: TestScript):Initializable {
             }
             testScript.selected = true
             HBox.setMargin(nameBox, Insets(2.0, 0.0, 0.0, 13.0))
-            testScript.updaters= testScript.updaters+object : MyFunction {
-                override fun invoke() {
-                    updateScene()
-                }
-            }
 
             val saveBtn = Button("Save Test")
             val retestBtn = Button("Save and Retest")
+            val updateBtn = Button("Update")
             val showCodeBtn = Button("Show code")
 
             saveBtn.setOnAction { save() }
             retestBtn.setOnAction { retest() }
+            updateBtn.setOnAction { updateScene() }
             showCodeBtn.setOnAction { showcode() }
 
-            val btnBox = HBox(saveBtn,retestBtn,showCodeBtn)
+            val btnBox = HBox(saveBtn,retestBtn,showCodeBtn,updateBtn)
             HBox.setMargin(retestBtn, Insets(0.0, 0.0, 0.0, 20.0))
             btnBox.alignment = Pos.BASELINE_RIGHT
             val lb = Label("Test name:")

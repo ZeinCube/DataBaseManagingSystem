@@ -1,6 +1,9 @@
 package visitors.expresions
 
 abstract class Variable {
+    override fun toString(): String {
+        return this.castAs("String").getValue() as String
+    }
     fun operation(other: Variable, op: String): Variable {
         return other._operation(this, op);
     }

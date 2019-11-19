@@ -27,7 +27,8 @@ class SingleTestDescription(val test: SingleQueryTest) : HBox() {
     val mySqlResOfQuery: TextArea = TextArea()
     val blocks = arrayOf(sqlQuery, expected, resultDBMS, mySqlResOfQuery, resultMySQL)
     val buttonsShow = arrayOf(Button("Show"), Button("Show"), Button("Show"))
-    lateinit var btnFix: Button;
+    lateinit var btnFix1: Button;
+    lateinit var btnFix2: Button;
 
     val conclusion: Label = Label()
     fun getExpected(): String {
@@ -101,7 +102,7 @@ class SingleTestDescription(val test: SingleQueryTest) : HBox() {
         buttonsShow[2].setOnAction {
             show(test.resultMySQL, false)
         }
-
+        buttonsShow.forEach { VBox.setMargin(it,Insets(2.0, 0.0, 0.0, 3.0)) }
         VBox.setMargin(sqlQuery, Insets(10.0, 0.0, 0.0, 3.0))
         VBox.setMargin(resultDBMS, Insets(10.0, 0.0, 0.0, 3.0))
         VBox.setMargin(expected, Insets(10.0, 0.0, 0.0, 3.0))
@@ -121,15 +122,24 @@ class SingleTestDescription(val test: SingleQueryTest) : HBox() {
         conclusion.font = Font.font("System", 14.0)
         VBox.setMargin(conclusion, Insets(50.0, 0.0, 0.0, 7.0))
 
-        btnFix = Button("Fix test")
-        btnFix.font = Font.font("System", 13.0)
-        VBox.setMargin(btnFix, Insets(50.0, 0.0, 0.0, 10.0))
+        btnFix1 = Button("Set to MySQL")
+        btnFix1.font = Font.font("System", 13.0)
+        VBox.setMargin(btnFix1, Insets(20.0, 0.0, 0.0, 10.0))
 
-        btnFix.setOnAction { event ->
+        btnFix2 = Button("Set to DBMS")
+        btnFix2.font = Font.font("System", 13.0)
+        VBox.setMargin(btnFix2, Insets(3.0, 0.0, 0.0, 10.0))
+
+        btnFix1.setOnAction { event ->
+            expected.text = resultMySQL.text
+            test.expected.setExpected(test.resultMySQL)
+        }
+        btnFix2.setOnAction { event ->
             expected.text = resultDBMS.text
+            test.expected.setExpected(test.resultDBMS)
         }
 
-        val rightBox = VBox(conclusion, btnFix)
+        val rightBox = VBox(conclusion, btnFix1,btnFix2)
         rightBox.minWidth = 120.0
         box.children.addAll(VBox(inLabel, sqlQuery),
                 VBox(outLabel, expected, buttonsShow[0]),

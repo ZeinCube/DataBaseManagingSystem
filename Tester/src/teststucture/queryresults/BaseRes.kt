@@ -58,15 +58,24 @@ abstract class BaseRes {
             if (rs is ResultSet) {
                 val rsmd = rs.getMetaData()
                 val columnsNumber = rsmd?.getColumnCount()
-                while (rs.next()) {
-                    for (i in 1..columnsNumber!!) {
-                        if (i > 1) res = res + (",  ")
-                        val columnValue = rs.getObject(i).toString()
-                        res = res + (columnValue + " " + rsmd.getColumnName(i))
-                    }
-                    res = res + "\n"
+                rs.next()
+                if (rsmd.getColumnName(1)=="Table")
+                {
+                    return StringRes(rs.getObject(2).toString())
                 }
-                return VoidRes();
+                rs.first()
+                val out = Table()
+                for (i in 1..columnsNumber!!) {
+                    out.plus(rsmd.getColumnName(i))
+                }
+                while (rs.next()) {
+                    val rec = Table.Record()
+                    for (i in 1..columnsNumber) {
+                        rec.plus(rs.getObject(i).toString())
+                    }
+                    out.plus(rec)
+                }
+                return TableRes(out);
             }
             if (rs is Boolean)
             {

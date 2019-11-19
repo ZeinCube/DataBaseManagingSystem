@@ -4,10 +4,9 @@ import MySQLRealGetString
 import parser.parseQueryResult
 import visitors.TableVisitor
 
-class Table {
-    constructor(s:String)
-    {
-        val res = TableVisitor().visit(parseQueryResult("@table\n"+s))
+class Table() {
+    constructor(s:String) : this() {
+        val res = TableVisitor().visit(parseQueryResult("@table\n"+s,"rq_table"))!!
         columns=res.columns
         records=res.records
     }
@@ -46,6 +45,6 @@ class Table {
     }
     override fun toString():String
     {
-        return columns.joinToString (" ")+records.joinToString()
+        return columns.joinToString (" ")+records.joinToString("")
     }
 }

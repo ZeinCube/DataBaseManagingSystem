@@ -50,10 +50,11 @@ IDENTIFIER
  : [a-zA-Z] [a-zA-Z_0-9]*
  ;
 
-NUMBER:                                         DIGIT+;
+NUMBER
+    :('+'|'-')? DIGIT+;
 NUMERIC_LITERAL
- : NUMBER '.' DIGIT*  ( E [-+]? NUMBER )?
- | '.' DIGIT+ ( E [-+]? NUMBER )?
+   : ('+'|'-')?NUMBER '.' DIGIT*  ( E [-+]? NUMBER )?
+   | ('+'|'-')?'.' DIGIT+ ( E [-+]? NUMBER )?
  ;
 
 
@@ -76,9 +77,7 @@ rq_table:
          (ENTER+ record)+ ;
 rq_error: K_ERROR ':'? ex=myString what=myString;
 
-
-column_name_list: (column_name)+;
-column_name: id type_name?;
+column_name_list: (id)+;
 record: literal_value+;
 
 query_result:
@@ -102,4 +101,3 @@ myDouble  returns [Double val]: r=NUMERIC_LITERAL{$val = Double.valueOf($r.text)
 myInt  returns [Integer val]: r=NUMBER           {$val = Integer.valueOf($r.text);};
 myNull returns [@Nullable Object val = null]: K_NULL;
 id:IDENTIFIER;
-type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;

@@ -1,15 +1,15 @@
+package clientsevrver
+
 import java.sql.*
 import java.util.*
 
-class DataBase{
-
-    lateinit var conn:Connection;
-
+class DBClient(var name:String,var server: DBServer) {
+    lateinit var conn: Connection;
     init
     {
         val connectionProps = Properties()
-        val username = "root"
-        val password = "18012000dZ"
+        val username = "TestClient"
+        val password = "Aa00000000"
         connectionProps.put("user", username)
         connectionProps.put("password", password)
         try {
@@ -21,8 +21,6 @@ class DataBase{
                             "",
                     connectionProps)
             val stmt = conn.createStatement()
-            stmt!!.executeUpdate("drop database if exists test")
-            stmt.executeUpdate("create database test")
             stmt.executeUpdate("use test")
         } catch (ex: SQLException) {
             // handle any errors
@@ -31,27 +29,37 @@ class DataBase{
             // handle any errors
             ex.printStackTrace()
         }
+        try {
+            //todo conection to DBMS
+        }catch (ex: Exception) {
+        }
+
+
     }
 
-    fun SendToSQL(s:String):Any
+    fun SendDBMS(s:String):Any{
+        //todo SendDBMS
+        return 0
+    }
+
+    fun SendMySQL(s:String):Any
     {
         var stmt: Statement? = null
         var rs: ResultSet? = null
-            stmt = conn.createStatement()
-            try {
-                rs = stmt!!.executeQuery(s)
-                return rs!!;
-            }catch (ex:SQLException)
+        stmt = conn.createStatement()
+        try {
+            rs = stmt!!.executeQuery(s)
+            return rs!!;
+        }catch (ex:SQLException)
+        {
+            if (ex.message == "Can not issue data manipulation statements with executeQuery().")
             {
-                if (ex.message == "Can not issue data manipulation statements with executeQuery().")
-                {
-                    stmt!!.executeUpdate(s)
-                    return true;
-                }else
+                stmt!!.executeUpdate(s)
+                return true;
+            }else
                 return ex
-            }
+        }
+
     }
-
-
 
 }

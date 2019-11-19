@@ -1,5 +1,7 @@
 package visitors
 
+import clientsevrver.DBClient
+import clientsevrver.DBServer
 import parser.testscriptparser.TestScriptBaseVisitor
 import parser.testscriptparser.TestScriptParser
 import teststucture.queryresults.BaseRes
@@ -22,6 +24,8 @@ class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>(
     val varLevelNum: Stack<Int> = Stack()
     var curTest:Int = 0
     var results:Array<BaseRes> =  exp;
+    var server:DBServer = DBServer()
+    var cur_client:DBClient = DBClient("main",server)
 
     private fun sentToSQL(s: String, isNeedCheck: Boolean) {
         //todo
@@ -29,16 +33,23 @@ class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>(
         {
             if(results.size>curTest)
             {
-                tests+=SingleQueryTest(s,results[curTest])
-                curTest++
+                tests+=SingleQueryTest(s,results[curTest],cur_client)
             }else
             {
-                tests+=SingleQueryTest(s, VoidRes())
+                tests+=SingleQueryTest(s, VoidRes(),cur_client)
             }
         curTest++
         }else
            tests.last().addSQLQuery(SQLQuery(s))
 
+    }
+
+    override fun visitClient(ctx: TestScriptParser.ClientContext?): Array<BaseTest>? {
+        val last_client = cur_client
+        cur_client = server.get(ctx!!.clientname().myString().`val`)
+        this.visit(ctx.code_block())
+        cur_client = last_client
+        return null
     }
 
     override fun visitParse(ctx: TestScriptParser.ParseContext?): Array<BaseTest>? {

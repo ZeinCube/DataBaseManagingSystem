@@ -3,6 +3,8 @@ package controller
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.*
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Region
 import myjavafxblocks.MyTableView
 import teststucture.queryresults.*
 import java.net.URL
@@ -18,13 +20,12 @@ class ShowControler(var result:BaseRes,var editable:Boolean): Initializable {
     lateinit var StringView:Tab
     lateinit var TableAsTableView:Tab
     lateinit var TableAsStrView:Tab
-    lateinit var SaveExp:Button
     lateinit var ErrorTextEx:TextArea
     lateinit var ErrorTextWhat:TextArea
     lateinit var StringText:TextArea
     lateinit var TableText:TextArea
     lateinit var TableAsTable:TableView<Table.Record>
-
+    lateinit var SaveBtn:Button
     fun save()
     {
         if (MainBox.getSelectionModel().getSelectedItem().text==ErrorView.text)
@@ -50,9 +51,13 @@ class ShowControler(var result:BaseRes,var editable:Boolean): Initializable {
             StringView.isDisable=false
             TableAsTableView.isDisable=false
             TableAsStrView.isDisable=false
-            SaveExp.isVisible=true
+            SaveBtn.isVisible=true
         }else
         {
+            ErrorTextEx.isEditable = false
+            ErrorTextWhat.isEditable = false
+            StringText.isEditable = false
+            TableText.isEditable = false
             TableView.isDisable=true
             ErrorView.isDisable=true
             ExecutedView.isDisable=true
@@ -60,7 +65,7 @@ class ShowControler(var result:BaseRes,var editable:Boolean): Initializable {
             StringView.isDisable=true
             TableAsTableView.isDisable=true
             TableAsStrView.isDisable=true
-            SaveExp.isVisible=false
+            SaveBtn.isVisible=false
         }
         when(result.getExpected())
         {
@@ -68,26 +73,38 @@ class ShowControler(var result:BaseRes,var editable:Boolean): Initializable {
                 ErrorTextEx.text = (result.getExpected() as ErrorRes).exception
                 ErrorTextWhat.text = (result.getExpected() as ErrorRes).what
                 ErrorView.isDisable=false
+                MainBox.selectionModel.select(ErrorView)
             }
             is VoidRes ->{
                 VoidView.isDisable=false
+                MainBox.selectionModel.select(VoidView)
             }
             is ExecutedRes ->{
                 ExecutedView.isDisable=false
+                MainBox.selectionModel.select(ExecutedView)
             }
             is StringRes ->{
                 StringText.text = (result.getExpected() as StringRes).expect
                 StringView.isDisable=false
+                MainBox.selectionModel.select(StringView)
             }
             is TableRes ->{
                 TableText.text = (result.getExpected() as TableRes).table.toString()
+                val p = (TableAsTable.parent as? AnchorPane)
+                p?.children?.remove(TableAsTable)
                 TableAsTable = MyTableView((result.getExpected() as TableRes).table)
-                ErrorView.isDisable=false
+                p?.children?.add(TableAsTable)
+                TableView.isDisable=false
+                TableAsTableView.isDisable=false
+                TableAsStrView.isDisable=false
+                MainBox.selectionModel.select(TableView)
+                (TableAsTableView.tabPane)?.selectionModel?.select(TableAsTableView)
             }
         }
     }
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         update()
+        SaveBtn.setOnAction { save() }
     }
 
 }

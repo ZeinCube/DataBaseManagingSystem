@@ -1,13 +1,13 @@
 package teststucture.tests
 
-import javafx.scene.layout.Region
-import teststucture.queryresults.BaseRes
-import DataBase
+import clientsevrver.DBClient
+
 open class SQLQuery(sqlquery: String) {
 
-    var sqlQuery : String? = sqlquery
-    fun execute(dataBase: DataBase) {
-        dataBase.SendToSQL(sqlQuery!!)
+    var sqlQuery : String = sqlquery
+    fun execute(client: DBClient) {
+        client.SendMySQL(sqlQuery!!)
+        client.SendDBMS(sqlQuery!!)
         //todo Запуск на нашей БД
     }
 

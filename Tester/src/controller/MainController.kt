@@ -16,6 +16,7 @@ import javafx.beans.property.StringProperty
 import javafx.scene.layout.AnchorPane
 import teststucture.hierarchy.*
 import teststucture.tests.BaseTest
+import teststucture.hierarchy.TestsHierarchy.HierarchyType as HierarchyType
 
 
 
@@ -23,6 +24,7 @@ class MainController {
 
     @FXML
     lateinit var testButton: Button
+    lateinit var updateButton: Button
     lateinit var MainPane: BorderPane
     lateinit var newGroupeName: TextArea
 
@@ -130,24 +132,10 @@ class MainController {
             testStage = Stage()
             testStage?.scene = scene
             testStage?.show()
-            data.updaters += object : MyFunction {
-                override fun invoke() {
-                    updateTable()
-                }
-            }
-            testStage?.setOnCloseRequest {
-                data.updaters = arrayOf()
-            }
-
         }
 
 
     }
-
-
-
-    
-
 
 
     private fun updateTable() {
@@ -341,6 +329,9 @@ class MainController {
         testButton.setOnAction {
             event ->
             rootTest.checkTests(false)
+        }
+        updateButton.setOnAction {
+            updateTable()
         }
         newGroupeName.textProperty().addListener { observable, oldValue, newValue ->
             if (newValue.contains('\n'))

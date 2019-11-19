@@ -38,7 +38,7 @@ K_IF: COMAND I F;
 K_ELSE: COMAND E L S E;
 K_VAR: COMAND V A R;
 K_SKIP: COMAND S K I P;
-
+K_CLIENT: COMAND C L I E N T;
 
 K_CAST: COMAND C A S T;
 K_ERROR: COMAND E R R O R;
@@ -93,7 +93,8 @@ code_block: open_block
                |assignment
                |code_block
                |myIf
-               |sql)*
+               |sql
+               |client)*
             close_block;
 
 test: K_TEST ':' expr;
@@ -103,6 +104,9 @@ myFor: K_FOR '('(assignment)?';' expr ';' assignment ')'
         code_block;
 myIf: K_IF '('expr')' code_block (K_ELSE code_block)?;
 
+client: K_CLIENT clientname code_block;
+
+clientname: myString;
 
 b_expr:  '(' expr ')';
 cast_operation: K_CAST expr K_AS type_name;
@@ -134,8 +138,8 @@ literal_value
 id:  IDENTIFIER;
 myString returns [String val]: r=STRING_LITERAL  {$val = $r.text.substring(1, $r.text.length()-1);};
 myDouble  returns [Double val]: r=NUMERIC_LITERAL{$val = Double.valueOf($r.text);};
-myInt  returns [Integer val]: r=NUMBER               {$val = Integer.valueOf($r.text);};
-myBool  returns [Boolean val]: r=(K_TRUE|K_FALSE)          {$val = Boolean.valueOf($r.text);};
+myInt  returns [Integer val]: r=NUMBER           {$val = Integer.valueOf($r.text);};
+myBool  returns [Boolean val]: r=(K_TRUE|K_FALSE){$val = Boolean.valueOf($r.text);};
 type_name: K_INT | K_DOUBLE | K_STRING | K_BOOL;
 myNull returns [Object val = null]: K_NULL;
 

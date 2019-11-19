@@ -37,7 +37,7 @@ class ResVisitor : QueryResultBaseVisitor<Array<BaseRes>>() {
     }
 
     override fun visitRq_table(ctx: QueryResultParser.Rq_tableContext?): Array<BaseRes> {
-        return arrayOf(TableRes(TableVisitor().visit(ctx)))
+        return arrayOf(TableRes(TableVisitor().visit(ctx)!!))
     }
 
     override fun visitRq_void(ctx: QueryResultParser.Rq_voidContext?): Array<BaseRes> {

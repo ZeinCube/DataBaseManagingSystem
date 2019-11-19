@@ -1,10 +1,9 @@
 package teststucture.tests
 
 import javafx.scene.layout.Region
-import teststucture.queryresults.BaseRes
-import DataBase
+import clientsevrver.DBClient
 
-abstract class BaseTest {
+abstract class BaseTest(var client: DBClient) {
     enum class TestResult {
         WA,
         WE,
@@ -67,7 +66,7 @@ abstract class BaseTest {
         }
     }
 
-    abstract fun execute(dataBase: DataBase)
+    abstract fun execute()
     abstract fun getView(): Region
 
     var postSQLQueries : Array<SQLQuery> = arrayOf()

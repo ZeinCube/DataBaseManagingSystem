@@ -8,6 +8,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
+import javafx.scene.layout.AnchorPane
 import teststucture.queryresults.Table
 import java.lang.Exception
 
@@ -17,8 +18,9 @@ class MyTableView(var table:Table): TableView<Table.Record>(FXCollections.observ
         var k = 0
         for (s in table.columns)
         {
-            k++
             val column = TableColumn<Table.Record,Any>(s)
+            this.columns.add(column)
+            column.minWidth = 100.0
             column.id = k.toString()
             column.setCellFactory {
                 object: TableCell<Table.Record, Any>()
@@ -38,6 +40,11 @@ class MyTableView(var table:Table): TableView<Table.Record>(FXCollections.observ
                     }
                 }
             }
+            AnchorPane.setRightAnchor(this,0.0)
+            AnchorPane.setBottomAnchor(this,0.0)
+            AnchorPane.setLeftAnchor(this,0.0)
+            AnchorPane.setTopAnchor(this,0.0)
+            k++
         }
     }
 }
