@@ -19,7 +19,6 @@ public class MetaTable {
     private List<MetaColumn> columns;
     private Class primaryKeyClass;
     private String fileTable;
-    private int rowSize; //size of row in bytes
 
     public MetaTable(Table table) {
         this.name = table.getName();
@@ -31,7 +30,6 @@ public class MetaTable {
 
         this.primaryKeyClass = table.getPrimaryKeyClass();
         fileTable = table.getPath();
-//        rowSize =
     }
 
     public MetaTable(String name, List<MetaColumn> columns, Class primaryKeyClass, String fileTable) {
@@ -120,16 +118,4 @@ public class MetaTable {
         this.fileTable = fileTable;
     }
 
-    public int getRowSize() {
-        return rowSize;
-    }
-
-    public void setRowSize(int rowSize) {
-        this.rowSize = rowSize;
-    }
-
-//    public int calculateRowSize()
-//    {
-//        for (Map.Entry<>)
-//    }
 }
