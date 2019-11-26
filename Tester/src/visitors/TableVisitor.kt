@@ -7,10 +7,11 @@ import teststucture.queryresults.Table
 import visitors.expresions.*
 
 class TableVisitor: QueryResultBaseVisitor<Table?>() {
-    var out :Table = Table()
+    var out :Table = Table(false)
 
     override fun visitRq_table(ctx: QueryResultParser.Rq_tableContext?): Table? {
         ctx?.children?.forEach{this.visit(it)}
+        out.ordered = ctx?.K_ORDERED() != null
         return out;
     }
 

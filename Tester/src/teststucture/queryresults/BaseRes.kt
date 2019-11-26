@@ -4,6 +4,7 @@ import javafx.scene.layout.Region
 import parser.ParseToTree
 import parser.sqlqueryresultparser.QueryResultLexer
 import parser.sqlqueryresultparser.QueryResultParser
+import teststucture.tests.BaseTest
 import visitors.ResVisitor
 import java.lang.Exception
 import java.sql.ResultSet
@@ -17,6 +18,9 @@ abstract class BaseRes {
     var sqlquery: String = TestResult.NT.toString()
     var result: String = TestResult.NT.toString()
 */
+
+
+    abstract fun compare(other:BaseRes):BaseTest.TestResult
     var newExpected : BaseRes? = null;
 
     fun setExpected(s:String)
@@ -64,7 +68,7 @@ abstract class BaseRes {
                     return StringRes(rs.getObject(2).toString())
                 }
                 rs.first()
-                val out = Table()
+                val out = Table(true)
                 for (i in 1..columnsNumber!!) {
                     out.plus(rsmd.getColumnName(i))
                 }

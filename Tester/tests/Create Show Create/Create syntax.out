@@ -1,0 +1,57 @@
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INT I)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'I)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'I I)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INT I, INT J)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'I, J INT J)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Duplicate column name 'I'"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Duplicate column name 'I'"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INT, CHAR(40))' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INT I, CHAR(40) I)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INT I, CHAR(40) C)' at line 1"
+@executed
+@executed
+@executed
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '[20] UNIQUE)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '[20])' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '[20] UNIQUE, U INT  PRIMARYKEY)' at line 1"
+@executed
+@executed
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 't5' already exists"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Column length too big for column 'NAME' (max = 255); use BLOB or TEXT instead"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'T' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', T' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'T' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'CREATE TABLE T5 (I INT, NAME CHAR[20] UNIQUE,U INT  PRIMARYKEY)' at line 1"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SHOW CREATE' at line 1"
+@string: "CREATE TABLE `t` (
+  `I` int(11) DEFAULT NULL,
+  `C` char(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+@string: "CREATE TABLE `t1` (
+  `I` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 'test.t2' doesn't exist"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 'test.t3' doesn't exist"
+@string: "CREATE TABLE `t4` (
+  `I` int(11) DEFAULT NULL,
+  `NAME` char(20) DEFAULT NULL,
+  `U` int(11) NOT NULL,
+  PRIMARY KEY (`U`),
+  UNIQUE KEY `NAME` (`NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+@string: "CREATE TABLE `t5` (
+  `I` int(11) DEFAULT NULL,
+  `NAME` char(30) DEFAULT NULL,
+  `U` int(11) NOT NULL,
+  PRIMARY KEY (`U`),
+  UNIQUE KEY `NAME` (`NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 'test.t6' doesn't exist"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 'test.t7' doesn't exist"
+@executed
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Unknown table 'test.t'"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Unknown table 'test.t2'"
+@error: "com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException" "Table 'test.t' doesn't exist"
+@string: "CREATE TABLE `t1` (
+  `I` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"

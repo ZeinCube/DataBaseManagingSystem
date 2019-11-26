@@ -3,7 +3,21 @@ package teststucture.hierarchy
 import teststucture.tests.BaseTest
 import java.io.File
 
-class GroupeOfTests(dir: String, name: String) : TestsHierarchy(name) {
+class GroupeOfTests(dir: String, name: String,var parent:TestsHierarchy) : TestsHierarchy(name) {
+    override fun updateConclusion() {
+        this.conclusion = BaseTest.TestResult.NT
+        for (i in testScripts)
+        {
+            if (i.conclusion!=BaseTest.TestResult.NT)
+                conclusion = conclusion and i.conclusion
+            else{
+                conclusion = BaseTest.TestResult.NT
+                break
+            }
+        }
+        if (conclusion!=BaseTest.TestResult.NT)
+            parent.updateConclusion()
+    }
 
     var testScripts: Array<TestScript> = arrayOf()
     lateinit var dirr: String
@@ -26,7 +40,7 @@ class GroupeOfTests(dir: String, name: String) : TestsHierarchy(name) {
         val meta = File("$dir$name\\meta.txt")
         meta.forEachLine {
             if (it.length > 0) {
-                testScripts += TestScript(it, "$dir$name", name)
+                testScripts += TestScript(it, "$dir$name", name,this)
             }
         }
         type = HierarchyType.group
@@ -46,7 +60,7 @@ class GroupeOfTests(dir: String, name: String) : TestsHierarchy(name) {
     fun addTest(s: String) {
         val meta = File("$dirr\\meta.txt")
         meta.appendText("\n$s")
-        testScripts += TestScript(s, "$dirr\\", name)
+        testScripts += TestScript(s, "$dirr\\", name,this)
     }
 
 

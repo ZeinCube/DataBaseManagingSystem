@@ -58,6 +58,8 @@ public class API {
             throw new DropException("Table " + tableName + "could not be dropped cause :" + e.getMessage());
         }
 
+        commit(metaFile);
+
         return "Table " + tableName + " dropped";
     }
 

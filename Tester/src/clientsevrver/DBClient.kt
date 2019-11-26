@@ -9,7 +9,7 @@ class DBClient(var name:String,var server: DBServer) {
     {
         val connectionProps = Properties()
         val username = "TestClient"
-        val password = "Aa00000000"
+        val password = ""
         connectionProps.put("user", username)
         connectionProps.put("password", password)
         try {
@@ -54,8 +54,14 @@ class DBClient(var name:String,var server: DBServer) {
         {
             if (ex.message == "Can not issue data manipulation statements with executeQuery().")
             {
-                stmt!!.executeUpdate(s)
-                return true;
+                try {
+                    stmt!!.executeUpdate(s)
+
+                }catch (ex:Exception)
+                {
+                    return ex
+                }
+                return true
             }else
                 return ex
         }

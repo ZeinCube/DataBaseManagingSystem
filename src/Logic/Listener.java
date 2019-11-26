@@ -5,8 +5,6 @@ import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
 import Engine.Exceptions.DropException;
-import Logic.gen.HelloBaseListener;
-import Logic.gen.HelloParser;
 
 import java.util.HashMap;
 import java.util.HashSet;

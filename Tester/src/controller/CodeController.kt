@@ -22,5 +22,6 @@ class CodeController(val test: TestScript): Initializable {
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         codearea.text = test.code
+        savebtn.setOnAction { save() }
     }
 }

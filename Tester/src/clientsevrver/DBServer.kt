@@ -15,14 +15,23 @@ class DBServer {
     {
         @JvmStatic
         var mutex:Mutex = Mutex()
+        fun getInstance():DBServer
+        {
+            mutex.lock()
+            _instance = DBServer()
+            return _instance
+        }
+        fun returnInstance()
+        {
+            _instance.endServer()
+            mutex.unlock()
+        }
+        private lateinit var _instance:DBServer
     }
     init {
-        mutex.lock()
         val connectionProps = Properties()
-        val username = "root"
-        val password = "18012000dZ"
-        connectionProps.put("user", username)
-        connectionProps.put("password", password)
+        connectionProps["user"] = "root"
+        connectionProps["password"] = ""
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance()
             conn = DriverManager.getConnection(
@@ -85,7 +94,12 @@ class DBServer {
     }
     fun endServer()
     {
+        for (i in clients)
+        {
+            i.conn.close()
+            //todo Удаление наши клиентов и сервера
+        }
         clearAll()
-        mutex.unlock()
+        conn.close()
     }
 }

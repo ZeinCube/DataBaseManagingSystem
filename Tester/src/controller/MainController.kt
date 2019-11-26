@@ -30,12 +30,25 @@ class MainController {
 
 
     var _path = Paths.get("").toAbsolutePath().toString()
-    var path = "$_path\\tests\\"
+    var path = "$_path\\Tester\\tests\\"
     val mainDir = File("$path\\meta.txt")
     val treeTableView = TreeTableView<TestsHierarchy>()
 
     private val rootTest = object : TestsHierarchy("TESTS")
     {
+        override fun updateConclusion() {
+            conclusion = BaseTest.TestResult.NT
+            for (i in testGropes)
+            {
+                if (i.conclusion!=BaseTest.TestResult.NT)
+                    conclusion = conclusion and i.conclusion
+                else{
+                    conclusion = BaseTest.TestResult.NT
+                    break
+                }
+            }
+        }
+
         override fun checkTests(necessarily:Boolean) {
             conclusion = BaseTest.TestResult.NT
             if (selected)
@@ -52,7 +65,7 @@ class MainController {
             conclusion = BaseTest.TestResult.NT
             type = HierarchyType.root
             mainDir.forEachLine {
-                testGropes = testGropes + arrayOf(GroupeOfTests("$path", it))
+                testGropes = testGropes + arrayOf(GroupeOfTests("$path", it,this))
             }
         }
 
@@ -106,20 +119,19 @@ class MainController {
                     inDir.appendText("\n")
                     outDir.appendText("\n")
 
-                    testGropes += GroupeOfTests(path, s)
-                    var t = TreeItem<TestsHierarchy>(testGropes.last())
+                    testGropes += GroupeOfTests(path, s,this)
+                    val t = TreeItem<TestsHierarchy>(testGropes.last())
                     t.children.add(TreeItem<TestsHierarchy>(testGropes.last().testScripts.last()))
                     treeTableView.root.children.addAll(t)
                 }
         }
 
-        private var testStage: Stage?=null
         
         val layout: String = "/res/testInfo.fxml"
         
         fun checkTest(data: TestScript) {
 
-            testStage?.close()
+
             
             val loader = FXMLLoader(javaClass.getResource(layout))
 
@@ -129,9 +141,9 @@ class MainController {
             loader.setController(controller)
             val flowPane = loader.load<AnchorPane>()
             val scene = Scene(flowPane)
-            testStage = Stage()
-            testStage?.scene = scene
-            testStage?.show()
+            val testStage = Stage()
+            testStage.scene = scene
+            testStage.show()
         }
 
 
@@ -311,10 +323,14 @@ class MainController {
     fun loadTable() {
 
         val root = TreeItem<TestsHierarchy>(rootTest);
+        root.isExpanded=true
         for (gr in rootTest.testGropes) {
             val subRoot = TreeItem<TestsHierarchy>(gr)
+            subRoot.isExpanded = true;
             for (test in gr.testScripts) {
-                subRoot.children.add(TreeItem(test))
+                val leaf = TreeItem(test)
+                leaf.isExpanded = true
+                subRoot.children.add(leaf as TreeItem<TestsHierarchy>)
             }
             root.children.add(subRoot)
         }

@@ -3,7 +3,7 @@ package teststucture.tests
 import javafx.scene.layout.Region
 import clientsevrver.DBClient
 
-abstract class BaseTest(var client: DBClient) {
+abstract class BaseTest(var client: DBClient?) {
     enum class TestResult {
         WA,
         WE,
@@ -68,7 +68,8 @@ abstract class BaseTest(var client: DBClient) {
 
     abstract fun execute()
     abstract fun getView(): Region
-
+    abstract fun setToMySQL()
+    abstract fun setToDBMS()
     var postSQLQueries : Array<SQLQuery> = arrayOf()
     var selected: Boolean = true
     var conclusion: TestResult = TestResult.NT

@@ -14,5 +14,6 @@ abstract class TestsHierarchy(var name: String = "")
     lateinit var type: HierarchyType
     var selected: Boolean = true
     abstract fun checkTests(necessarily:Boolean)
+    abstract fun updateConclusion()
 }
 

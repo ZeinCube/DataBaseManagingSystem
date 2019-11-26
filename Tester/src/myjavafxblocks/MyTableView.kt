@@ -1,5 +1,6 @@
 package myjavafxblocks
 
+import MySQLRealGetString
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -29,7 +30,7 @@ class MyTableView(var table:Table): TableView<Table.Record>(FXCollections.observ
                     override fun updateItem(item: Any?, empty: Boolean) {
                         super.updateItem(item, empty)
                         try{
-                            label.text=table[index][column.id.toInt()]
+                            label.text=MySQLRealGetString(table[index][column.id.toInt()])
                         }catch (ex:Exception)
                         {}
                         if (empty) {

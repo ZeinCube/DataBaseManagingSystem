@@ -15,7 +15,7 @@ import teststucture.tests.SingleQueryTest
 import java.util.*
 import kotlin.collections.HashMap
 
-class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>() {
+class CodeVisitor(exp:Array<BaseRes>,var server:DBServer? = null) : TestScriptBaseVisitor<Array<BaseTest>?>() {
     lateinit var name: String
     var tests: Array<BaseTest> = arrayOf()
 
@@ -24,11 +24,9 @@ class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>(
     val varLevelNum: Stack<Int> = Stack()
     var curTest:Int = 0
     var results:Array<BaseRes> =  exp;
-    var server:DBServer = DBServer()
-    var cur_client:DBClient = DBClient("main",server)
+    var cur_client:DBClient? = if (server!=null) DBClient("main",server!!) else null
 
     private fun sentToSQL(s: String, isNeedCheck: Boolean) {
-        //todo
         if (isNeedCheck)
         {
             if(results.size>curTest)
@@ -46,8 +44,8 @@ class CodeVisitor(exp:Array<BaseRes>) : TestScriptBaseVisitor<Array<BaseTest>?>(
 
     override fun visitClient(ctx: TestScriptParser.ClientContext?): Array<BaseTest>? {
         val last_client = cur_client
-        cur_client = server.get(ctx!!.clientname().myString().`val`)
-        this.visit(ctx.code_block())
+        cur_client = server?.get(ctx!!.clientname().myString().`val`)//todo
+        this.visit(ctx!!.code_block())
         cur_client = last_client
         return null
     }

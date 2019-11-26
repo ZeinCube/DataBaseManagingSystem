@@ -39,6 +39,7 @@ K_ERROR: COMAND E R R O R;
 K_CSTRING:COMAND S T R I N G;
 K_TABLE: COMAND T A B L E;
 K_VOID: (COMAND V O I D)|(COMAND S K I P);
+K_ORDERED: COMAND O R D E R E D;
 
 K_INT: I N T;
 K_DOUBLE: D O U B L E;
@@ -72,7 +73,7 @@ rq_executed: K_EXECUTED;
 rq_void: K_VOID;
 rq_string: K_CSTRING (ENTER*) ':'? myString;
 rq_table:
-         K_TABLE ENTER?
+         K_TABLE ENTER? K_ORDERED? ENTER?
          (column_name_list)
          (ENTER+ record)+ ;
 rq_error: K_ERROR ':'? ex=myString what=myString;

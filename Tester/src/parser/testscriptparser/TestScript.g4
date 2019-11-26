@@ -93,8 +93,7 @@ code_block: open_block
                |assignment
                |code_block
                |myIf
-               |sql
-               |client)*
+               |sql)*
             close_block;
 
 test: K_TEST ':' expr;
