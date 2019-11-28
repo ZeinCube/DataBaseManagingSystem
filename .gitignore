@@ -70,3 +70,6 @@ src/Logic/HelloListener.java
 src/Logic/HelloParser.java
 
 mysql-connector-java-5.1.48/
+
+src/Logic/HelloVisitor.java
+src/Logic/HelloBaseVisitor.java
