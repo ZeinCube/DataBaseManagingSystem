@@ -52,13 +52,7 @@ gen/parser/TestScriptLexer.tokens
 gen/parser/TestScriptListener.java
 gen/parser/TestScriptParser.java
 gen/parser/TestScriptVisitor.java
-Logic/antlr/Hello.interp
-Logic/antlr/HelloLexer.interp
-Logic/antlr/HelloLexer.java
-Logic/antlr/HelloLexer.tokens
-Logic/antlr/HelloListener.java
-Logic/antlr/HelloParser.java
-Logic/antlr/HelloVisitor.java
+
 src/Logic/Hello.interp
 
 src/Logic/Hello.tokens

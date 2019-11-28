@@ -6,10 +6,10 @@ import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import static Logic.HelloLexer.*;
+import static Logic.HelloLexer.K_PRIMARY_KEY;
+import static Logic.HelloLexer.K_UNIQUE;
 
 public class Listener extends HelloBaseListener {
     private DBEngine engine;
@@ -133,7 +133,7 @@ public class Listener extends HelloBaseListener {
         int i = ctx.getChildCount();
         int j = 0;
         List<HelloParser.Column_defContext> columns = null;
-        HashSet<Column> hashSet = new HashSet<Column>();
+        HashMap<String, Column> columnHashMap = new HashMap<>();
         boolean buff = false;
         while (j <= i / 2 && branchType == BranchType.Table_sources) {
             if ((ctx.column_def(j).getStop().getType() == K_PRIMARY_KEY) ||
@@ -151,13 +151,13 @@ public class Listener extends HelloBaseListener {
                 System.err.println("the request was entered incorrectly");
             }
             Column k = new Column(columnName, columnContainsClass, buff);
-            hashSet.add(k);
+            columnHashMap.put(columnName, k);
             j++;
             buff = false;
         }
         try {
             String kek = hashMap.get("Table_name").toString();
-            System.out.println(api.createTable(kek, hashSet));
+            System.out.println(api.createTable(kek, columnHashMap));
         } catch (DBMSException e) {
             System.err.println(e.getMessage());
         }
