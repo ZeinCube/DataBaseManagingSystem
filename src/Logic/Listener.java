@@ -4,10 +4,12 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
-import Engine.Exceptions.DropException;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+
+import static Logic.HelloLexer.*;
 
 public class Listener extends HelloBaseListener {
     private DBEngine engine;
@@ -23,10 +25,13 @@ public class Listener extends HelloBaseListener {
         }
     }
 
+
     private enum InquiryMode {
         Undefined,
         What,
-        Content
+        Content,
+        Where,
+        Value
     }
 
     private InquiryMode mode;
@@ -36,7 +41,9 @@ public class Listener extends HelloBaseListener {
         ShowCreate,
         Drop,
         Table_sources,
-        Column_source
+        Select,
+        Insert,
+        Update
     }
 
     private BranchType branchType;
@@ -74,6 +81,7 @@ public class Listener extends HelloBaseListener {
         branchType = BranchType.Drop;
     }
 
+
     @Override
     public void enterTable(HelloParser.TableContext ctx) {
         super.enterTable(ctx);
@@ -92,7 +100,7 @@ public class Listener extends HelloBaseListener {
                 try {
                     String string = ctx.name(i - 1).getText();
                     api.dropTable(string);
-                } catch (DropException e) {
+                } catch (DBMSException e) {
                     System.err.println(e.getMessage());
                 } finally {
                     System.out.println("table droped");
@@ -123,34 +131,110 @@ public class Listener extends HelloBaseListener {
     public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
+        int j = 0;
         List<HelloParser.Column_defContext> columns = null;
-        HashMap<String, Column> columnHashMap = new HashMap<>();
-        boolean unique = false;
-        while (i > 0 && branchType == BranchType.Table_sources) {
-            if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
-                    !ctx.column_def(i - 1).getStop().getText().equals("primary key")) {
-                unique = true;
+        HashSet<Column> hashSet = new HashSet<Column>();
+        boolean buff = false;
+        while (j <= i / 2 && branchType == BranchType.Table_sources) {
+            if ((ctx.column_def(j).getStop().getType() == K_PRIMARY_KEY) ||
+                    (ctx.column_def(j).getStop().getType() == K_UNIQUE)) {
+                buff = true;
             }
-            String columnName = ctx.column_def(i - 1).name().getText();
+            String columnName = null;
             Class columnContainsClass = null;
-            String className = ctx.column_def(i - 1).type().getText();
-            className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1);
             try {
+                columnName = ctx.column_def(j).name().getText();
+                String className = ctx.column_def(j).type().getText();
+                className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1).toLowerCase();
                 columnContainsClass = Class.forName(className);
-            } catch (ClassNotFoundException e1) {
-                e1.printStackTrace();
+            } catch (Exception e1) {
+                System.err.println("the request was entered incorrectly");
             }
-            Column k = new Column(columnName, columnContainsClass, unique);
-            columnHashMap.put(columnName, k);
-            i--;
+            Column k = new Column(columnName, columnContainsClass, buff);
+            hashSet.add(k);
+            j++;
+            buff = false;
         }
         try {
             String kek = hashMap.get("Table_name").toString();
-            api.createTable(kek, columnHashMap);
+            System.out.println(api.createTable(kek, hashSet));
         } catch (DBMSException e) {
             System.err.println(e.getMessage());
-        } finally {
-            System.out.println("table created");
+        }
+    }
+
+    @Override
+    public void enterSelect(HelloParser.SelectContext ctx) {
+        super.enterSelect(ctx);
+        if (ctx.getChildCount() > 1) {
+            mode = InquiryMode.What;
+        }
+        branchType = BranchType.Select;
+    }
+
+    @Override
+    public void enterSelect_what(HelloParser.Select_whatContext ctx) {
+        super.enterSelect_what(ctx);
+        int i = ctx.getChildCount();
+        int j = 0;
+        while (j <= i / 2 && (branchType == BranchType.Select) && (InquiryMode.What == mode)) {
+            hashMap.put("Column_name " + j, ctx.result_column(j).getText());
+            j++;
+        }
+        mode = InquiryMode.Where;
+        branchType = BranchType.Table_sources;
+    }
+
+    @Override
+    public void enterSelect_from(HelloParser.Select_fromContext ctx) {
+        super.enterSelect_from(ctx);
+//        int i = ctx.getChildCount();
+        int j = 0;
+//        while (j <= i / 2 && (branchType == BranchType.Select) && (InquiryMode.Where == mode)) {
+//            if (ctx.table_or_subquery(j).getText() == )
+//        }
+        if ((branchType == BranchType.Select) && (InquiryMode.Where == mode))
+            hashMap.put("Table_name ", ctx.table_or_subquery(j).getText());
+    }
+
+    @Override
+    public void enterInsert(HelloParser.InsertContext ctx) {
+        super.enterInsert(ctx);
+        if (ctx.getChildCount() > 1) {
+            mode = InquiryMode.Where;
+            hashMap.put("Table_name ", ctx.name().getText());
+        }
+        branchType = BranchType.Insert;
+    }
+
+    @Override
+    public void enterInsert_colums(HelloParser.Insert_columsContext ctx) {
+        super.enterInsert_colums(ctx);
+        int i = ctx.getChildCount();
+        int j = 0;
+        while (j < i / 2 && (branchType == BranchType.Insert) && (InquiryMode.Where == mode)) {
+            hashMap.put("Insert_Column " + j, ctx.name(j).getText());
+            j++;
+        }
+        mode = InquiryMode.What;
+    }
+
+    @Override
+    public void enterInsert_values(HelloParser.Insert_valuesContext ctx) {
+        super.enterInsert_values(ctx);
+        if ((branchType == BranchType.Insert) && (InquiryMode.What == mode)) {
+            mode = InquiryMode.Value;
+        }
+    }
+
+    @Override
+    public void enterInsert_expr(HelloParser.Insert_exprContext ctx) {
+        super.enterInsert_expr(ctx);
+        int i = ctx.getChildCount();
+        int j = 0;
+        while (j < i / 2 && (branchType == BranchType.Insert) && (InquiryMode.Value == mode)) {
+            hashMap.put("Insert_Value " + j, ctx.literal_value(j).getText());
+            j++;
         }
     }
 }
