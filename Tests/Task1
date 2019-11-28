@@ -1,0 +1,18 @@
+CREATE TABLE bb(id INTEGER PRIMARY KEY, age float UNIQUE, name) - падает
+
+CREATE TABLE h(id INTEGER);
+SHOW CREATE TABLE h;
+DROP TABLE h;
+
+create table t0 (id integer, kek float primary key);
+
+CREATE TABLE g(id INTEGER PRIMARY KEY, age integer);
+SHOW CREATE TABLE g;
+
+CREATE TABLE bbb(id iNtEgEr PRIMARY KEY, age FLOAT, name character(50));
+
+create table hh(id integer primary key)
+create table hh(id integer primary key, age integer)
+create table hh(id integer primary key, age integer, h float)
+create table hh(id integer primary key, age integer, h float, g integer)
+create table hh(id integer primary key, age integer, h float, g integer, kek float)

@@ -1,7 +1,3 @@
-package src;
-
-//import com.sun.security.ntlm.Client;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 
