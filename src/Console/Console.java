@@ -1,11 +1,7 @@
 package Console;
 
-import Engine.API;
-import Engine.DBEngine;
-import Engine.Entity.Column;
 import Logic.ParserManager;
 
-import java.util.HashSet;
 import java.util.Scanner;
 
 public class Console {
@@ -19,4 +15,3 @@ public class Console {
         }
     }
 }
-
