@@ -30,7 +30,8 @@ public class Listener extends HelloBaseListener {
         Undefined,
         What,
         Content,
-        Where
+        Where,
+        Value
     }
 
     private InquiryMode mode;
@@ -40,7 +41,9 @@ public class Listener extends HelloBaseListener {
         ShowCreate,
         Drop,
         Table_sources,
-        Select
+        Select,
+        Insert,
+        Update
     }
 
     private BranchType branchType;
@@ -175,8 +178,7 @@ public class Listener extends HelloBaseListener {
         int i = ctx.getChildCount();
         int j = 0;
         while (j <= i / 2 && (branchType == BranchType.Select) && (InquiryMode.What == mode)) {
-            String test = ctx.result_column(j).getText();
-            hashMap.put("Column_name " + j, test);
+            hashMap.put("Column_name " + j, ctx.result_column(j).getText());
             j++;
         }
         mode = InquiryMode.Where;
@@ -193,5 +195,46 @@ public class Listener extends HelloBaseListener {
 //        }
         if ((branchType == BranchType.Select) && (InquiryMode.Where == mode))
             hashMap.put("Table_name ", ctx.table_or_subquery(j).getText());
+    }
+
+    @Override
+    public void enterInsert(HelloParser.InsertContext ctx) {
+        super.enterInsert(ctx);
+        if (ctx.getChildCount() > 1) {
+            mode = InquiryMode.Where;
+            hashMap.put("Table_name ", ctx.name().getText());
+        }
+        branchType = BranchType.Insert;
+    }
+
+    @Override
+    public void enterInsert_colums(HelloParser.Insert_columsContext ctx) {
+        super.enterInsert_colums(ctx);
+        int i = ctx.getChildCount();
+        int j = 0;
+        while (j < i / 2 && (branchType == BranchType.Insert) && (InquiryMode.Where == mode)) {
+            hashMap.put("Insert_Column " + j, ctx.name(j).getText());
+            j++;
+        }
+        mode = InquiryMode.What;
+    }
+
+    @Override
+    public void enterInsert_values(HelloParser.Insert_valuesContext ctx) {
+        super.enterInsert_values(ctx);
+        if ((branchType == BranchType.Insert) && (InquiryMode.What == mode)) {
+            mode = InquiryMode.Value;
+        }
+    }
+
+    @Override
+    public void enterInsert_expr(HelloParser.Insert_exprContext ctx) {
+        super.enterInsert_expr(ctx);
+        int i = ctx.getChildCount();
+        int j = 0;
+        while (j < i / 2 && (branchType == BranchType.Insert) && (InquiryMode.Value == mode)) {
+            hashMap.put("Insert_Value " + j, ctx.literal_value(j).getText());
+            j++;
+        }
     }
 }
