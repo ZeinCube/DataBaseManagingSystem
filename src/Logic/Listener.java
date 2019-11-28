@@ -1,21 +1,21 @@
 package Logic;
-
+ 
 import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
-
+ 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-
-import static Logic.HelloLexer.K_PRIMARY_KEY;
-import static Logic.HelloLexer.K_UNIQUE;
-
+ 
+import static Logic.HelloLexer.*;
+ 
 public class Listener extends HelloBaseListener {
     private DBEngine engine;
     private API api;
     private HashMap<String, Object> hashMap = new HashMap<>();
-
+ 
     {
         try {
             engine = new DBEngine();
@@ -24,8 +24,7 @@ public class Listener extends HelloBaseListener {
             e.printStackTrace();
         }
     }
-
-
+ 
     private enum InquiryMode {
         Undefined,
         What,
@@ -33,9 +32,9 @@ public class Listener extends HelloBaseListener {
         Where,
         Value
     }
-
+ 
     private InquiryMode mode;
-
+ 
     private enum BranchType {
         Create,
         ShowCreate,
@@ -45,15 +44,15 @@ public class Listener extends HelloBaseListener {
         Insert,
         Update
     }
-
+ 
     private BranchType branchType;
-
+ 
     @Override
     public void enterSql_query(HelloParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
-
+ 
     @Override
     public void enterShow_create(HelloParser.Show_createContext ctx) {
         super.enterShow_create(ctx);
@@ -62,7 +61,7 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.ShowCreate;
     }
-
+ 
     @Override
     public void enterCreate(HelloParser.CreateContext ctx) {
         super.enterCreate(ctx);
@@ -71,7 +70,7 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.Create;
     }
-
+ 
     @Override
     public void enterDrop(HelloParser.DropContext ctx) {
         super.enterDrop(ctx);
@@ -80,8 +79,8 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.Drop;
     }
-
-
+ 
+ 
     @Override
     public void enterTable(HelloParser.TableContext ctx) {
         super.enterTable(ctx);
@@ -90,7 +89,7 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.Table_sources;
     }
-
+ 
     @Override
     public void enterTable_name_list(HelloParser.Table_name_listContext ctx) {
         super.enterTable_name_list(ctx);
@@ -120,20 +119,20 @@ public class Listener extends HelloBaseListener {
             }
         }
     }
-
+ 
     @Override
     public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
-
+ 
     @Override
     public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         int j = 0;
         List<HelloParser.Column_defContext> columns = null;
-        HashMap<String, Column> columnHashMap = new HashMap<>();
+        HashSet<Column> hashSet = new HashSet<Column>();
         boolean buff = false;
         while (j <= i / 2 && branchType == BranchType.Table_sources) {
             if ((ctx.column_def(j).getStop().getType() == K_PRIMARY_KEY) ||
@@ -151,18 +150,18 @@ public class Listener extends HelloBaseListener {
                 System.err.println("the request was entered incorrectly");
             }
             Column k = new Column(columnName, columnContainsClass, buff);
-            columnHashMap.put(columnName, k);
+            hashSet.add(k);
             j++;
             buff = false;
         }
         try {
             String kek = hashMap.get("Table_name").toString();
-            System.out.println(api.createTable(kek, columnHashMap));
+            System.out.println(api.createTable(kek, hashSet));
         } catch (DBMSException e) {
             System.err.println(e.getMessage());
         }
     }
-
+ 
     @Override
     public void enterSelect(HelloParser.SelectContext ctx) {
         super.enterSelect(ctx);
@@ -171,7 +170,7 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.Select;
     }
-
+ 
     @Override
     public void enterSelect_what(HelloParser.Select_whatContext ctx) {
         super.enterSelect_what(ctx);
@@ -184,7 +183,7 @@ public class Listener extends HelloBaseListener {
         mode = InquiryMode.Where;
         branchType = BranchType.Table_sources;
     }
-
+ 
     @Override
     public void enterSelect_from(HelloParser.Select_fromContext ctx) {
         super.enterSelect_from(ctx);
@@ -196,7 +195,7 @@ public class Listener extends HelloBaseListener {
         if ((branchType == BranchType.Select) && (InquiryMode.Where == mode))
             hashMap.put("Table_name ", ctx.table_or_subquery(j).getText());
     }
-
+ 
     @Override
     public void enterInsert(HelloParser.InsertContext ctx) {
         super.enterInsert(ctx);
@@ -206,7 +205,7 @@ public class Listener extends HelloBaseListener {
         }
         branchType = BranchType.Insert;
     }
-
+ 
     @Override
     public void enterInsert_colums(HelloParser.Insert_columsContext ctx) {
         super.enterInsert_colums(ctx);
@@ -218,7 +217,7 @@ public class Listener extends HelloBaseListener {
         }
         mode = InquiryMode.What;
     }
-
+ 
     @Override
     public void enterInsert_values(HelloParser.Insert_valuesContext ctx) {
         super.enterInsert_values(ctx);
@@ -226,7 +225,7 @@ public class Listener extends HelloBaseListener {
             mode = InquiryMode.Value;
         }
     }
-
+ 
     @Override
     public void enterInsert_expr(HelloParser.Insert_exprContext ctx) {
         super.enterInsert_expr(ctx);

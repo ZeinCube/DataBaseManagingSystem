@@ -51,7 +51,7 @@ public class API {
         return rows.size() + " rows inserted to \"" + table.getName() + " successfully finished";
     }
 
-    public String dropTable(String tableName) throws DropException {
+    public String dropTable(String tableName) throws DBMSException {
         try {
             metaFile.dropTable(tableName);
         } catch (Exception e) {

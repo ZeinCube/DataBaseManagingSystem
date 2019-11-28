@@ -1,5 +1,5 @@
 grammar Hello;
-
+ 
 K_CREATE:                                        C R E A T E;
 K_DROP:                                          D R O P;
 K_TABLE:                                         T A B L E;
@@ -19,23 +19,23 @@ K_OR:                                            O R;
 NOT:                                             N O T;
 TRUE:                                            T R U E;
 FALSE:                                           F A L S E;
-
+ 
 K_PRIMARY_KEY:                                  P R I M A R Y SPACE K E Y;
 K_UNIQUE:                                       U N I Q U E;
-
+ 
 T_CHAR:                                         C H A R A C T E R;
 T_INT:                                          I N T E G E R;
 T_FLOAT:                                        F L O A T;
-
-
+ 
+ 
 STRING:                                         '"' (~'"' | '""')* '"';
 STRING_LITERAL:                                 '\'' ( ~'\'' | '\'\'' )* '\'';
-
+ 
 IDENTIFIER:                                     [a-zA-Z_] [a-zA-Z_0-9]*;
 SPACE:                                          [ \t\r\n]+  -> skip;
 ENTER:                                          [\n];
 UNEXPECTED:                                     '.';
-
+ 
 LETTER:                                         [a-zA-Z];
 //fragments
 fragment DIGIT:                                 [0-9];
@@ -65,106 +65,105 @@ fragment W:                                     [wW];
 fragment X:                                     [xX];
 fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
-
+ 
 NUMBER:                                         DIGIT+;
 NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?
                                               | '.' DIGIT+ ;
-
+ 
 mynumber:                                       NUMBER | NUMERIC_LITERAL;
 mystring:                                       STRING;
-
-
+ 
+ 
 signed_number:                                  ( '+' | '-' )? NUMERIC_LITERAL;
-
+ 
 name:                                            IDENTIFIER;
-
+ 
 mychar:                                         T_CHAR('['NUMBER ']')?;
 myint:                                          T_INT('('NUMBER ')')?;
 myfloat:                                        T_FLOAT('('NUMBER ')')?;
-
+ 
 type:                                           myint | myfloat | mychar;
-
+ 
 parse:                                          sql_query (';')? EOF;
-
+ 
 sql_query:                                      create
                                                 |drop
                                                 |show_create
                                                 |select
                                                 |insert
                                                 |update;
-
+ 
 show_create:                                     K_SHOW K_CREATE K_TABLE table_name_list;
 create:                                          K_CREATE table;
 drop:                                            K_DROP K_TABLE table_name_list;
 table_name_list:                                 name ( ',' name )*;
 table:                                           K_TABLE table_definition;
-
+ 
 table_definition:                                name
                                                  '('
                                                  columns_sourse
                                                  ')';
-
+ 
 columns_sourse :                                 (column_def ( ',' column_def )*)?;
-
+ 
 column_def:                                      name
                                                  type
                                                  column_constraint?;
-
+ 
 column_constraint:                               K_PRIMARY_KEY
                                                 |K_UNIQUE;
-
+ 
 select:                                        K_SELECT select_what
                                               ( select_from )?
                                               ( select_where)?;
-
+ 
 select_where:                                   K_WHERE expr;
-
+ 
 table_or_subquery:                              name
                                                 | '(' select ')' ;
-
+ 
 select_from:                                    K_FROM table_or_subquery ( ',' table_or_subquery )*;
 select_what:                                    result_column ( ',' result_column )*;
-
+ 
 result_column:                                    '*'
                                                 | name
                                                 | name '.' '*';
-
+ 
 insert:                                          K_INSERT K_INTO name
                                                 (insert_colums)?
                                                  insert_values;
-
+ 
 insert_colums:                                  '(' name ( ',' name )* ')' ;
-
+ 
 insert_values:                                  K_VALUES insert_expr;
-
+ 
 insert_expr:                                    '(' literal_value ( ',' literal_value )* ')';
-
+ 
 update:                                          K_UPDATE name update_set;
 update_set:                                      K_SET update_idef (update_where)?;
 update_idef:                                     update_expr ( ',' update_expr )*;
 update_expr:                                     name '=' expr;
 update_where:                                    K_WHERE expr;
-
+ 
 expr:                                            literal_value
                                                 | unary_operator expr
-                                                | expr '||' expr
                                                 | (name '.')? name
                                                 | (name '.')? name expr
-                                                | expr ( '*' | '/' | '%' ) expr
-                                                | expr ( '+' | '-' ) expr
-                                                | expr ( '<<' | '>>' | '&' | '|' ) expr
-                                                | expr ( '<' | '<=' | '>' | '>=' ) expr
-                                                | expr ( '=' | '==' | '!=' | '<>' ) expr
+                                                | binary_operator_mul_del
+                                                | binary_operator_sum_sub
+                                                | binary_operator_comp
+                                                | binary_operator_eq
                                                 | expr K_AND expr
-                                                | expr K_OR expr
-                                                | '(' expr ')'
-                                                | '(' select ')';
-
-
+                                                | expr K_OR expr;
+ 
+binary_operator_sum_sub:                        literal_value ( '+' | '-' ) expr;
+binary_operator_mul_del:                        literal_value ( '*' | '/' | '%' ) expr;
+binary_operator_comp:                           literal_value ( '<' | '<=' | '>' | '>=' ) expr;
+binary_operator_eq:                             literal_value ( '=' | '==' | '!=' | '<>' ) expr;
+ 
 literal_value:                                    mynumber
                                                  |STRING_LITERAL;
-
+ 
 unary_operator:                                    '-'
                                                  | '+'
                                                  | '~';
-
