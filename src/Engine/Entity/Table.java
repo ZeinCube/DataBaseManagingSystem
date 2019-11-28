@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -19,25 +19,34 @@ public class Table extends Commitable {
     private Class primaryKeyClass;
     private HashMap<Integer, Row> rows;
 
-    public Table(String name, HashSet<Column> columns) throws ExistingPrimaryKeyException, NoPrimaryKeyException {
+    public Table(String name, HashMap<String, Column> columns) throws DBMSException {
         boolean hasPrimaryKey = false;
 
-        for (Column column : columns) {
-            if (hasPrimaryKey && column.isPRIMARY_KEY()) {
-                throw new ExistingPrimaryKeyException(column.getMeta(), name);
+        ArrayList columnNames = new ArrayList<>();
+
+        for (HashMap.Entry<String, Column> entry : columns.entrySet()) {
+            if (hasPrimaryKey && entry.getValue().isPRIMARY_KEY()) {
+                throw new ExistingPrimaryKeyException(entry.getValue().getMeta(), name);
             }
 
-            hasPrimaryKey = hasPrimaryKey || column.isPRIMARY_KEY();
+            hasPrimaryKey = hasPrimaryKey || entry.getValue().isPRIMARY_KEY();
+
+            if (!columnNames.contains(entry.getKey())) {
+                columnNames.add(entry.getKey());
+            } else {
+                throw new DBMSException("Column with name " + entry.getKey() + " already exists");
+            }
+
+            this.columns = new HashMap<>();
         }
 
         if (!hasPrimaryKey) {
             throw new NoPrimaryKeyException();
         }
 
-        this.columns = new HashMap<>();
 
-        for (Column column : columns) {
-            this.columns.put(column.getColumnName(), column);
+        for (HashMap.Entry<String, Column> entry : columns.entrySet()) {
+            this.columns.put(entry.getValue().getColumnName(), entry.getValue());
         }
 
         this.name = name;

@@ -11,7 +11,7 @@ import Engine.Exceptions.DropException;
 import Engine.Exceptions.GetTableException;
 import Engine.Exceptions.NoTableException;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
 public class API {
@@ -21,7 +21,7 @@ public class API {
         this.metaFile = metaFile;
     }
 
-    public String createTable(String tableName, HashSet<Column> columns) throws DBMSException {
+    public String createTable(String tableName, HashMap<String, Column> columns) throws DBMSException {
         Table table = new Table(tableName, columns);
         MetaTable metaTable = new MetaTable(table);
 
@@ -58,7 +58,11 @@ public class API {
             throw new DropException("Table " + tableName + "could not be dropped cause :" + e.getMessage());
         }
 
-        commit(metaFile);
+        try {
+            commit(metaFile);
+        } catch (DBMSException e) {
+            throw new DropException("Table \"" + tableName + "\" could not be dropped cause:" + e.getMessage());
+        }
 
         return "Table " + tableName + " dropped";
     }
