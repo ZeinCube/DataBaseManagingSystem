@@ -22,6 +22,7 @@
                   <Pane prefHeight="37.0" prefWidth="530.0">
                      <children>
                           <Button fx:id="testButton" alignment="CENTER" layoutX="315.0" layoutY="11.0" mnemonicParsing="false" text="TestSelected" />
+                        <Button fx:id="updateButton" alignment="CENTER" layoutX="244.0" layoutY="11.0" mnemonicParsing="false" text="Update" />
                      </children>
                   </Pane>
                </children>
