@@ -135,9 +135,9 @@ insert:                                          K_INSERT K_INTO name
 
 insert_colums:                                  '(' name ( ',' name )* ')' ;
 
-insert_values:                                  '(' expr ( ',' expr )* ')' ( ',' '(' expr ( ',' expr )* ')' )*
-                                               | select
-                                               |K_VALUES insert_values;
+insert_values:                                  K_VALUES insert_expr;
+
+insert_expr:                                    '(' literal_value ( ',' literal_value )* ')';
 
 update:                                          K_UPDATE name update_set;
 update_set:                                      K_SET update_idef (update_where)?;
@@ -162,8 +162,7 @@ expr:                                            literal_value
 
 
 literal_value:                                    mynumber
-                                                 |STRING_LITERAL
-                                                 | K_NULL;
+                                                 |STRING_LITERAL;
 
 unary_operator:                                    '-'
                                                  | '+'
