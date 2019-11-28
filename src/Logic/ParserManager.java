@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class ParserManager {
 
-    public void Parse(String s) {
+    public String Parse(String s) {
         HelloLexer lexer = new HelloLexer(CharStreams.fromString(s));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         HelloParser parser = new HelloParser((tokens));
@@ -23,6 +23,8 @@ public class ParserManager {
             e.printStackTrace();
             System.exit(0);
         }
+        //todo
+        return "";
     }
 }
 

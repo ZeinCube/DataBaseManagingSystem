@@ -15,4 +15,9 @@ public class DBMSException extends Exception {
     public void setClassName(String className) {
         this.className = className;
     }
+
+    @Override
+    public String getMessage() {
+        return this.className + '\n' + super.getMessage();
+    }
 }

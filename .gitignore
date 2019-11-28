@@ -1,6 +1,5 @@
 Tester/.idea/.idea/
 /.idea
-DataBaseManagingSystem.iml`
 /target/
 Tester/src/parser/testscriptparser/TestGrammar.interp
 Tester/src/parser/testscriptparser/TestGrammar.tokens

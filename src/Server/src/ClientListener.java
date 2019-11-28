@@ -1,8 +1,5 @@
-package Server;
-
 import Engine.API;
-import Engine.DBEngine;
-import Engine.Exceptions.DropException;
+import Logic.ParserManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,11 +14,10 @@ public class ClientListener extends Thread {
     private DataInputStream is;
     private DataOutputStream os;
     private API api;
+    private ParserManager manager = new ParserManager();
 
     public ClientListener(Socket socket) throws Exception {
         this.socket = socket;
-        api = new DBEngine().getApi();
-
         try {
             is = new DataInputStream(socket.getInputStream());
             os = new DataOutputStream(socket.getOutputStream());
@@ -38,12 +34,10 @@ public class ClientListener extends Thread {
         while (!isInterrupted() && !socket.isClosed()) {
             try {
                 String message = is.readUTF();
-                os.writeUTF(api.dropTable(message));
+                os.writeUTF(manager.Parse(message));
                 os.flush();
             } catch (IOException e) {
                 System.err.println("No connection :" + e.getMessage());
-            } catch (DropException e) {
-                e.printStackTrace();
             }
         }
     }
