@@ -147,19 +147,19 @@ update_where:                                    K_WHERE expr;
 
 expr:                                            literal_value
                                                 | unary_operator expr
-                                                | expr '||' expr
                                                 | (name '.')? name
                                                 | (name '.')? name expr
-                                                | expr ( '*' | '/' | '%' ) expr
-                                                | expr ( '+' | '-' ) expr
-                                                | expr ( '<<' | '>>' | '&' | '|' ) expr
-                                                | expr ( '<' | '<=' | '>' | '>=' ) expr
-                                                | expr ( '=' | '==' | '!=' | '<>' ) expr
+                                                | binary_operator_mul_del
+                                                | binary_operator_sum_sub
+                                                | binary_operator_comp
+                                                | binary_operator_eq
                                                 | expr K_AND expr
-                                                | expr K_OR expr
-                                                | '(' expr ')'
-                                                | '(' select ')';
+                                                | expr K_OR expr;
 
+binary_operator_sum_sub:                        literal_value ( '+' | '-' ) expr;
+binary_operator_mul_del:                        literal_value ( '*' | '/' | '%' ) expr;
+binary_operator_comp:                           literal_value ( '<' | '<=' | '>' | '>=' ) expr;
+binary_operator_eq:                             literal_value ( '=' | '==' | '!=' | '<>' ) expr;
 
 literal_value:                                    mynumber
                                                  |STRING_LITERAL;
