@@ -7,7 +7,6 @@ import Engine.Exceptions.DBMSException;
 import Engine.Exceptions.DropException;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class Listener extends HelloBaseListener {
@@ -125,7 +124,7 @@ public class Listener extends HelloBaseListener {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         List<HelloParser.Column_defContext> columns = null;
-        HashSet<Column> hashSet = new HashSet<Column>();
+        HashMap<String, Column> columnHashMap = new HashMap<>();
         boolean unique = false;
         while (i > 0 && branchType == BranchType.Table_sources) {
             if (ctx.column_def(i - 1).getStop().getText() != "unique" ||
@@ -142,12 +141,12 @@ public class Listener extends HelloBaseListener {
                 e1.printStackTrace();
             }
             Column k = new Column(columnName, columnContainsClass, unique);
-            hashSet.add(k);
+            columnHashMap.put(columnName, k);
             i--;
         }
         try {
             String kek = hashMap.get("Table_name").toString();
-            api.createTable(kek, hashSet);
+            api.createTable(kek, columnHashMap);
         } catch (DBMSException e) {
             System.err.println(e.getMessage());
         } finally {

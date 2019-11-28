@@ -18,11 +18,13 @@ public class Table extends Commitable {
     private HashMap<String, Column> columns;
     private Class primaryKeyClass;
     private HashMap<Integer, Row> rows;
+    private TableContainer container;
+    private String pathToContainer;
 
     public Table(String name, HashMap<String, Column> columns) throws DBMSException {
         boolean hasPrimaryKey = false;
 
-        ArrayList columnNames = new ArrayList<>();
+        ArrayList<String> columnNames = new ArrayList<>();
 
         for (HashMap.Entry<String, Column> entry : columns.entrySet()) {
             if (hasPrimaryKey && entry.getValue().isPRIMARY_KEY()) {
