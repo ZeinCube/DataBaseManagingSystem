@@ -5,6 +5,7 @@ K_DROP:                                          D R O P;
 K_TABLE:                                         T A B L E;
 K_SHOW:                                          S H O W;
 K_WHERE:                                         W H E R E;
+K_WHEN:                                          W H E N;
 K_SELECT:                                        S E L E C T;
 K_UPDATE:                                        U P D A T E;
 K_FROM:                                          F R O M;
@@ -13,34 +14,31 @@ K_SET:                                           S E T;
 K_INSERT:                                        I N S E R T;
 K_INTO:                                          I N T O;
 K_VALUES:                                        V A L U E S;
-
-AND:                                             A N D;
-OR:                                              O R;
+K_AND:                                           A N D;
+K_OR:                                            O R;
 NOT:                                             N O T;
 TRUE:                                            T R U E;
 FALSE:                                           F A L S E;
 
-SPACE:                                          [ \t\r\n]+  -> skip;
-ENTER:                                          [\n];
 K_PRIMARY_KEY:                                  P R I M A R Y SPACE K E Y;
 K_UNIQUE:                                       U N I Q U E;
 
-T_CHAR:                                         C H A R A C H T E R;
+T_CHAR:                                         C H A R A C T E R;
 T_INT:                                          I N T E G E R;
 T_FLOAT:                                        F L O A T;
 
-NUMBER:                                         DIGIT+;
-NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?;
 
 STRING:                                         '"' (~'"' | '""')* '"';
+STRING_LITERAL:                                 '\'' ( ~'\'' | '\'\'' )* '\'';
 
 IDENTIFIER:                                     [a-zA-Z_] [a-zA-Z_0-9]*;
-
+SPACE:                                          [ \t\r\n]+  -> skip;
+ENTER:                                          [\n];
 UNEXPECTED:                                     '.';
 
+LETTER:                                         [a-zA-Z];
 //fragments
-fragment DIGIT: [0-9];
-fragment LETTER: [a-zA-Z];
+fragment DIGIT:                                 [0-9];
 fragment A:                                     [aA];
 fragment B:                                     [bB];
 fragment C:                                     [cC];
@@ -68,10 +66,13 @@ fragment X:                                     [xX];
 fragment Y:                                     [yY];
 fragment Z:                                     [zZ];
 
+NUMBER:                                         DIGIT+;
+NUMERIC_LITERAL:                                DIGIT+ ( '.' DIGIT* )?
+                                              | '.' DIGIT+ ;
+
 mynumber:                                       NUMBER | NUMERIC_LITERAL;
 mystring:                                       STRING;
 
-parse:                                          sql_query (';')? EOF;
 
 signed_number:                                  ( '+' | '-' )? NUMERIC_LITERAL;
 
@@ -83,41 +84,19 @@ myfloat:                                        T_FLOAT('('NUMBER ')')?;
 
 type:                                           myint | myfloat | mychar;
 
+parse:                                          sql_query (';')? EOF;
+
 sql_query:                                      create
                                                 |drop
                                                 |show_create
                                                 |select
-                                                |update
-                                                |const_expr;
-
-value:                                          name| mynumber| logic_expr;
-insert_value:                                    '('value (',' value)*')';
-insert_values:                                   '(' insert_value (','insert_value)*')';
-insert_colums:                                   name (',' name)*;
-insert:                                          K_INSERT K_INTO name
-                                                 ('(' insert_colums ')')?
-                                                 K_VALUES  insert_values ;
-
-select_idef:                                     ('*' | IDENTIFIER);
-select_list:                                     select_idef (',' select_idef)*;
-select_table_list:                                name
-                                                 |select
-                                                 |'('select')';
-
-select:                                          K_SELECT select_list K_FROM select_table_list (K_WHERE expr)?;
-
-update_operand:                                  name|signed_number;
-update_idef:                                     name '=' expr;
-update:                                          K_UPDATE name K_SET update_idef (K_WHERE logic_expr)?;
+                                                |insert
+                                                |update;
 
 show_create:                                     K_SHOW K_CREATE K_TABLE table_name_list;
-
 create:                                          K_CREATE table;
-
 drop:                                            K_DROP K_TABLE table_name_list;
-
 table_name_list:                                 name ( ',' name )*;
-
 table:                                           K_TABLE table_definition;
 
 table_definition:                                name
@@ -134,91 +113,59 @@ column_def:                                      name
 column_constraint:                               K_PRIMARY_KEY
                                                 |K_UNIQUE;
 
-sub_const_arifm_expr:                           SUB const_arifm_expr;
+select:                                        K_SELECT select_what
+                                              ( select_from )?
+                                              ( select_where)?;
 
-b_const_arifm_expr:                             '(' const_arifm_expr ')';
+select_where:                                   K_WHERE expr;
 
-mul:                                            '*';
-div:                                            '/';
-add:                                            '+';
-sub:                                            '-';
-concate:                                        '|';
-mynull:                                         K_NULL;
+table_or_subquery:                              name
+                                                | '(' select ')' ;
 
-const_arifm_expr:                               const_arifm_expr concate const_arifm_expr
-                                                |const_arifm_expr (mul| div) const_arifm_expr
-                                                | const_arifm_expr (add |sub) const_arifm_expr
-                                                | mystring
-                                                | mynumber
-                                                | sub_const_arifm_expr
-                                                | b_const_arifm_expr
-                                                | mynull;
+select_from:                                    K_FROM table_or_subquery ( ',' table_or_subquery )*;
+select_what:                                    result_column ( ',' result_column )*;
 
-sub_arifm_expr:                                 SUB arifm_expr;
-b_arifm_expr:                                   '(' arifm_expr ')';
+result_column:                                    '*'
+                                                | name
+                                                | name '.' '*';
 
-arifm_expr:                                     arifm_expr concate arifm_expr
-                                               |arifm_expr (mul|div) arifm_expr
-                                               | arifm_expr (add|sub) arifm_expr
-                                               | b_arifm_expr
-                                               | name
-                                               | const_arifm_expr
-                                               | sub_arifm_expr;
+insert:                                          K_INSERT K_INTO name
+                                                (insert_colums)?
+                                                 insert_values;
 
-eq:                                             '==';
-neq:                                            '!=';
-moreeq:                                         '>='|'=>';
-more:                                           '>';
-less:                                           '<';
-lesseq:                                         '<='|'=<';
+insert_colums:                                  '(' name ( ',' name )* ')' ;
 
-comp_op1 :                                      eq|neq;
-comp_op2 :                                      moreeq|more|less|lesseq;
+insert_values:                                  '(' expr ( ',' expr )* ')' ( ',' '(' expr ( ',' expr )* ')' )*
+                                               | select
+                                               |K_VALUES insert_values;
 
-b_const_compare_expr:                           '('const_compare_expr')';
+update:                                          K_UPDATE name update_set;
+update_set:                                      K_SET update_idef (update_where)?;
+update_idef:                                     update_expr ( ',' update_expr )*;
+update_expr:                                     name '=' expr;
+update_where:                                    K_WHERE expr;
 
-const_compare_expr:                             const_arifm_expr comp_op1 const_arifm_expr
-                                                |const_arifm_expr comp_op2 const_arifm_expr
-                                                | b_const_compare_expr;
+expr:                                            literal_value
+                                                | unary_operator expr
+                                                | expr '||' expr
+                                                | (name '.')? name
+                                                | (name '.')? name expr
+                                                | expr ( '*' | '/' | '%' ) expr
+                                                | expr ( '+' | '-' ) expr
+                                                | expr ( '<<' | '>>' | '&' | '|' ) expr
+                                                | expr ( '<' | '<=' | '>' | '>=' ) expr
+                                                | expr ( '=' | '==' | '!=' | '<>' ) expr
+                                                | expr K_AND expr
+                                                | expr K_OR expr
+                                                | '(' expr ')'
+                                                | '(' select ')';
 
-b_compare_expr:                                 '('compare_expr')';
 
-compare_expr:                                    compare_expr comp_op1 compare_expr
-                                                 |compare_expr comp_op2 compare_expr
-                                                 | b_compare_expr
-                                                 | const_compare_expr
-                                                 | arifm_expr;
+literal_value:                                    mynumber
+                                                 |STRING_LITERAL
+                                                 | K_NULL;
 
-mytrue:                                          TRUE;
-myfalse:                                         FALSE;
+unary_operator:                                    '-'
+                                                 | '+'
+                                                 | '~';
 
-logic_literal:                                   (mytrue | myfalse);
-
-not_const_logic_expr:                            (NOT|'!') const_logic_expr;
-
-and:                                             AND;
-or:                                              OR;
-
-b_const_logic_expr:                              '('const_logic_expr')';
-
-const_logic_expr:                                const_logic_expr or const_logic_expr
-                                                 |const_logic_expr and const_logic_expr
-                                                 | logic_literal
-                                                 | b_const_logic_expr
-                                                 | not_const_logic_expr
-                                                 | const_compare_expr
-                                                 | const_arifm_expr;
-
-not_logic_expr:                                 NOT logic_expr;
-b_logic_expr:                                   '('logic_expr')';
-
-logic_expr:                                     logic_expr or logic_expr
-                                               |logic_expr and logic_expr
-                                               | b_logic_expr
-                                               | not_logic_expr
-                                               | const_logic_expr
-                                               | compare_expr
-                                               | arifm_expr;
-
-const_expr:                                    const_arifm_expr|const_compare_expr|const_logic_expr;
-expr:                                          const_expr|compare_expr|arifm_expr|logic_expr;
