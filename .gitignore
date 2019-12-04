@@ -1,36 +1,5 @@
-Tester/.idea/.idea/
 /.idea
 /target/
-Tester/src/parser/testscriptparser/TestGrammar.interp
-Tester/src/parser/testscriptparser/TestGrammar.tokens
-Tester/src/parser/testscriptparser/TestGrammarBaseListener.java
-Tester/src/parser/testscriptparser/TestGrammarBaseVisitor.java
-Tester/src/parser/testscriptparser/TestGrammarLexer.interp
-Tester/src/parser/testscriptparser/TestGrammarLexer.java
-Tester/src/parser/testscriptparser/TestGrammarLexer.tokens
-Tester/src/parser/testscriptparser/TestGrammarListener.java
-Tester/src/parser/testscriptparser/TestGrammarParser.java
-Tester/src/parser/testscriptparser/TestGrammarVisitor.java
-Tester/src/parser/testscriptparser/TestScriptVisitor.java
-Tester/src/parser/sqlqueryresultparser/QueryResult.interp
-Tester/src/parser/sqlqueryresultparser/QueryResult.tokens
-Tester/src/parser/sqlqueryresultparser/QueryResultBaseListener.java
-Tester/src/parser/sqlqueryresultparser/QueryResultBaseVisitor.java
-Tester/src/parser/sqlqueryresultparser/QueryResultLexer.interp
-Tester/src/parser/sqlqueryresultparser/QueryResultLexer.java
-Tester/src/parser/sqlqueryresultparser/QueryResultLexer.tokens
-Tester/src/parser/sqlqueryresultparser/QueryResultListener.java
-Tester/src/parser/sqlqueryresultparser/QueryResultParser.java
-Tester/src/parser/sqlqueryresultparser/QueryResultVisitor.java
-Tester/src/parser/testscriptparser/TestScript.interp
-Tester/src/parser/testscriptparser/TestScript.tokens
-Tester/src/parser/testscriptparser/TestScriptBaseListener.java
-Tester/src/parser/testscriptparser/TestScriptBaseVisitor.java
-Tester/src/parser/testscriptparser/TestScriptLexer.interp
-Tester/src/parser/testscriptparser/TestScriptLexer.java
-Tester/src/parser/testscriptparser/TestScriptLexer.tokens
-Tester/src/parser/testscriptparser/TestScriptListener.java
-Tester/src/parser/testscriptparser/TestScriptParser.java
 gen/parser/QueryResult.interp
 gen/parser/QueryResult.tokens
 gen/parser/QueryResultBaseListener.java
@@ -67,8 +36,6 @@ src/Logic/HelloLexer.tokens
 src/Logic/HelloListener.java
 
 src/Logic/HelloParser.java
-
-mysql-connector-java-5.1.48/
 
 src/Logic/HelloVisitor.java
 src/Logic/HelloBaseVisitor.java

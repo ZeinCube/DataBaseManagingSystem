@@ -1,3 +1,5 @@
+package Client.src;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,10 +18,11 @@ public class Client {
 
     public static void main(String[] args) {
         connect("localhost");
+
         while (scanner.hasNextLine()) {
             List<String> tokens = new ArrayList<>();
-            Scanner lineScanner = new Scanner(System.in);
 
+            Scanner lineScanner = new Scanner(System.in);
             while (lineScanner.hasNextLine()) {
                 tokens.add(lineScanner.nextLine());
             }
@@ -27,7 +30,7 @@ public class Client {
             String result = "";
 
             for (String s: tokens) {
-                result.concat(s);
+                result = result.concat(s);
             }
 
             try {

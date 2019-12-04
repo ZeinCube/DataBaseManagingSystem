@@ -147,15 +147,27 @@ update_where:                                    K_WHERE expr;
  
 expr:                                            literal_value
                                                 | unary_operator expr
-                                                | (name '.')? name
-                                                | (name '.')? name expr
-                                                | binary_operator_mul_del
-                                                | binary_operator_sum_sub
-                                                | binary_operator_comp
-                                                | binary_operator_eq
+                                                | not_num_value
+                                                | expr operand expr
+                                                | expr operand expr
+                                                | expr operand expr
+                                                | expr operand expr
+                                                | expr operand expr
+                                                | expr operand expr
+                                                | expr operand expr
                                                 | expr K_AND expr
                                                 | expr K_OR expr;
- 
+
+not_num_value:                                 (name '.')? name expr?;
+
+operand:                                        ( '+' | '-' )
+                                                |( '+' | '-' )
+                                                |( '*' | '/' | '%' )
+                                                |( '*' | '/' | '%' )
+                                                |( '<' | '<=' | '>' | '>=' )
+                                                |( '=' | '==' | '!=' | '<>' )
+                                                |( '<' | '<=' | '>' | '>=' );
+
 binary_operator_sum_sub:                        literal_value ( '+' | '-' ) expr;
 binary_operator_mul_del:                        literal_value ( '*' | '/' | '%' ) expr;
 binary_operator_comp:                           literal_value ( '<' | '<=' | '>' | '>=' ) expr;

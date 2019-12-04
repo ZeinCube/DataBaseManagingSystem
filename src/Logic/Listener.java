@@ -4,7 +4,8 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
- 
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,14 @@ public class Listener extends HelloBaseListener {
     private DBEngine engine;
     private API api;
     private HashMap<String, Object> hashMap = new HashMap<>();
- 
+    private String messageRet = null;
+    private HashMap<Integer, Object> hashMapLit = new HashMap<>();
+    private HashMap<Integer, Object> hashMapOp = new HashMap<>();
+    private HashMap<Integer, Object> hashMapNotNum = new HashMap<>();
+    private int countLiteral = 0;
+    private int countOperand = 0;
+
+
     {
         try {
             engine = new DBEngine();
@@ -98,11 +106,9 @@ public class Listener extends HelloBaseListener {
             while (i > 0) {
                 try {
                     String string = ctx.name(i - 1).getText();
-                    api.dropTable(string);
+                    messageRet = api.dropTable(string);
                 } catch (DBMSException e) {
-                    System.err.println(e.getMessage());
-                } finally {
-                    System.out.println("table droped");
+                    messageRet = e.getMessage();
                 }
                 i--;
             }
@@ -111,9 +117,9 @@ public class Listener extends HelloBaseListener {
             while (i > 0) {
                 String string = ctx.name(i - 1).getText();
                 try {
-                    System.out.println(api.showCreateTable(string));
+                    messageRet = api.showCreateTable(string);
                 } catch (Exception e) {
-                    System.err.println(e.getMessage());
+                    messageRet = e.getMessage();
                 }
                 i--;
             }
@@ -132,7 +138,7 @@ public class Listener extends HelloBaseListener {
         int i = ctx.getChildCount();
         int j = 0;
         List<HelloParser.Column_defContext> columns = null;
-        HashSet<Column> hashSet = new HashSet<Column>();
+        HashMap<String, Column> hashMap = new HashMap<>();
         boolean buff = false;
         while (j <= i / 2 && branchType == BranchType.Table_sources) {
             if ((ctx.column_def(j).getStop().getType() == K_PRIMARY_KEY) ||
@@ -147,18 +153,18 @@ public class Listener extends HelloBaseListener {
                 className = "java.lang." + className.substring(0, 1).toUpperCase() + className.substring(1).toLowerCase();
                 columnContainsClass = Class.forName(className);
             } catch (Exception e1) {
-                System.err.println("the request was entered incorrectly");
+                messageRet = "the request was entered incorrectly";
             }
             Column k = new Column(columnName, columnContainsClass, buff);
-            hashSet.add(k);
+            hashMap.put("Column", k);
             j++;
             buff = false;
         }
         try {
-            String kek = hashMap.get("Table_name").toString();
-            System.out.println(api.createTable(kek, hashSet));
+            String kek = this.hashMap.get("Table_name").toString();
+            messageRet = api.createTable(kek, hashMap);
         } catch (DBMSException e) {
-            System.err.println(e.getMessage());
+            messageRet = e.getMessage();
         }
     }
  
@@ -236,4 +242,40 @@ public class Listener extends HelloBaseListener {
             j++;
         }
     }
+
+    @Override
+    public void enterExpr(HelloParser.ExprContext ctx) {
+        super.enterExpr(ctx);
+        String t;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            t = ctx.getChild(i).getText();
+        }
+    }
+
+    @Override
+    public void enterLiteral_value(HelloParser.Literal_valueContext ctx) {
+        super.enterLiteral_value(ctx);
+        hashMapLit.put(countLiteral, ctx.start.getText());
+        countLiteral++;
+    }
+
+    @Override
+    public void enterOperand(HelloParser.OperandContext ctx) {
+        super.enterOperand(ctx);
+        hashMapOp.put(countLiteral, ctx.start.getText());
+        countOperand++;
+    }
+
+
+    @Override
+    public void enterNot_num_value(HelloParser.Not_num_valueContext ctx) {
+        super.enterNot_num_value(ctx);
+        hashMapNotNum.put(countLiteral, ctx.start.getText());
+        countLiteral++;
+    }
+
+    public String getMessageRet() {
+        return messageRet;
+    }
+
 }
