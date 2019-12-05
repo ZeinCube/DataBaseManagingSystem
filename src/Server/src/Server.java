@@ -16,7 +16,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         setAddress("localhost");
-        System.out.println(ADDRESS.getHostAddress());
+        System.out.println("Server is running on IP: " + ADDRESS.getHostAddress());
         try {
             mainSocket = new ServerSocket(3309, 0, ADDRESS);
         } catch (IOException e) {

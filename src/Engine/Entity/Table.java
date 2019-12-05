@@ -17,7 +17,6 @@ public class Table extends Commitable {
     private String name;
     private HashMap<String, Column> columns;
     private Class primaryKeyClass;
-    private HashMap<Integer, Row> rows;
     private TableContainer container;
     private String pathToContainer;
 
@@ -52,8 +51,6 @@ public class Table extends Commitable {
         }
 
         this.name = name;
-
-        rows = new HashMap<>();
     }
 
     public Table(String name) {
@@ -73,6 +70,27 @@ public class Table extends Commitable {
             }
         }
 
+    }
+
+    public ArrayList<Column> select(ArrayList<String> columns) {
+        HashMap<String, Column> result = new HashMap<>();
+        for (String columnName : columns) {
+            result.put(columnName, getColumnByName(columnName));
+        }
+
+        for (HashMap.Entry<Integer, Row> row : container.getRows().entrySet()) {
+            for (String columnName: columns) {
+                result.get(columnName).addValue(row.getValue().getValueByColumnName(columnName));
+            }
+        }
+
+        ArrayList<Column> resultColumns = new ArrayList<>();
+
+        for (HashMap.Entry<String, Column> columnEntry : result.entrySet()) {
+            resultColumns.add(columnEntry.getValue());
+        }
+
+        return resultColumns;
     }
 
     public String getName() {
@@ -107,14 +125,6 @@ public class Table extends Commitable {
         this.primaryKeyClass = primaryKeyClass;
     }
 
-    public HashMap<Integer, Row> getRows() {
-        return rows;
-    }
-
-    public void setRows(HashMap<Integer, Row> rows) {
-        this.rows = rows;
-    }
-
     public static String getPath(String tableName) {
         return System.getProperty("user.home") + "/.dbms/tables/" + tableName + ".dbms";
     }
@@ -129,6 +139,11 @@ public class Table extends Commitable {
         }
 
         return SerializationUtils.deserialize(data);
+    }
+
+    public Column getColumnByName (String columnName) {
+        Column searchingColumn = columns.get(columnName);
+        return new Column(searchingColumn.getColumnName(), searchingColumn.getValueClass(), searchingColumn.isUNIQUE(), searchingColumn.isPRIMARY_KEY());
     }
 
     @Override

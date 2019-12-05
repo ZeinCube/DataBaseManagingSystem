@@ -11,6 +11,7 @@ import Engine.Exceptions.DropException;
 import Engine.Exceptions.GetTableException;
 import Engine.Exceptions.NoTableException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,7 +38,9 @@ public class API {
         return "Created table " + tableName;
     }
 
-
+    public ArrayList<Column> select(String tableName, ArrayList<String> columnNames) throws GetTableException, NoTableException {
+        return this.getTable(tableName).select(columnNames);
+    }
 
     public String showCreateTable(String tableName) throws Exception {
         return metaFile.getTable(tableName).getCreate();
