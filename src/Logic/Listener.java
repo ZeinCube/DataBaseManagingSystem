@@ -5,13 +5,12 @@ import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
- 
-import static Logic.HelloLexer.*;
- 
+
+import static Logic.HelloParser.K_PRIMARY_KEY;
+import static Logic.HelloParser.K_UNIQUE;
+
 public class Listener extends HelloBaseListener {
     private DBEngine engine;
     private API api;
