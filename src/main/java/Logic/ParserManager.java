@@ -1,5 +1,7 @@
 package Logic;
 
+import Logic.Parser.DBGrammarLexer;
+import Logic.Parser.DBGrammarParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -8,9 +10,9 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 public class ParserManager {
 
     public String Parse(String s) {
-        HelloLexer lexer = new HelloLexer(CharStreams.fromString(s));
+        DBGrammarLexer lexer = new DBGrammarLexer(CharStreams.fromString(s));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        HelloParser parser = new HelloParser((tokens));
+        DBGrammarParser parser = new DBGrammarParser((tokens));
         ParseTree tree = null;
         String out = null;
         try {
