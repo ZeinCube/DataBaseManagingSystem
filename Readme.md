@@ -1,9 +1,13 @@
 # DataBaseManagingSystem Project
 Contributors :
-* [Glushkova Diana](https://github.com/dianaRusak)
-* [Dzuba Alexander](https://github.com/alkonior)
+* [Anton Melnikov](https://github.com/hehogcode)
 * [Ivan Kokorev](https://github.com/ZeinCube)
 
----------
-For jackson installation please go to ```File->ProjectSettings->Libraries->"+"->Select all .jar files from jackson directory```
----------
+## Initialization of parser
+
+Configure ANTRL... with settings:
+
+- Output directory where all output is generated: ...DataBase/LogicModule/src/main/java/
+
+- Location of imported grammars: ...DataBase/LogicModule/src/main/java/
+- Package/namespace for the generated code: Logic.Parser

@@ -1,11 +1,12 @@
-/.idea
-/target/
-/src/main/java/Logic/Parser/*
-/src/main/java/Logic/DBGrammar.interp
-/src/main/java/Logic/DBGrammar.tokens
-/src/main/java/Logic/DBGrammarBaseListener.java
-/src/main/java/Logic/DBGrammarLexer.java
-/src/main/java/Logic/DBGrammarLexer.interp
-/src/main/java/Logic/DBGrammarLexer.tokens
-/src/main/java/Logic/DBGrammarListener.java
-/src/main/java/Logic/DBGrammarParser.java
+# Save only maven project
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+*.iml
+.idea/
+.eclipse
+
+Parser/*.*
