@@ -4,14 +4,11 @@ import Engine.API;
 import Engine.DBEngine;
 import Engine.Entity.Column;
 import Engine.Exceptions.DBMSException;
-
 import java.util.HashMap;
 import java.util.List;
 
-import Logic.Parser.*;
-
-import static Logic.Parser.DBGrammarParser.K_PRIMARY_KEY;
-import static Logic.Parser.DBGrammarParser.K_UNIQUE;
+import static Logic.DBGrammarLexer.K_PRIMARY_KEY;
+import static Logic.DBGrammarLexer.K_UNIQUE;
 
 public class Listener extends DBGrammarBaseListener {
     private DBEngine engine;
