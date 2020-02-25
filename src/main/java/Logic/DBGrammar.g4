@@ -1,4 +1,4 @@
-grammar Hello;
+grammar DBGrammar;
  
 K_CREATE:                                        C R E A T E;
 K_DROP:                                          D R O P;

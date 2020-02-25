@@ -8,10 +8,12 @@ import Engine.Exceptions.DBMSException;
 import java.util.HashMap;
 import java.util.List;
 
-import static Logic.HelloParser.K_PRIMARY_KEY;
-import static Logic.HelloParser.K_UNIQUE;
+import Logic.Parser.*;
 
-public class Listener extends HelloBaseListener {
+import static Logic.Parser.DBGrammarParser.K_PRIMARY_KEY;
+import static Logic.Parser.DBGrammarParser.K_UNIQUE;
+
+public class Listener extends DBGrammarBaseListener {
     private DBEngine engine;
     private API api;
     private HashMap<String, Object> hashMap = new HashMap<>();
@@ -55,13 +57,13 @@ public class Listener extends HelloBaseListener {
     private BranchType branchType;
  
     @Override
-    public void enterSql_query(HelloParser.Sql_queryContext ctx) {
+    public void enterSql_query(DBGrammarParser.Sql_queryContext ctx) {
         super.enterSql_query(ctx);
         mode = InquiryMode.Undefined;
     }
  
     @Override
-    public void enterShow_create(HelloParser.Show_createContext ctx) {
+    public void enterShow_create(DBGrammarParser.Show_createContext ctx) {
         super.enterShow_create(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -70,7 +72,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterCreate(HelloParser.CreateContext ctx) {
+    public void enterCreate(DBGrammarParser.CreateContext ctx) {
         super.enterCreate(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -79,7 +81,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterDrop(HelloParser.DropContext ctx) {
+    public void enterDrop(DBGrammarParser.DropContext ctx) {
         super.enterDrop(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -89,7 +91,7 @@ public class Listener extends HelloBaseListener {
  
  
     @Override
-    public void enterTable(HelloParser.TableContext ctx) {
+    public void enterTable(DBGrammarParser.TableContext ctx) {
         super.enterTable(ctx);
         if (ctx.getChildCount() > 1 && mode == InquiryMode.What) {
             mode = InquiryMode.Content;
@@ -98,7 +100,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterTable_name_list(HelloParser.Table_name_listContext ctx) {
+    public void enterTable_name_list(DBGrammarParser.Table_name_listContext ctx) {
         super.enterTable_name_list(ctx);
         int i = ctx.getChildCount();
         if (mode == InquiryMode.What && branchType == BranchType.Drop) {
@@ -126,17 +128,17 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterTable_definition(HelloParser.Table_definitionContext ctx) {
+    public void enterTable_definition(DBGrammarParser.Table_definitionContext ctx) {
         super.enterTable_definition(ctx);
         hashMap.put("Table_name", ctx.name().getText());
     }
  
     @Override
-    public void enterColumns_sourse(HelloParser.Columns_sourseContext ctx) {
+    public void enterColumns_sourse(DBGrammarParser.Columns_sourseContext ctx) {
         super.enterColumns_sourse(ctx);
         int i = ctx.getChildCount();
         int j = 0;
-        List<HelloParser.Column_defContext> columns = null;
+        List<DBGrammarParser.Column_defContext> columns = null;
         HashMap<String, Column> hashMap = new HashMap<>();
         boolean buff = false;
         while (j <= i / 2 && branchType == BranchType.Table_sources) {
@@ -168,7 +170,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterSelect(HelloParser.SelectContext ctx) {
+    public void enterSelect(DBGrammarParser.SelectContext ctx) {
         super.enterSelect(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.What;
@@ -177,7 +179,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterSelect_what(HelloParser.Select_whatContext ctx) {
+    public void enterSelect_what(DBGrammarParser.Select_whatContext ctx) {
         super.enterSelect_what(ctx);
         int i = ctx.getChildCount();
         int j = 0;
@@ -190,7 +192,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterSelect_from(HelloParser.Select_fromContext ctx) {
+    public void enterSelect_from(DBGrammarParser.Select_fromContext ctx) {
         super.enterSelect_from(ctx);
 //        int i = ctx.getChildCount();
         int j = 0;
@@ -202,7 +204,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterInsert(HelloParser.InsertContext ctx) {
+    public void enterInsert(DBGrammarParser.InsertContext ctx) {
         super.enterInsert(ctx);
         if (ctx.getChildCount() > 1) {
             mode = InquiryMode.Where;
@@ -212,7 +214,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterInsert_colums(HelloParser.Insert_columsContext ctx) {
+    public void enterInsert_colums(DBGrammarParser.Insert_columsContext ctx) {
         super.enterInsert_colums(ctx);
         int i = ctx.getChildCount();
         int j = 0;
@@ -224,7 +226,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterInsert_values(HelloParser.Insert_valuesContext ctx) {
+    public void enterInsert_values(DBGrammarParser.Insert_valuesContext ctx) {
         super.enterInsert_values(ctx);
         if ((branchType == BranchType.Insert) && (InquiryMode.What == mode)) {
             mode = InquiryMode.Value;
@@ -232,7 +234,7 @@ public class Listener extends HelloBaseListener {
     }
  
     @Override
-    public void enterInsert_expr(HelloParser.Insert_exprContext ctx) {
+    public void enterInsert_expr(DBGrammarParser.Insert_exprContext ctx) {
         super.enterInsert_expr(ctx);
         int i = ctx.getChildCount();
         int j = 0;
@@ -243,7 +245,7 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterExpr(HelloParser.ExprContext ctx) {
+    public void enterExpr(DBGrammarParser.ExprContext ctx) {
         super.enterExpr(ctx);
         String t;
         for (int i = 0; i < ctx.getChildCount(); i++) {
@@ -252,14 +254,14 @@ public class Listener extends HelloBaseListener {
     }
 
     @Override
-    public void enterLiteral_value(HelloParser.Literal_valueContext ctx) {
+    public void enterLiteral_value(DBGrammarParser.Literal_valueContext ctx) {
         super.enterLiteral_value(ctx);
         hashMapLit.put(countLiteral, ctx.start.getText());
         countLiteral++;
     }
 
     @Override
-    public void enterOperand(HelloParser.OperandContext ctx) {
+    public void enterOperand(DBGrammarParser.OperandContext ctx) {
         super.enterOperand(ctx);
         hashMapOp.put(countLiteral, ctx.start.getText());
         countOperand++;
@@ -267,7 +269,7 @@ public class Listener extends HelloBaseListener {
 
 
     @Override
-    public void enterNot_num_value(HelloParser.Not_num_valueContext ctx) {
+    public void enterNot_num_value(DBGrammarParser.Not_num_valueContext ctx) {
         super.enterNot_num_value(ctx);
         hashMapNotNum.put(countLiteral, ctx.start.getText());
         countLiteral++;
