@@ -2,6 +2,9 @@ package Test.Utils;
 
 public class Printer {
 
+    public static final String DELIMITER =
+            "--------------------------------------------------------------------------------";
+
     public static final String RESET = "\u001B[0m";
     public static final String CLEAR = "\033[H\033[2J";
 
@@ -29,11 +32,32 @@ public class Printer {
     }
 
     public static void print_shell_prompt() {
-        System.out.print(TEXT_PURPLE + "test_framework# " + RESET);
+        System.out.print(BACKGROUND_CYAN + TEXT_BLACK + "test_framework#" + RESET + " ");
     }
 
     public static void print_error(String msg) {
-        System.out.println(TEXT_RED + msg + RESET);
+        System.out.println(TEXT_RED + "[ERROR] " + RESET + msg);
+    }
+
+    public static void print_critical_error(String msg) {
+        System.out.println(BACKGROUND_RED + TEXT_BLACK + "[CRITICAL]" + RESET + " " + msg);
+        System.exit(0);
+    }
+
+    public static void print_info(String msg) {
+        System.out.println(TEXT_BLUE + "[INFO] " + RESET + msg);
+    }
+
+    public static void print_list_element(String msg) {
+        System.out.println("-> " + msg);
+    }
+
+    public static void print_delimiter() {
+        System.out.println(TEXT_YELLOW + DELIMITER + RESET);
+    }
+
+    public static void print_question(String msg) {
+        System.out.print(msg + ": ");
     }
 
     public static void clear() {
