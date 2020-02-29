@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class TestCli {
-
     private TestEngine engine;
 
     public TestCli() {
@@ -21,7 +20,7 @@ public class TestCli {
 
             if (command.length == 0) continue;
 
-            if (command.length == 1 && command[0].equals("exit")) {
+            if (command.length == 1 && (command[0].equals("exit") || command[0].equals("quit"))) {
                 return;
             } else {
                 parse_command(command);
@@ -31,14 +30,14 @@ public class TestCli {
 
     private void parse_command(String[] command) {
         int len = command.length;
-        String[] args = len > 1 ? Arrays.copyOfRange(command, 1, command.length ) : new String[]{};
+        String[] args = len > 1 ? Arrays.copyOfRange(command, 1, command.length) : new String[]{};
 
         switch (command[0]) {
             case "run":
                 if (!check_args_len(len)) break;
 
                 boolean run_all_flag = false;
-                for (String arg: args) {
+                for (String arg : args) {
                     if (arg.equals("all")) {
                         run_all_flag = true;
                         break;
@@ -46,24 +45,32 @@ public class TestCli {
                 }
 
                 if (run_all_flag) {
-                    engine.run_all_tests();
+                    engine.runAllTests();
                     break;
                 }
 
-                engine.run_test(args);
+                engine.runTests(args);
+                break;
+            case "list":
+                if (len != 1)
+                    Printer.print_error("Unknown arguments after list command");
+
+                engine.listTests();
                 break;
             case "create":
                 if (check_args_len(len))
-                    engine.create_test(args);
+                    engine.createTest(args);
                 break;
+            case "delete":
             case "remove":
                 if (check_args_len(len))
-                    engine.remove_test(args);
+                    engine.removeTests(args);
                 break;
             case "show":
                 if (check_args_len(len))
-                    engine.show_results(args);
+                    engine.showResults(args);
                 break;
+            case "cls":
             case "clear":
                 if (len != 1) {
                     Printer.print_error("Too many arguments");
