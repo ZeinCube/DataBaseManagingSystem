@@ -15,7 +15,7 @@ public class TestCli {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            Printer.print_shell_prompt();
+            Printer.printShellPrompt();
             String[] command = scanner.nextLine().split(" ");
 
             if (command.length == 0) continue;
@@ -23,18 +23,18 @@ public class TestCli {
             if (command.length == 1 && (command[0].equals("exit") || command[0].equals("quit"))) {
                 return;
             } else {
-                parse_command(command);
+                parseCommand(command);
             }
         }
     }
 
-    private void parse_command(String[] command) {
+    private void parseCommand(String[] command) {
         int len = command.length;
         String[] args = len > 1 ? Arrays.copyOfRange(command, 1, command.length) : new String[]{};
 
         switch (command[0]) {
             case "run":
-                if (!check_args_len(len)) break;
+                if (!checkArgsLen(len)) break;
 
                 boolean run_all_flag = false;
                 for (String arg : args) {
@@ -52,41 +52,42 @@ public class TestCli {
                 engine.runTests(args);
                 break;
             case "list":
+            case "lst":
                 if (len != 1)
-                    Printer.print_error("Unknown arguments after list command");
+                    Printer.printError("Unknown arguments after list command");
 
                 engine.listTests();
                 break;
             case "create":
-                if (check_args_len(len))
+                if (checkArgsLen(len))
                     engine.createTest(args);
                 break;
             case "delete":
             case "remove":
-                if (check_args_len(len))
+                if (checkArgsLen(len))
                     engine.removeTests(args);
                 break;
             case "show":
-                if (check_args_len(len))
+                if (checkArgsLen(len))
                     engine.showResults(args);
                 break;
             case "cls":
             case "clear":
                 if (len != 1) {
-                    Printer.print_error("Too many arguments");
+                    Printer.printError("Too many arguments");
                 } else {
                     Printer.clear();
                 }
 
                 break;
             default:
-                Printer.print_error("Unknown command");
+                Printer.printError("Unknown command");
         }
     }
 
-    private boolean check_args_len(int len) {
+    private boolean checkArgsLen(int len) {
         if (len < 2) {
-            Printer.print_error("Give name(s) of test(s)");
+            Printer.printError("Give name(s) of test(s)");
         }
 
         return len >= 2;

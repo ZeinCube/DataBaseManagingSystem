@@ -15,19 +15,19 @@ public class TestEngine {
     private Configurator config;
 
     public TestEngine() {
-        Printer.print_delimiter();
-        Printer.print_info("Initializing TestEngine instance");
+        Printer.printDelimiter();
+        Printer.printInfo("Initializing TestEngine instance");
 
         config = new Configurator();
 
-        Printer.print_info("Tests folder: " + config.getTESTS_FOLDER());
-        Printer.print_delimiter();
+        Printer.printInfo("Tests folder: " + config.getTESTS_FOLDER());
+        Printer.printDelimiter();
     }
 
 
     public void createTest(String[] testNames) {
         for (String name : testNames) {
-            Printer.print_info("Creating test <" + name + ">");
+            Printer.printInfo("Creating test <" + name + ">");
 
             String test_dir = config.getTESTS_FOLDER().concat(name);
             String test_results_dir = test_dir.concat("/results");
@@ -41,23 +41,23 @@ public class TestEngine {
                 new File(test_dir.concat("/test.in")).createNewFile();
                 new File(test_expected_dir.concat("/test.out")).createNewFile();
             } catch (IOException e) {
-                Printer.print_critical_error(e.getMessage());
+                Printer.printCriticalError(e.getMessage());
             }
 
-            Printer.print_info("Test <" + name + "> created");
+            Printer.printInfo("Test <" + name + "> created");
         }
     }
 
     public void listTests() {
         for (String f : new File(config.getTESTS_FOLDER()).list()) {
-            Printer.print_list_element(f);
+            Printer.printListElement(f);
         }
     }
 
 
     public void removeTests(String[] testNames) {
         for (String name : testNames) {
-            Printer.print_info("Deleting test <" + name + ">");
+            Printer.printInfo("Deleting test <" + name + ">");
             File testFolder = new File(config.getTESTS_FOLDER() + name);
             if (testFolder.exists()) {
                 try {
@@ -66,11 +66,11 @@ public class TestEngine {
                             .sorted((o1, o2) -> -o1.compareTo(o2))
                             .forEach(File::delete);
                 } catch (IOException e) {
-                    Printer.print_critical_error(e.getMessage());
+                    Printer.printCriticalError(e.getMessage());
                 }
-                Printer.print_info("Test <" + name + "> deleted");
+                Printer.printInfo("Test <" + name + "> deleted");
             } else {
-                Printer.print_error("Test not found <" + name + ">");
+                Printer.printError("Test not found <" + name + ">");
             }
         }
     }
@@ -87,7 +87,7 @@ public class TestEngine {
 
 
     public void runAllTests() {
-        Printer.print_info("Running all tests");
+        Printer.printInfo("Running all tests");
         runTests(new File(config.getTESTS_FOLDER()).list());
     }
 }

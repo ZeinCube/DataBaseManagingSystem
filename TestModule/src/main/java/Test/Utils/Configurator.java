@@ -9,22 +9,22 @@ public class Configurator {
     private String TESTS_FOLDER;
 
     public Configurator() {
-        Printer.print_info("Initializing configuration");
+        Printer.printInfo("Initializing configuration");
 
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
 
         try {
             if (!config.exists()) {
-                Printer.print_info("Creating new configuration");
+                Printer.printInfo("Creating new configuration");
                 config.createNewFile();
                 createConfig();
-                Printer.print_info("Configuration created");
+                Printer.printInfo("Configuration created");
             } else {
                 loadConfig();
-                Printer.print_info("Configuration loaded");
+                Printer.printInfo("Configuration loaded");
             }
         } catch (IOException e) {
-            Printer.print_critical_error(e.getMessage());
+            Printer.printCriticalError(e.getMessage());
         }
     }
 
@@ -42,14 +42,14 @@ public class Configurator {
             }
         }
 
-        Printer.print_critical_error("Incorrect config file on path" + config.getAbsolutePath());
+        Printer.printCriticalError("Incorrect config file on path" + config.getAbsolutePath());
     }
 
     private void createConfig() throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            Printer.print_question("Input test directory path");
+            Printer.printQuestion("Input test directory path");
             TESTS_FOLDER = scanner.nextLine();
 
             if (TESTS_FOLDER.charAt(TESTS_FOLDER.length() - 1) != '/') {
@@ -62,7 +62,7 @@ public class Configurator {
                 fout.close();
                 break;
             } else {
-                Printer.print_error("Incorrect folder path");
+                Printer.printError("Incorrect folder path");
             }
         }
     }
