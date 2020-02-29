@@ -27,36 +27,36 @@ public class Printer {
     public static final String BACKGROUND_WHITE = "\u001B[47m";
 
 
-    public static void print_message(String msg) {
+    public static void printMessage(String msg) {
         System.out.println(msg);
     }
 
-    public static void print_shell_prompt() {
+    public static void printShellPrompt() {
         System.out.print(BACKGROUND_CYAN + TEXT_BLACK + "test_framework#" + RESET + " ");
     }
 
-    public static void print_error(String msg) {
+    public static void printError(String msg) {
         System.out.println(TEXT_RED + "[ERROR] " + RESET + msg);
     }
 
-    public static void print_critical_error(String msg) {
+    public static void printCriticalError(String msg) {
         System.out.println(BACKGROUND_RED + TEXT_BLACK + "[CRITICAL]" + RESET + " " + msg);
         System.exit(0);
     }
 
-    public static void print_info(String msg) {
+    public static void printInfo(String msg) {
         System.out.println(TEXT_BLUE + "[INFO] " + RESET + msg);
     }
 
-    public static void print_list_element(String msg) {
+    public static void printListElement(String msg) {
         System.out.println("-> " + msg);
     }
 
-    public static void print_delimiter() {
+    public static void printDelimiter() {
         System.out.println(TEXT_YELLOW + DELIMITER + RESET);
     }
 
-    public static void print_question(String msg) {
+    public static void printQuestion(String msg) {
         System.out.print(msg + ": ");
     }
 
