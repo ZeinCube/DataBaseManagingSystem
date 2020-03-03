@@ -8,6 +8,15 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class ImprovedParserManager {
+
+    private Listener listener;
+    private ParseTreeWalker parseTreeWalker;
+
+    public ImprovedParserManager() {
+        listener = new Listener();
+        parseTreeWalker = new ParseTreeWalker();
+    }
+
     public String Parse(String command) {
         DBGrammarLexer lexer = new DBGrammarLexer(CharStreams.fromString(command));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -16,10 +25,11 @@ public class ImprovedParserManager {
 
         try {
             ParseTree tree = parser.parse();
-            ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-            Listener listener = new Listener();
             parseTreeWalker.walk(listener, tree);
             out = listener.getMessageRet();
+            if (out.isEmpty()) {
+                out = "Operation completed;";
+            }
         } catch (Exception e) {
             out = "SystemError: " + e.getMessage();
         }
