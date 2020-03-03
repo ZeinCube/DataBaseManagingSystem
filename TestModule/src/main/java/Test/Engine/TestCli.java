@@ -64,6 +64,7 @@ public class TestCli {
                 break;
             case "delete":
             case "remove":
+            case "rm":
                 if (checkArgsLen(len))
                     engine.removeTests(args);
                 break;

@@ -26,7 +26,6 @@ public class Printer {
     public static final String BACKGROUND_CYAN = "\u001B[46m";
     public static final String BACKGROUND_WHITE = "\u001B[47m";
 
-
     public static void printMessage(String msg) {
         System.out.println(msg);
     }

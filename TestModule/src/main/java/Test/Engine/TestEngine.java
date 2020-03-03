@@ -41,7 +41,7 @@ public class TestEngine {
                 new File(test_dir.concat("/test.in")).createNewFile();
                 new File(test_expected_dir.concat("/test.out")).createNewFile();
             } catch (IOException e) {
-                Printer.printCriticalError(e.getMessage());
+                Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
             }
 
             Printer.printInfo("Test <" + name + "> created");
@@ -66,7 +66,7 @@ public class TestEngine {
                             .sorted((o1, o2) -> -o1.compareTo(o2))
                             .forEach(File::delete);
                 } catch (IOException e) {
-                    Printer.printCriticalError(e.getMessage());
+                    Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
                 }
                 Printer.printInfo("Test <" + name + "> deleted");
             } else {
