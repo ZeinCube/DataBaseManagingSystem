@@ -38,8 +38,12 @@ public class Printer {
         System.out.println(TEXT_RED + "[ERROR] " + RESET + msg);
     }
 
-    public static void printCriticalError(String msg) {
-        System.out.println(BACKGROUND_RED + TEXT_BLACK + "[CRITICAL]" + RESET + " " + msg);
+    public static void printCriticalError(Exception e) {
+        System.out.println(BACKGROUND_RED + TEXT_BLACK + "[CRITICAL]" + RESET + " " + e.getClass() + ": " + e.getMessage());
+    }
+
+    public static void printCriticalErrorAndExit(Exception e) {
+        printCriticalError(e);
         System.exit(0);
     }
 
