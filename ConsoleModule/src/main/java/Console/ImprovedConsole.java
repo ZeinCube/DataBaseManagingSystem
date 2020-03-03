@@ -1,6 +1,6 @@
 package Console;
 
-import Logic.ParserManager;
+import Logic.ImprovedParserManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class ImprovedConsole {
 
     public static void main(String[] args) throws Exception {
-        ParserManager manager = new ParserManager();
+        ImprovedParserManager manager = new ImprovedParserManager();
         if (args.length > 0) {
             for (String arg: args) {
                 if ((new File(arg)).exists()) {
@@ -25,7 +25,7 @@ public class ImprovedConsole {
         }
     }
 
-    private static void run_shell(ParserManager manager) {
+    private static void run_shell(ImprovedParserManager manager) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
