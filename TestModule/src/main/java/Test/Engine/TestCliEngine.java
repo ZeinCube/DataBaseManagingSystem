@@ -1,6 +1,5 @@
 package Test.Engine;
 
-import Test.Utils.Configurator;
 import Test.Utils.Printer;;
 
 import java.io.File;
@@ -9,18 +8,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class TestEngine {
+public class TestCliEngine {
 
     private String DB_NAME = "DataBaseManagingSystem";
-    private Configurator config;
+    private Tester tester;
 
-    public TestEngine() {
+    public TestCliEngine() {
         Printer.printDelimiter();
-        Printer.printInfo("Initializing TestEngine instance");
+        Printer.printInfo("Initializing Tester instance");
 
-        config = new Configurator();
+        tester = new Tester();
 
-        Printer.printInfo("Tests folder: " + config.getTESTS_FOLDER());
+        Printer.printInfo("Tests folder: " + tester.getConfigurator().getTESTS_FOLDER());
         Printer.printDelimiter();
     }
 
@@ -29,7 +28,7 @@ public class TestEngine {
         for (String name : testNames) {
             Printer.printInfo("Creating test <" + name + ">");
 
-            String test_dir = config.getTESTS_FOLDER().concat(name);
+            String test_dir = tester.getConfigurator().getTESTS_FOLDER().concat(name);
             String test_results_dir = test_dir.concat("/results");
             String test_expected_dir = test_dir.concat("/expected");
 
@@ -40,16 +39,17 @@ public class TestEngine {
             try {
                 new File(test_dir.concat("/test.in")).createNewFile();
                 new File(test_expected_dir.concat("/test.out")).createNewFile();
+                Printer.printInfo("Test <" + name + "> created");
             } catch (IOException e) {
-                Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
+                Printer.printCriticalError(e);
+                Printer.printError("Test <" + name + "> is not created");
             }
 
-            Printer.printInfo("Test <" + name + "> created");
         }
     }
 
     public void listTests() {
-        for (String f : new File(config.getTESTS_FOLDER()).list()) {
+        for (String f : new File(tester.getConfigurator().getTESTS_FOLDER()).list()) {
             Printer.printListElement(f);
         }
     }
@@ -58,17 +58,17 @@ public class TestEngine {
     public void removeTests(String[] testNames) {
         for (String name : testNames) {
             Printer.printInfo("Deleting test <" + name + ">");
-            File testFolder = new File(config.getTESTS_FOLDER() + name);
+            File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
             if (testFolder.exists()) {
                 try {
                     Files.walk(Paths.get(String.valueOf(testFolder)))
                             .map(Path::toFile)
                             .sorted((o1, o2) -> -o1.compareTo(o2))
                             .forEach(File::delete);
+                    Printer.printInfo("Test <" + name + "> deleted");
                 } catch (IOException e) {
-                    Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
+                    Printer.printCriticalError(e);
                 }
-                Printer.printInfo("Test <" + name + "> deleted");
             } else {
                 Printer.printError("Test not found <" + name + ">");
             }
@@ -77,7 +77,10 @@ public class TestEngine {
 
 
     public void runTests(String[] testNames) {
-        System.out.println("run_test");
+        Tester tester = new Tester();
+        for (String testName : testNames) {
+            tester.test(testName);
+        }
     }
 
 
@@ -88,6 +91,6 @@ public class TestEngine {
 
     public void runAllTests() {
         Printer.printInfo("Running all tests");
-        runTests(new File(config.getTESTS_FOLDER()).list());
+        runTests(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
     }
 }

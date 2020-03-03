@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class TestCli {
-    private TestEngine engine;
+    private TestCliEngine engine;
 
     public TestCli() {
-        engine = new TestEngine();
+        engine = new TestCliEngine();
     }
 
     public void run() {

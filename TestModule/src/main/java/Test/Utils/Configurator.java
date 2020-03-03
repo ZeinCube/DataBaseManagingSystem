@@ -1,6 +1,6 @@
 package Test.Utils;
 
-import Test.Exceptions.WrongConfigException;
+import Test.Exceptions.TestWrongConfigException;
 
 import java.io.*;
 import java.util.NoSuchElementException;
@@ -27,7 +27,7 @@ public class Configurator {
                 Printer.printInfo("Configuration loaded");
             }
         } catch (IOException e) {
-            Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
+            Printer.printCriticalErrorAndExit(e);
         }
     }
 
@@ -42,11 +42,11 @@ public class Configurator {
             if (input.length == 2) {
                 TESTS_FOLDER = input[1];
                 if (!checkTestsFolder()) {
-                    throw new WrongConfigException("Incorrect config file on path " + config.getAbsolutePath());
+                    throw new TestWrongConfigException("Incorrect config file on path " + config.getAbsolutePath());
                 }
             }
-        } catch (NoSuchElementException | WrongConfigException | FileNotFoundException e) {
-            Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
+        } catch (NoSuchElementException | TestWrongConfigException | FileNotFoundException e) {
+            Printer.printCriticalErrorAndExit(e);
         }
     }
 
@@ -75,5 +75,9 @@ public class Configurator {
     private boolean checkTestsFolder() {
         File tests_folder = new File(TESTS_FOLDER);
         return tests_folder.exists() && tests_folder.isDirectory();
+    }
+
+    public String getTestFolder(String testName) {
+        return TESTS_FOLDER + "testName";
     }
 }
