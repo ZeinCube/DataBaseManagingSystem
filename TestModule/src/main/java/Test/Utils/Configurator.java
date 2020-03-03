@@ -1,6 +1,9 @@
 package Test.Utils;
 
+import Test.Exceptions.WrongConfigException;
+
 import java.io.*;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Configurator {
@@ -24,7 +27,7 @@ public class Configurator {
                 Printer.printInfo("Configuration loaded");
             }
         } catch (IOException e) {
-            Printer.printCriticalError(e.getMessage());
+            Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
         }
     }
 
@@ -32,17 +35,19 @@ public class Configurator {
         return TESTS_FOLDER;
     }
 
-    private void loadConfig() throws FileNotFoundException {
-        Scanner scanner = new Scanner(config);
-        String[] input = scanner.nextLine().split("=");
-        if (input.length == 2) {
-            TESTS_FOLDER = input[1];
-            if (checkTestsFolder()) {
-                return;
+    private void loadConfig() {
+        try {
+            Scanner scanner = new Scanner(config);
+            String[] input = scanner.nextLine().split("=");
+            if (input.length == 2) {
+                TESTS_FOLDER = input[1];
+                if (!checkTestsFolder()) {
+                    throw new WrongConfigException("Incorrect config file on path " + config.getAbsolutePath());
+                }
             }
+        } catch (NoSuchElementException | WrongConfigException | FileNotFoundException e) {
+            Printer.printCriticalError(e.getClass() + ": " + e.getMessage());
         }
-
-        Printer.printCriticalError("Incorrect config file on path" + config.getAbsolutePath());
     }
 
     private void createConfig() throws IOException {
