@@ -78,6 +78,13 @@ public class Configurator {
     }
 
     public String getTestFolder(String testName) {
-        return TESTS_FOLDER + "testName";
+        String test_folder_path = TESTS_FOLDER + testName + "\\";
+
+        if (!(new File(test_folder_path).exists())) {
+            Printer.printError("Test <" + testName + "> does not exist");
+            return "";
+        }
+
+        return test_folder_path;
     }
 }

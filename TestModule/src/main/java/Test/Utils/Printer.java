@@ -38,6 +38,10 @@ public class Printer {
         System.out.println(TEXT_RED + "[ERROR] " + RESET + msg);
     }
 
+    public static void printError(Exception e) {
+        System.out.println(TEXT_RED + "[ERROR] " + RESET + " " + e.getClass() + ": " + e.getMessage());
+    }
+
     public static void printCriticalError(Exception e) {
         System.out.println(BACKGROUND_RED + TEXT_BLACK + "[CRITICAL]" + RESET + " " + e.getClass() + ": " + e.getMessage());
     }
@@ -61,6 +65,10 @@ public class Printer {
 
     public static void printQuestion(String msg) {
         System.out.print(msg + ": ");
+    }
+
+    public static void printTask(String msg) {
+        System.out.println(TEXT_YELLOW + "[Task]" + RESET + " " + msg);
     }
 
     public static void clear() {
