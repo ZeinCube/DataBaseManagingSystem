@@ -53,6 +53,7 @@ public class TestCli {
                 break;
             case "list":
             case "lst":
+            case "ls":
                 if (len != 1)
                     Printer.printError("Unknown arguments after list command");
 

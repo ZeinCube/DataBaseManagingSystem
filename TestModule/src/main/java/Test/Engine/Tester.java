@@ -8,25 +8,22 @@ import Test.Utils.Configurator;
 import Test.Utils.Printer;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class Tester {
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     private static final String CLEAR_COMMAND = "[@Clear]";
 
-    private enum PRINT_LEVEL {RESULT, ERROR, ALL}
+    private enum PRINT_LEVEL {MAIN, EXTENDED}
 
-    ;
     private CommandRunner commandRunner;
     private Configurator configurator;
     private ImprovedParserManager parserManager;
     private PRINT_LEVEL printLevel;
 
     public Tester() {
-        printLevel = PRINT_LEVEL.ALL;
+        printLevel = PRINT_LEVEL.MAIN;
 
         commandRunner = new CommandRunner();
         configurator = new Configurator();
@@ -52,8 +49,6 @@ public class Tester {
             File input = new File(test_folder + test + ".in");
             File expected = new File(test_folder + "expected\\" + test + ".expected");
             File output = new File(test_folder + "results\\" + test + ".out");
-
-            // TODO: check status codes and save them in .codes file
             File codes = new File(test_folder + "results\\" + test + ".codes");
 
             try {
@@ -63,28 +58,60 @@ public class Tester {
                 Printer.printError(e);
             }
 
-
             Printer.printDelimiter();
         }
     }
 
-    private void runTest(File input, File output) {
+    private void runTest(File input, File output) throws IOException {
+        Printer.printTask("Test run task");
 
+        Scanner scanner = new Scanner(input);
+        FileOutputStream outputStream = new FileOutputStream(output);
+
+        while (scanner.hasNextLine()) {
+            String query = scanner.nextLine();
+
+            if (query.startsWith(PRINT_LEVEL_COMMAND)) {
+                configPrintLevel(query);
+            } else if (query.startsWith(CLEAR_COMMAND)) {
+                dropDatabase();
+            } else {
+                String answer = commandRunner.runCommand(query).trim();
+
+                if (printLevel == PRINT_LEVEL.EXTENDED) {
+                    Printer.printTest(query, answer);
+                }
+
+                outputStream.write((answer + "\n").getBytes());
+            }
+        }
     }
 
 
     private void checkTest(File results, File expected) throws FileNotFoundException {
-        Scanner resultsScanner = new Scanner(expected);
+        Printer.printTask("Test check task");
+
+        Scanner resultsScanner = new Scanner(results);
         Scanner expectedScanner = new Scanner(expected);
 
-        while (resultsScanner.hasNextLine() && expectedScanner.hasNextLine()) {
-            String resultStr = resultsScanner.nextLine();
-            String expectedStr = expectedScanner.nextLine();
-            if (!resultsScanner.nextLine().equals(expectedScanner.nextLine())) {
-                String errorMessage = String.format("Wrong test result\nExpected:\n%s\nResult:\n%s", expectedStr, resultStr);
-                Printer.printError(new TestWrongResult(errorMessage));
+        int counter = 0;
+
+        while (expectedScanner.hasNextLine() || resultsScanner.hasNextLine()) {
+            counter += 1;
+
+            String resultStr = null, expectedStr = null;
+            if (resultsScanner.hasNextLine())
+                resultStr = resultsScanner.nextLine();
+            if (expectedScanner.hasNextLine())
+                expectedStr = expectedScanner.nextLine();
+
+            if (resultStr == null || expectedStr == null || !expectedStr.equals(resultStr)) {
+                Printer.printTestError(new TestWrongResult("Wrong test result on line " + counter), expectedStr, resultStr);
             }
         }
+
+        resultsScanner.close();
+        expectedScanner.close();
     }
 
     private void dropDatabase() {
@@ -96,8 +123,8 @@ public class Tester {
         }
 
         parserManager = new ImprovedParserManager();
-        if (printLevel == PRINT_LEVEL.ALL) {
-            Printer.printInfo("Database dropped");
+        if (printLevel == PRINT_LEVEL.EXTENDED) {
+            Printer.printTestInfo("Database dropped");
         }
     }
 
@@ -106,16 +133,18 @@ public class Tester {
         boolean flag = false;
         for (PRINT_LEVEL level : PRINT_LEVEL.values()) {
             if (level.name().equals(print_level)) {
-                if (printLevel == PRINT_LEVEL.ALL) {
-                    Printer.printInfo("PrintLevel set to " + print_level);
-                }
                 printLevel = level;
                 flag = true;
+
+                if (printLevel == PRINT_LEVEL.EXTENDED) {
+                    Printer.printTestInfo("PrintLevel set to " + print_level);
+                }
             }
         }
 
         if (!flag) {
-            Printer.printError("Can not set print level to " + print_level);
+            Printer.printTestError("Can not set print level to " + printLevel);
         }
     }
+
 }

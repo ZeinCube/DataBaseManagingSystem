@@ -37,7 +37,7 @@ public class TestCliEngine {
 
             try {
                 new File(test_dir.concat("/test.in")).createNewFile();
-                new File(test_expected_dir.concat("/test.out")).createNewFile();
+                new File(test_expected_dir.concat("/test.expected")).createNewFile();
                 Printer.printInfo("Test <" + name + "> created");
             } catch (IOException e) {
                 Printer.printCriticalError(e);

@@ -10,6 +10,6 @@ public class CommandRunner {
     }
 
     public String runCommand(String cmd) {
-        return parserManager.Parse(cmd);
+        return parserManager.parse(cmd);
     }
 }
