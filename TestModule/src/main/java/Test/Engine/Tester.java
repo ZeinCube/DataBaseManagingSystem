@@ -100,7 +100,9 @@ public class Tester {
             }
         }
 
-        Printer.printInBox(statusCounter.toString());
+        if (printLevel == PRINT_LEVEL.EXTENDED) {
+            Printer.printInBox(statusCounter.toString());
+        }
     }
 
 
