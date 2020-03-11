@@ -44,7 +44,7 @@ public class Status {
 
         String jsonStr = "";
         try {
-            jsonStr = objectMapper.writeValueAsString(status);
+            jsonStr = objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             Printer.printError("Json status mapping error");
         }
