@@ -5,6 +5,9 @@ public class Printer {
     public static final String DELIMITER =
             "--------------------------------------------------------------------------------";
 
+    public static final String LEFT_BOX_BORDER = "| ";
+    public static final String RIGHT_BOX_BORDER = " |";
+
     public static final String RESET = "\u001B[0m";
     public static final String CLEAR = "\033[H\033[2J";
 
@@ -37,7 +40,7 @@ public class Printer {
     }
 
     public static void printShellPrompt() {
-        System.out.print(BACKGROUND_CYAN + TEXT_WHITE + "test_framework#" + RESET + " ");
+        System.out.print(BACKGROUND_CYAN + TEXT_BLACK + "test_framework#" + RESET + " ");
     }
 
     public static void printError(String msg) {
@@ -93,8 +96,33 @@ public class Printer {
         System.out.println(TEXT_BLUE + "[TestInfo] " + RESET + msg);
     }
 
+    public static void printInBox(String msg) {
+        String[] strings = msg.split("\n");
+        int max_len = 0;
+        for (String s: strings) {
+            if (s.length() > max_len)
+                max_len = s.length();
+        }
+
+        for (int i = 0; i < strings.length; i++) {
+            for (int j = strings[i].length(); j < max_len; j++) {
+                strings[i] = strings[i].concat(" ");
+            }
+        }
+
+        StringBuilder TOP_BOTTOM_BORDER = new StringBuilder();
+        for (int i = 0; i < max_len + 4; i++) {
+            TOP_BOTTOM_BORDER.append("-");
+        }
+
+        System.out.println(TEXT_GREEN + TOP_BOTTOM_BORDER + RESET);
+        for (String s: strings)
+            System.out.println(TEXT_GREEN + LEFT_BOX_BORDER + RESET + s + TEXT_GREEN + RIGHT_BOX_BORDER + RESET);
+        System.out.println(TEXT_GREEN + TOP_BOTTOM_BORDER + RESET);
+    }
+
     public static void clear() {
-        System.out.print("\033[H\033[2J");
+        System.out.print(CLEAR);
         System.out.flush();
     }
 }
