@@ -5,10 +5,16 @@ import Test.Exceptions.TestDropDatabaseError;
 import Test.Exceptions.TestWrongResult;
 import Test.Utils.CommandRunner;
 import Test.Utils.Configurator;
+import Test.Utils.Statuses.Status;
 import Test.Utils.Printer;
+import Test.Utils.Statuses.StatusCounter;
+import Test.Utils.Statuses.StatusParser;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Tester {
@@ -52,7 +58,7 @@ public class Tester {
             File codes = new File(test_folder + "results\\" + test + ".codes");
 
             try {
-                runTest(input, output);
+                runTest(input, output, codes);
                 checkTest(output, expected);
             } catch (Exception e) {
                 Printer.printError(e);
@@ -62,21 +68,29 @@ public class Tester {
         }
     }
 
-    private void runTest(File input, File output) throws IOException {
+    private void runTest(File input, File output, File codes) throws IOException {
         Printer.printTask("Test run task");
 
-        Scanner scanner = new Scanner(input);
+        Scanner inputScanner = new Scanner(input);
         FileOutputStream outputStream = new FileOutputStream(output);
+        FileOutputStream codesStream = new FileOutputStream(codes);
 
-        while (scanner.hasNextLine()) {
-            String query = scanner.nextLine();
+        StatusCounter statusCounter = new StatusCounter();
+
+        while (inputScanner.hasNextLine()) {
+            String query = inputScanner.nextLine();
 
             if (query.startsWith(PRINT_LEVEL_COMMAND)) {
                 configPrintLevel(query);
             } else if (query.startsWith(CLEAR_COMMAND)) {
                 dropDatabase();
             } else {
+
                 String answer = commandRunner.runCommand(query).trim();
+
+                Status status = StatusParser.parse(query, answer);
+                codesStream.write(status.toString().concat("\n").getBytes());
+                statusCounter.parse(status);
 
                 if (printLevel == PRINT_LEVEL.EXTENDED) {
                     Printer.printTest(query, answer);
@@ -85,6 +99,8 @@ public class Tester {
                 outputStream.write((answer + "\n").getBytes());
             }
         }
+
+        Printer.printInBox(statusCounter.toString());
     }
 
 
