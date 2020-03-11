@@ -56,6 +56,7 @@ public class Configurator {
         while (true) {
             Printer.printQuestion("Input test directory path");
             TESTS_FOLDER = scanner.nextLine();
+            TESTS_FOLDER = TESTS_FOLDER.replaceAll("\\\\", "/");
 
             if (TESTS_FOLDER.charAt(TESTS_FOLDER.length() - 1) != '/') {
                 TESTS_FOLDER += '/';
@@ -78,6 +79,13 @@ public class Configurator {
     }
 
     public String getTestFolder(String testName) {
-        return TESTS_FOLDER + "testName";
+        String test_folder_path = TESTS_FOLDER + testName + "\\";
+
+        if (!(new File(test_folder_path).exists())) {
+            Printer.printError("Test <" + testName + "> does not exist");
+            return "";
+        }
+
+        return test_folder_path;
     }
 }

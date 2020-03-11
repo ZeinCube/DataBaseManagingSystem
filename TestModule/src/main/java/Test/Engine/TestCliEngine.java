@@ -15,7 +15,7 @@ public class TestCliEngine {
 
     public TestCliEngine() {
         Printer.printDelimiter();
-        Printer.printInfo("Initializing Tester instance");
+        Printer.printTask("Initializing Tester instance");
 
         tester = new Tester();
 
@@ -23,11 +23,10 @@ public class TestCliEngine {
         Printer.printDelimiter();
     }
 
-
     public void createTest(String[] testNames) {
         for (String name : testNames) {
-            Printer.printInfo("Creating test <" + name + ">");
-
+            Printer.printTask("Creating test <" + name + ">");
+          
             String test_dir = tester.getConfigurator().getTESTS_FOLDER().concat(name);
             String test_results_dir = test_dir.concat("/results");
             String test_expected_dir = test_dir.concat("/expected");
@@ -38,7 +37,7 @@ public class TestCliEngine {
 
             try {
                 new File(test_dir.concat("/test.in")).createNewFile();
-                new File(test_expected_dir.concat("/test.out")).createNewFile();
+                new File(test_expected_dir.concat("/test.expected")).createNewFile();
                 Printer.printInfo("Test <" + name + "> created");
             } catch (IOException e) {
                 Printer.printCriticalError(e);
@@ -54,10 +53,9 @@ public class TestCliEngine {
         }
     }
 
-
     public void removeTests(String[] testNames) {
         for (String name : testNames) {
-            Printer.printInfo("Deleting test <" + name + ">");
+            Printer.printTask("Deleting test <" + name + ">");
             File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
             if (testFolder.exists()) {
                 try {
@@ -75,22 +73,19 @@ public class TestCliEngine {
         }
     }
 
-
     public void runTests(String[] testNames) {
-        Tester tester = new Tester();
         for (String testName : testNames) {
+            Printer.printTask("Running test <" + testName + ">");
             tester.test(testName);
         }
     }
-
 
     public void showResults(String[] testNames) {
         System.out.println("show_results");
     }
 
-
     public void runAllTests() {
-        Printer.printInfo("Running all tests");
+        Printer.printTask("Running all tests");
         runTests(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
     }
 }

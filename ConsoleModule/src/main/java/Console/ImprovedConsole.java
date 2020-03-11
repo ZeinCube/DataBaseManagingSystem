@@ -16,12 +16,12 @@ public class ImprovedConsole {
                     FileInputStream fin = new FileInputStream(args[0]);
                     Scanner scanner = new Scanner(fin);
                     while (scanner.hasNextLine()) {
-                        manager.Parse(scanner.nextLine());
+                        manager.parse(scanner.nextLine());
                     }
                 }
             }
         } else {
-            run_shell(manager);
+            runShell(manager);
         }
     }
 
@@ -30,11 +30,11 @@ public class ImprovedConsole {
 
         while (true) {
             String line = scanner.nextLine();
-            if (line.isEmpty() || line.equals("exit")) {
-                break;
-            }
 
-            manager.Parse(line);
+            if (line.isEmpty()) continue;
+            if (line.equals("exit")) break;
+
+            System.out.println(manager.parse(line));
         }
     }
 }
