@@ -56,8 +56,8 @@ public class Configurator {
         while (true) {
             Printer.printQuestion("Input test directory path");
             TESTS_FOLDER = scanner.nextLine();
-
             TESTS_FOLDER = TESTS_FOLDER.replaceAll("\\\\", "/");
+
             if (TESTS_FOLDER.charAt(TESTS_FOLDER.length() - 1) != '/') {
                 TESTS_FOLDER += '/';
             }

@@ -25,7 +25,7 @@ public class ImprovedConsole {
         }
     }
 
-    private static void runShell(ImprovedParserManager manager) {
+    private static void run_shell(ImprovedParserManager manager) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {

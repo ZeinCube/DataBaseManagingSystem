@@ -164,5 +164,4 @@ public class Tester {
             Printer.printTestError("Can not set print level to " + printLevel);
         }
     }
-
 }
