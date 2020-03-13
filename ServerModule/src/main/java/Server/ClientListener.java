@@ -38,6 +38,7 @@ public class ClientListener extends Thread {
                 String message = is.readUTF();
 
                 if (message.equals("exit") || message.equals("quit")) {
+                    System.out.println("Disconnected client on IP " + socket.getInetAddress() + "|" + socket.getPort());
                     break;
                 }
 
