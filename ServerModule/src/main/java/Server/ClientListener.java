@@ -8,9 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * Слушает комады от клиента
- */
+
 public class ClientListener extends Thread {
     private Socket socket;
     private DataInputStream is;
