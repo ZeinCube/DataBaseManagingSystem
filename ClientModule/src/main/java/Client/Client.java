@@ -23,13 +23,12 @@ public class Client {
             List<String> tokens = new ArrayList<>();
 
             Scanner lineScanner = new Scanner(System.in);
-            System.out.print("# ");
             while (lineScanner.hasNextLine()) {
                 String s = lineScanner.nextLine();
                 tokens.add(s);
 
                 if (s.endsWith(";")) break;
-                System.out.print("  >>");
+                System.out.print(">>");
             }
 
             String result = "";
@@ -40,12 +39,13 @@ public class Client {
             String[] queries = result.split(";");
 
             for (String s: queries) {
-                if (s.equals("exit") || s.equals("quit")) {
-                    break;
-                }
 
                 try {
                     os.writeUTF(s);
+                    if (s.equals("exit") || s.equals("quit")) {
+                        listener.interrupt();
+                        System.exit(0);
+                    }
                 } catch (IOException e) {
                     listener.interrupt();
                     System.err.println(e.getMessage());
