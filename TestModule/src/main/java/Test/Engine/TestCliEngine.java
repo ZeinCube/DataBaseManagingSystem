@@ -26,7 +26,7 @@ public class TestCliEngine {
     public void createTest(String[] testNames) {
         for (String name : testNames) {
             Printer.printTask("Creating test <" + name + ">");
-
+          
             String test_dir = tester.getConfigurator().getTESTS_FOLDER().concat(name);
             String test_results_dir = test_dir.concat("/results");
             String test_expected_dir = test_dir.concat("/expected");

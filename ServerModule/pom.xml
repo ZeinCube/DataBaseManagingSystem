@@ -36,7 +36,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Server.Server</mainClass>
+                            <mainClass>Test.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
