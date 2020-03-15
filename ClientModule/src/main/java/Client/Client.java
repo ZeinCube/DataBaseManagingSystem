@@ -19,25 +19,37 @@ public class Client {
     public static void main(String[] args) {
         connect("localhost");
 
-        while (scanner.hasNextLine()) {
+        while (true) {
             List<String> tokens = new ArrayList<>();
 
             Scanner lineScanner = new Scanner(System.in);
             while (lineScanner.hasNextLine()) {
-                tokens.add(lineScanner.nextLine());
+                String s = lineScanner.nextLine();
+                tokens.add(s);
+
+                if (s.endsWith(";")) break;
+                System.out.print(">>");
             }
 
             String result = "";
-
-            for (String s: tokens) {
+            for (String s : tokens) {
                 result = result.concat(s);
             }
 
-            try {
-                os.writeUTF(result);
-            } catch (IOException e) {
-                listener.interrupt();
-                System.err.println(e.getMessage());
+            String[] queries = result.split(";");
+
+            for (String s: queries) {
+
+                try {
+                    os.writeUTF(s);
+                    if (s.equals("exit") || s.equals("quit")) {
+                        listener.interrupt();
+                        System.exit(0);
+                    }
+                } catch (IOException e) {
+                    listener.interrupt();
+                    System.err.println(e.getMessage());
+                }
             }
         }
     }

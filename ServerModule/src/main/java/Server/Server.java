@@ -41,28 +41,4 @@ public class Server {
             e.printStackTrace();
         }
     }
-
-    private static void setAddress() throws IOException {
-        ifases = "\nINTERFACES:";
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                ifases += "\n     " + intf.getName() + ": ";
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (int i = 0; i < addrs.size(); i++) {
-                    InetAddress ipAddress = addrs.get(i);
-                    ifases += ipAddress.getHostAddress() + (i == addrs.size() - 1 ? "" : ", ");
-                    if (!ipAddress.isLoopbackAddress() & !ipAddress.isLinkLocalAddress() & !ipAddress.getHostAddress().contains(":")) {
-                        ADDRESS = ipAddress;
-                        break;
-                    }
-                }
-            }
-            ifases += "\n----end of interfaces----";
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            mainSocket.close();
-            System.exit(1);
-        }
-    }
 }

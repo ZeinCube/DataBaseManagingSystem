@@ -1,22 +1,20 @@
 package Server;
 
 import Engine.API;
-import Logic.ParserManager;
+import Logic.ImprovedParserManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * Слушает комады от клиента
- */
+
 public class ClientListener extends Thread {
     private Socket socket;
     private DataInputStream is;
     private DataOutputStream os;
     private API api;
-    private ParserManager manager = new ParserManager();
+    private ImprovedParserManager manager = new ImprovedParserManager();
 
     public ClientListener(Socket socket) throws Exception {
         this.socket = socket;
@@ -28,6 +26,8 @@ public class ClientListener extends Thread {
             System.err.println("No connection");
         }
 
+        System.out.println("Connected client on IP " + socket.getInetAddress() + "|" + socket.getPort());
+
         start();
     }
 
@@ -36,7 +36,13 @@ public class ClientListener extends Thread {
         while (!isInterrupted() && !socket.isClosed()) {
             try {
                 String message = is.readUTF();
-                os.writeUTF(manager.Parse(message));
+
+                if (message.equals("exit") || message.equals("quit")) {
+                    System.out.println("Disconnected client on IP " + socket.getInetAddress() + "|" + socket.getPort());
+                    break;
+                }
+
+                os.writeUTF(manager.parse(message).trim());
                 os.flush();
             } catch (IOException e) {
                 System.err.println("No connection :" + e.getMessage());
