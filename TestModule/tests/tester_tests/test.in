@@ -1,6 +1,6 @@
 [@PrintLevel] EXTENDED
-hello
-world
+hello;
+world;
 [@Clear]
-foo
-bar
+foo;
+bar;

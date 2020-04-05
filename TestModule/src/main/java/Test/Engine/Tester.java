@@ -1,12 +1,11 @@
 package Test.Engine;
 
-import Logic.ImprovedParserManager;
 import Test.Exceptions.TestDropDatabaseError;
 import Test.Exceptions.TestWrongResult;
-import Test.Utils.CommandRunner;
+import Test.Utils.CSWorker;
 import Test.Utils.Configurator;
-import Test.Utils.Statuses.Status;
 import Test.Utils.Printer;
+import Test.Utils.Statuses.Status;
 import Test.Utils.Statuses.StatusCounter;
 import Test.Utils.Statuses.StatusParser;
 import org.apache.commons.io.FileUtils;
@@ -18,22 +17,19 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Tester {
+
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     private static final String CLEAR_COMMAND = "[@Clear]";
 
     private enum PRINT_LEVEL {MAIN, EXTENDED}
 
-    private CommandRunner commandRunner;
     private Configurator configurator;
-    private ImprovedParserManager parserManager;
     private PRINT_LEVEL printLevel;
 
     public Tester() {
         printLevel = PRINT_LEVEL.MAIN;
 
-        commandRunner = new CommandRunner();
         configurator = new Configurator();
-        parserManager = new ImprovedParserManager();
     }
 
     public Configurator getConfigurator() {
@@ -53,9 +49,9 @@ public class Tester {
             Printer.printInfo("Running test <" + test + ">");
 
             File input = new File(test_folder + test + ".in");
-            File expected = new File(test_folder + "expected\\" + test + ".expected");
-            File output = new File(test_folder + "results\\" + test + ".out");
-            File codes = new File(test_folder + "results\\" + test + ".codes");
+            File expected = new File(test_folder + "expected/" + test + ".expected");
+            File output = new File(test_folder + "results/" + test + ".out");
+            File codes = new File(test_folder + "results/" + test + ".codes");
 
             try {
                 runTest(input, output, codes);
@@ -85,8 +81,7 @@ public class Tester {
             } else if (query.startsWith(CLEAR_COMMAND)) {
                 dropDatabase();
             } else {
-
-                String answer = commandRunner.runCommand(query).trim();
+                String answer = CSWorker.Communicate(query).trim();
 
                 Status status = StatusParser.parse(query, answer);
                 codesStream.write(status.toString().concat("\n").getBytes());
@@ -140,7 +135,6 @@ public class Tester {
             Printer.printCriticalError(new TestDropDatabaseError("error dropping database"));
         }
 
-        parserManager = new ImprovedParserManager();
         if (printLevel == PRINT_LEVEL.EXTENDED) {
             Printer.printTestInfo("Database dropped");
         }

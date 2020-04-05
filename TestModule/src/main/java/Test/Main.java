@@ -1,12 +1,17 @@
 package Test;
 
 import Test.Engine.TestCli;
+import Test.Utils.CSWorker;
 
 public class Main {
 
     public static void main(String[] args) {
-        TestCli cli = new TestCli();
-        cli.run();
+        CSWorker.PROJECT_PATH = args[0];
+        CSWorker.RunClientServer();
+
+        new TestCli().run();
+
+        CSWorker.StopClientServer();
     }
 
 }
