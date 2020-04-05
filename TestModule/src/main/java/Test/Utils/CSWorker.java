@@ -3,11 +3,9 @@ package Test.Utils;
 import java.io.*;
 
 /**
- * ClientServer work helper
+ * Class CSWorker
+ * Client Server helper
  * Set PROJECT_PATH before use
- *
- * @author hehogcode
- * @version 1.0.1
  */
 public class CSWorker {
     public static String PROJECT_PATH;
@@ -21,7 +19,7 @@ public class CSWorker {
     private static PrintWriter clientWriter;
     private static BufferedReader clientReader;
 
-    public static void RunServer() {
+    public static void runServer() {
         try {
             server = Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + SERVER_JAR);
         } catch (IOException e) {
@@ -30,16 +28,16 @@ public class CSWorker {
         }
     }
 
-    public static void StopServer() {
+    public static void stopServer() {
         server.destroy();
     }
 
-    public static void RestartServer() {
-        StopServer();
-        RunServer();
+    public static void restartServer() {
+        stopServer();
+        runServer();
     }
 
-    public static void RunClient() {
+    public static void runClient() {
         try {
             client = Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + CLIENT_JAR);
             clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -50,7 +48,7 @@ public class CSWorker {
         }
     }
 
-    public static void StopClient() {
+    public static void stopClient() {
         try {
             clientReader.close();
         } catch (IOException e) {
@@ -61,39 +59,31 @@ public class CSWorker {
         client.destroy();
     }
 
-    public static void RestartClient() {
-        StopClient();
-        RunClient();
+    public static void restartClient() {
+        stopClient();
+        runClient();
     }
 
-    public static void RunClientServer() {
-        RunServer();
-        RunClient();
+    public static void runClientServer() {
+        runServer();
+        runClient();
     }
 
-    public static void StopClientServer() {
-        StopClient();
-        StopServer();
+    public static void stopClientServer() {
+        stopClient();
+        stopServer();
     }
 
-    public static void RestartClientServer() {
-        StopClientServer();
-        RunClientServer();
+    public static void restartClientServer() {
+        stopClientServer();
+        runClientServer();
     }
 
-    public static Process RunAndReturnClient() throws IOException {
+    public static Process runAndReturnClient() throws IOException {
         return Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + CLIENT_JAR);
     }
 
-    public static boolean getClientStatus() {
-        return client.isAlive();
-    }
-
-    public static boolean getServerStatus() {
-        return server.isAlive();
-    }
-
-    public static String Communicate(String query) {
+    public static String communicate(String query) {
         clientWriter.println(query);
         clientWriter.flush();
 
@@ -103,5 +93,13 @@ public class CSWorker {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static boolean getClientStatus() {
+        return client.isAlive();
+    }
+
+    public static boolean getServerStatus() {
+        return server.isAlive();
     }
 }

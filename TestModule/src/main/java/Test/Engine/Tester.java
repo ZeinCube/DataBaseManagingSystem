@@ -16,6 +16,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * class Tester
+ * Core of testing framework
+ */
 public class Tester {
 
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
@@ -81,7 +85,7 @@ public class Tester {
             } else if (query.startsWith(CLEAR_COMMAND)) {
                 dropDatabase();
             } else {
-                String answer = CSWorker.Communicate(query).trim();
+                String answer = CSWorker.communicate(query).trim();
 
                 Status status = StatusParser.parse(query, answer);
                 codesStream.write(status.toString().concat("\n").getBytes());
@@ -132,7 +136,7 @@ public class Tester {
             FileUtils.deleteDirectory(new File(System.getProperty("user.home") + "/.dbms"));
         } catch (IOException e) {
             Printer.printCriticalError(e);
-            Printer.printCriticalError(new DropDatabaseException("error dropping database"));
+            Printer.printCriticalError(new DropDatabaseException());
         }
 
         if (printLevel == PRINT_LEVEL.EXTENDED) {

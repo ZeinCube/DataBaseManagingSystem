@@ -5,6 +5,11 @@ import Test.Utils.Printer;
 import java.util.Arrays;
 import java.util.Scanner;
 
+
+/**
+ * class TestCli
+ * Cli interface for Tester
+ */
 public class TestCli {
     private TestCliEngine engine;
 

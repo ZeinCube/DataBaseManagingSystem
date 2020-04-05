@@ -7,6 +7,12 @@ import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * Class Configurator
+ * Checks config in location $HOME/.dbms_test_config
+ * with full path to tests root folder (default $PROJECT_PATH/TestModule/tests)
+ * and checks status of client server
+ */
 public class Configurator {
 
     private File config;
@@ -16,9 +22,8 @@ public class Configurator {
         Printer.printInfo("Initializing configuration");
 
         Printer.printInfo("Checking client server status");
-        if (!checkClientServer()) {
+        if (!checkClientServer())
             Printer.printCriticalErrorAndExit(new ClientServerDownException());
-        }
         Printer.printInfo("Client Server OK");
 
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
@@ -26,8 +31,12 @@ public class Configurator {
         try {
             if (!config.exists()) {
                 Printer.printInfo("Creating new configuration");
-                config.createNewFile();
+
+                boolean flag = config.createNewFile();
+                if (!flag) Printer.printCriticalErrorAndExit(new BadConfigException("Can not create config file"));
+
                 createConfig();
+
                 Printer.printInfo("Configuration created");
             } else {
                 loadConfig();
@@ -66,13 +75,13 @@ public class Configurator {
             TESTS_FOLDER = TESTS_FOLDER.replaceAll("\\\\", "/");
 
             if (TESTS_FOLDER.charAt(TESTS_FOLDER.length() - 1) != '/') {
-                TESTS_FOLDER += '/';
+                TESTS_FOLDER = TESTS_FOLDER.concat("/");
             }
 
             if (checkTestsFolder()) {
-                FileOutputStream fout = new FileOutputStream(config);
-                fout.write(("TESTS_FOLDER=" + TESTS_FOLDER + "\n").getBytes());
-                fout.close();
+                FileOutputStream configOutputStream = new FileOutputStream(this.config);
+                configOutputStream.write(("TESTS_FOLDER=" + TESTS_FOLDER + "\n").getBytes());
+                configOutputStream.close();
                 break;
             } else {
                 Printer.printError("Incorrect folder path");

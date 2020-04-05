@@ -7,10 +7,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
+/**
+ * Class TestCliEngine
+ * Engine for TestCli.java
+ * Initialize and run tester
+ */
 public class TestCliEngine {
 
-    private String DB_NAME = "DataBaseManagingSystem";
     private Tester tester;
 
     public TestCliEngine() {
@@ -26,7 +31,7 @@ public class TestCliEngine {
     public void createTest(String[] testNames) {
         for (String name : testNames) {
             Printer.printTask("Creating test <" + name + ">");
-          
+
             String test_dir = tester.getConfigurator().getTESTS_FOLDER().concat(name);
             String test_results_dir = test_dir.concat("/results");
             String test_expected_dir = test_dir.concat("/expected");
@@ -48,7 +53,7 @@ public class TestCliEngine {
     }
 
     public void listTests() {
-        for (String f : new File(tester.getConfigurator().getTESTS_FOLDER()).list()) {
+        for (String f : Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list())) {
             Printer.printListElement(f);
         }
     }
@@ -86,6 +91,6 @@ public class TestCliEngine {
 
     public void runAllTests() {
         Printer.printTask("Running all tests");
-        runTests(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
+        runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
     }
 }

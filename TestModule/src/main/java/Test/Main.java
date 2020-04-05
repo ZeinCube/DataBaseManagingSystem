@@ -7,11 +7,11 @@ public class Main {
 
     public static void main(String[] args) {
         CSWorker.PROJECT_PATH = args[0];
-        CSWorker.RunClientServer();
+        CSWorker.runClientServer();
 
         new TestCli().run();
 
-        CSWorker.StopClientServer();
+        CSWorker.stopClientServer();
     }
 
 }
