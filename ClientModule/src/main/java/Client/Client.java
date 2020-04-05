@@ -58,7 +58,6 @@ public class Client {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
             DataInputStream is = new DataInputStream(socket.getInputStream());
-            System.out.println("Connected to port " + port);
             os = new DataOutputStream(socket.getOutputStream());
             listener = new ServerListener(is);
         } catch (Exception e) {

@@ -21,7 +21,6 @@ import java.util.Scanner;
  * Core of testing framework
  */
 public class Tester {
-
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     private static final String CLEAR_COMMAND = "[@Clear]";
 
@@ -30,19 +29,32 @@ public class Tester {
     private Configurator configurator;
     private PRINT_LEVEL printLevel;
 
+    private int countTests;
+    private int countPassed;
+
     public Tester() {
         printLevel = PRINT_LEVEL.MAIN;
 
+        clearCounters();
+
         configurator = new Configurator();
+    }
+
+    public void clearCounters() {
+        countTests = 0;
+        countPassed = 0;
     }
 
     public Configurator getConfigurator() {
         return configurator;
     }
 
+
+    // Testing functions
+
     public void test(String testName) {
-        String test_folder = configurator.getTestFolder(testName);
-        String[] tests = new File(test_folder).list((file, s) -> s.endsWith(".in"));
+        String testFolder = configurator.getTestFolder(testName);
+        String[] tests = new File(testFolder).list((file, s) -> s.endsWith(".in"));
 
         if (tests == null) return;
 
@@ -52,14 +64,16 @@ public class Tester {
             Printer.printDelimiter();
             Printer.printInfo("Running test <" + test + ">");
 
-            File input = new File(test_folder + test + ".in");
-            File expected = new File(test_folder + "expected/" + test + ".expected");
-            File output = new File(test_folder + "results/" + test + ".out");
-            File codes = new File(test_folder + "results/" + test + ".codes");
+            File input = new File(testFolder + test + ".in");
+            File expected = new File(testFolder + "expected/" + test + ".expected");
+            File output = new File(testFolder + "results/" + test + ".out");
+            File codes = new File(testFolder + "results/" + test + ".codes");
 
             try {
                 runTest(input, output, codes);
-                checkTest(output, expected);
+                if (checkTest(output, expected)) {
+                    countPassed++;
+                }
             } catch (Exception e) {
                 Printer.printError(e);
             }
@@ -70,6 +84,8 @@ public class Tester {
 
     private void runTest(File input, File output, File codes) throws IOException {
         Printer.printTask("Test run task");
+
+        countTests++;
 
         Scanner inputScanner = new Scanner(input);
         FileOutputStream outputStream = new FileOutputStream(output);
@@ -104,9 +120,10 @@ public class Tester {
         }
     }
 
-
-    private void checkTest(File results, File expected) throws FileNotFoundException {
+    private boolean checkTest(File results, File expected) throws FileNotFoundException {
         Printer.printTask("Test check task");
+
+        boolean passed = true;
 
         Scanner resultsScanner = new Scanner(results);
         Scanner expectedScanner = new Scanner(expected);
@@ -124,12 +141,18 @@ public class Tester {
 
             if (resultStr == null || expectedStr == null || !expectedStr.equals(resultStr)) {
                 Printer.printTestError(new TestWrongResultException("Wrong test result on line " + counter), expectedStr, resultStr);
+                passed = false;
             }
         }
 
         resultsScanner.close();
         expectedScanner.close();
+
+        return passed;
     }
+
+
+    // Framework commands
 
     private void dropDatabase() {
         try {
@@ -145,21 +168,30 @@ public class Tester {
     }
 
     private void configPrintLevel(String cmd) {
-        String print_level = cmd.replace(PRINT_LEVEL_COMMAND, "").trim();
+        String printLevel = cmd.replace(PRINT_LEVEL_COMMAND, "").trim();
         boolean flag = false;
         for (PRINT_LEVEL level : PRINT_LEVEL.values()) {
-            if (level.name().equals(print_level)) {
-                printLevel = level;
+            if (level.name().equals(printLevel)) {
+                this.printLevel = level;
                 flag = true;
 
-                if (printLevel == PRINT_LEVEL.EXTENDED) {
-                    Printer.printTestInfo("PrintLevel set to " + print_level);
-                }
+                Printer.printTestInfo("PrintLevel set to " + printLevel);
             }
         }
 
         if (!flag) {
-            Printer.printTestError("Can not set print level to " + printLevel);
+            Printer.printTestError("Can not set print level to " + this.printLevel);
         }
+    }
+
+
+    // Other functions
+
+    public boolean allPassed() {
+        return countTests == countPassed;
+    }
+
+    public void printStatistic() {
+        Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
     }
 }

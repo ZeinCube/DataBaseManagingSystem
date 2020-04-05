@@ -77,10 +77,6 @@ public class TestCli {
                 if (checkArgsLen(len))
                     engine.removeTests(args);
                 break;
-            case "show":
-                if (checkArgsLen(len))
-                    engine.showResults(args);
-                break;
             case "cls":
             case "clear":
                 if (len != 1) {

@@ -128,4 +128,10 @@ public class Printer {
         System.out.print(CLEAR);
         System.out.flush();
     }
+
+    public static void printTestsStatistic(int countTests, int countPassed, int countNotPassed) {
+        System.out.println(BACKGROUND_BLACK + TEXT_WHITE + "[Results] " + countTests + " tests " +
+                BACKGROUND_GREEN + "Passed: " + countPassed + " " +
+                BACKGROUND_RED + "Not passed: " + countNotPassed + RESET);
+    }
 }

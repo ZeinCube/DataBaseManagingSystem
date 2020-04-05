@@ -79,18 +79,19 @@ public class TestCliEngine {
     }
 
     public void runTests(String[] testNames) {
+        tester.clearCounters();
+
         for (String testName : testNames) {
             Printer.printTask("Running test <" + testName + ">");
             tester.test(testName);
         }
-    }
 
-    public void showResults(String[] testNames) {
-        System.out.println("show_results");
+        tester.printStatistic();
     }
 
     public void runAllTests() {
         Printer.printTask("Running all tests");
+        Printer.printDelimiter();
         runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
     }
 }

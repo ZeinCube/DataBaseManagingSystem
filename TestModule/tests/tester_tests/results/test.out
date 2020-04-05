@@ -1,4 +1,4 @@
-Connected to port 3309
 line 1:0 mismatched input 'hello' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
 line 1:0 mismatched input 'world' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
 line 1:0 mismatched input 'foo' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'bar' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
