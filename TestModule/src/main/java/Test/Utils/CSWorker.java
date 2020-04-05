@@ -7,7 +7,7 @@ import java.io.*;
  * Set PROJECT_PATH before use
  *
  * @author hehogcode
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class CSWorker {
     public static String PROJECT_PATH;
@@ -83,6 +83,14 @@ public class CSWorker {
 
     public static Process RunAndReturnClient() throws IOException {
         return Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + CLIENT_JAR);
+    }
+
+    public static boolean getClientStatus() {
+        return client.isAlive();
+    }
+
+    public static boolean getServerStatus() {
+        return server.isAlive();
     }
 
     public static String Communicate(String query) {

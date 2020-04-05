@@ -1,7 +1,7 @@
 package Test.Engine;
 
-import Test.Exceptions.TestDropDatabaseError;
-import Test.Exceptions.TestWrongResult;
+import Test.Exceptions.DropDatabaseException;
+import Test.Exceptions.TestWrongResultException;
 import Test.Utils.CSWorker;
 import Test.Utils.Configurator;
 import Test.Utils.Printer;
@@ -119,7 +119,7 @@ public class Tester {
                 expectedStr = expectedScanner.nextLine();
 
             if (resultStr == null || expectedStr == null || !expectedStr.equals(resultStr)) {
-                Printer.printTestError(new TestWrongResult("Wrong test result on line " + counter), expectedStr, resultStr);
+                Printer.printTestError(new TestWrongResultException("Wrong test result on line " + counter), expectedStr, resultStr);
             }
         }
 
@@ -132,7 +132,7 @@ public class Tester {
             FileUtils.deleteDirectory(new File(System.getProperty("user.home") + "/.dbms"));
         } catch (IOException e) {
             Printer.printCriticalError(e);
-            Printer.printCriticalError(new TestDropDatabaseError("error dropping database"));
+            Printer.printCriticalError(new DropDatabaseException("error dropping database"));
         }
 
         if (printLevel == PRINT_LEVEL.EXTENDED) {

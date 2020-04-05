@@ -1,6 +1,7 @@
 package Test.Utils;
 
-import Test.Exceptions.TestWrongConfigException;
+import Test.Exceptions.ClientServerDownException;
+import Test.Exceptions.BadConfigException;
 
 import java.io.*;
 import java.util.NoSuchElementException;
@@ -13,6 +14,12 @@ public class Configurator {
 
     public Configurator() {
         Printer.printInfo("Initializing configuration");
+
+        Printer.printInfo("Checking client server status");
+        if (!checkClientServer()) {
+            Printer.printCriticalErrorAndExit(new ClientServerDownException());
+        }
+        Printer.printInfo("Client Server OK");
 
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
 
@@ -42,10 +49,10 @@ public class Configurator {
             if (input.length == 2) {
                 TESTS_FOLDER = input[1];
                 if (!checkTestsFolder()) {
-                    throw new TestWrongConfigException("Incorrect config file on path " + config.getAbsolutePath());
+                    throw new BadConfigException("Incorrect config file on path " + config.getAbsolutePath());
                 }
             }
-        } catch (NoSuchElementException | TestWrongConfigException | FileNotFoundException e) {
+        } catch (NoSuchElementException | BadConfigException | FileNotFoundException e) {
             Printer.printCriticalErrorAndExit(e);
         }
     }
@@ -87,5 +94,9 @@ public class Configurator {
         }
 
         return test_folder_path;
+    }
+
+    public boolean checkClientServer() {
+        return CSWorker.getClientStatus() && CSWorker.getServerStatus();
     }
 }
