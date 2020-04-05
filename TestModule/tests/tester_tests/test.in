@@ -1,5 +1,6 @@
 [@PrintLevel] EXTENDED
 hello;
+@@ Example comment
 world;
 [@Clear]
 foo;

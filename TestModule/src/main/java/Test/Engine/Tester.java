@@ -21,6 +21,7 @@ import java.util.Scanner;
  * Core of testing framework
  */
 public class Tester {
+    private static final String COMMENT_COMMAND = "@@";
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     private static final String CLEAR_COMMAND = "[@Clear]";
 
@@ -100,7 +101,7 @@ public class Tester {
                 configPrintLevel(query);
             } else if (query.startsWith(CLEAR_COMMAND)) {
                 dropDatabase();
-            } else {
+            } else if (!query.startsWith(COMMENT_COMMAND)) {
                 String answer = CSWorker.communicate(query).trim();
 
                 Status status = StatusParser.parse(query, answer);
@@ -118,6 +119,7 @@ public class Tester {
         if (printLevel == PRINT_LEVEL.EXTENDED) {
             Printer.printInBox(statusCounter.toString());
         }
+
     }
 
     private boolean checkTest(File results, File expected) throws FileNotFoundException {
