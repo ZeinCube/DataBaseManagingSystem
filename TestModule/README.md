@@ -116,3 +116,9 @@ Sets the level of the desired output. For printing complete testing progress, us
 
 ### @@ Some Text
 Comment. Just a comment.
+
+### [@Sleep] TIME
+Sleep for TIME milliseconds
+
+### [@Repeat] TIMES
+Repeat next expression TIMES times. In expression you can use $i variable. It will be replaced from 1 to TIMES on each iteration.

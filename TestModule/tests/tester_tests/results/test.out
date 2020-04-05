@@ -1,4 +1,8 @@
 line 1:0 mismatched input 'hello' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
-line 1:0 mismatched input 'world' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'world1' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'world2' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'world3' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'world4' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
+line 1:0 mismatched input 'world5' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
 line 1:0 mismatched input 'foo' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
 line 1:0 mismatched input 'bar' expecting {K_CREATE, K_DROP, K_SHOW, K_SELECT, K_UPDATE, K_INSERT}
