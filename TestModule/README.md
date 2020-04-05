@@ -19,6 +19,37 @@ If you want to run certain tests and get the result (only true or false), you ca
 
 TODO: Script for Windows
 
+## Tests structure
+
+Example of test folder:
+```
+TestFolder
+    expected
+        hello.expected
+        world.expected
+    results
+        hello.codes
+        hello.out
+        world.codes
+        world.out
+    hello.in
+    world.in
+```
+
+The ```TestFolder``` folder contains a test whose name matches the name of the folder.
+
+Files with the extension **.in** are test files with SQL queries and commands for the testing framework. 
+In the example above, there are two tests called ```hello``` and ```world```.
+
+The ```expected``` folder contains the expected output for each test 
+in files with the extension **.expected**. The output should match exactly what you want, including white space and line breaks. 
+In the example above, there are two files with the expected output for each test: ```hello.expected``` and ```world.expected```.
+
+The ```results``` folder contains valid tests results. Files with the extension **.out** store the received output, which will then be compared with the corresponding **.expected** file. Files with the extension **.codes** contain operation codes, executable commands and their output in json format.
+
+
+The test framework will automatically create the necessary folders and files using the *create* command.
+
 ## Command line interface
 
 ### ```run``` command
