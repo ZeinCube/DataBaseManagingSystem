@@ -94,4 +94,8 @@ public class TestCliEngine {
         Printer.printDelimiter();
         runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
     }
+
+    public boolean allPassed() {
+        return tester.allPassed();
+    }
 }

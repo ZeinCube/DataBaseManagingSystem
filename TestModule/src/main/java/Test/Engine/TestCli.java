@@ -2,6 +2,8 @@ package Test.Engine;
 
 import Test.Utils.Printer;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -17,7 +19,12 @@ public class TestCli {
         engine = new TestCliEngine();
     }
 
-    public void run() {
+    public int run(String[] args) {
+        if (args.length > 0) {
+            parseCommand(args);
+            return engine.allPassed() ? 0 : 1;
+        }
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             Printer.printShellPrompt();
@@ -26,7 +33,7 @@ public class TestCli {
             if (command.length == 0) continue;
 
             if (command.length == 1 && (command[0].equals("exit") || command[0].equals("quit"))) {
-                return;
+                return 0;
             } else {
                 parseCommand(command);
             }

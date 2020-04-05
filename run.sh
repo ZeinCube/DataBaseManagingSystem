@@ -18,7 +18,7 @@ function build {
   mvn clean install
 }
 
-function run_testing_framework {
+function run_testing_framework() {
   TESTS_CONFIG="$HOME/.dbms_tests_config"
 
   if [[ ! -f $TESTS_CONFIG ]]; then
@@ -26,7 +26,7 @@ function run_testing_framework {
     echo "TEST_FOLDER=$(pwd)/tests/" > "$TESTS_CONFIG"
   fi
 
-  java -jar $TESTS_MODULE_EXECUTABLE "$(pwd)"/
+  java -jar $TESTS_MODULE_EXECUTABLE "$(pwd)"/ "$@"
 }
 
 function run_console {
@@ -36,12 +36,12 @@ function run_console {
 
 cd "$SCRIPT_DIR" || exit 0
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -eq 0 ]; then
   run_console
 else
   case $1 in
     "build") build;;
-    "test") run_testing_framework;;
-    "console") run_console;;
+    "test") run_testing_framework "${@:2}";;
+    "console" | *) run_console;;
   esac
 fi
