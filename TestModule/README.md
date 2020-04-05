@@ -9,6 +9,14 @@ For running testing framework on Linux systems use ```run.sh``` script in projec
 It will create a config file ```~/.dbms_tests_config```
 Please, check the path to the root directory with the tests in the configuration file. By default, the path should point to ```$PROJECT_ROOT/TestModule/tests/```
 
+To main function (class Main.java) MUST be passed 1 argument: full path to projects root directory (script run.sh will do it automatically)
+
+If you want to run certain tests and get the result (only true or false), you can use the special syntax:
+```bash
+./run.sh test run testname1, testname2 ...
+./run.sh test run all
+```
+
 TODO: Script for Windows
 
 ## Command line interface
@@ -56,3 +64,8 @@ del testname1 testname2
 Aliases: ```cls```
 
 Clears the screen of terminal. Not all of terminals are supported. Check if your terminal supports ANSI escape codes.
+
+### ```exit``` command
+Aliases: ```quit```
+
+Exit from testing framework
