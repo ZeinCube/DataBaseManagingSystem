@@ -53,6 +53,7 @@ public class TestCli {
                 break;
             case "list":
             case "lst":
+            case "dir":
             case "ls":
                 if (len != 1)
                     Printer.printError("Unknown arguments after list command");
@@ -60,11 +61,13 @@ public class TestCli {
                 engine.listTests();
                 break;
             case "create":
+            case "new":
                 if (checkArgsLen(len))
                     engine.createTest(args);
                 break;
             case "delete":
             case "remove":
+            case "del":
             case "rm":
                 if (checkArgsLen(len))
                     engine.removeTests(args);
