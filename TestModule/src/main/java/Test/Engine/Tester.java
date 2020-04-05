@@ -10,10 +10,7 @@ import Test.Utils.Statuses.StatusCounter;
 import Test.Utils.Statuses.StatusParser;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -25,16 +22,18 @@ public class Tester {
     private static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     private static final String CLEAR_COMMAND = "[@Clear]";
 
-    private enum PRINT_LEVEL {MAIN, EXTENDED}
+    private enum PRINT_LEVEL {MAIN, EXTENDED, NONE}
 
     private Configurator configurator;
     private PRINT_LEVEL printLevel;
+    private PrintStream systemOutCopy;
 
     private int countTests;
     private int countPassed;
 
     public Tester() {
         printLevel = PRINT_LEVEL.MAIN;
+        systemOutCopy = System.out;
 
         clearCounters();
 
@@ -79,13 +78,13 @@ public class Tester {
                 Printer.printError(e);
             }
 
+            System.setOut(systemOutCopy);
+
             Printer.printDelimiter();
         }
     }
 
     private void runTest(File input, File output, File codes) throws IOException {
-        Printer.printTask("Test run task");
-
         countTests++;
 
         Scanner inputScanner = new Scanner(input);
@@ -123,8 +122,6 @@ public class Tester {
     }
 
     private boolean checkTest(File results, File expected) throws FileNotFoundException {
-        Printer.printTask("Test check task");
-
         boolean passed = true;
 
         Scanner resultsScanner = new Scanner(results);
@@ -177,12 +174,27 @@ public class Tester {
                 this.printLevel = level;
                 flag = true;
 
-                Printer.printTestInfo("PrintLevel set to " + printLevel);
+                if (this.printLevel == PRINT_LEVEL.NONE) {
+                    try {
+                        System.setOut(new PrintStream(new OutputStream() {
+                            public void write(int b) {
+                            }
+                        }));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.setOut(systemOutCopy);
+                }
+
+                if (this.printLevel == PRINT_LEVEL.EXTENDED) {
+                    Printer.printTestInfo("PrintLevel set to " + printLevel);
+                }
             }
         }
 
         if (!flag) {
-            Printer.printTestError("Can not set print level to " + this.printLevel);
+            Printer.printTestError("Can not set print level to " + printLevel);
         }
     }
 

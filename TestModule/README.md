@@ -100,3 +100,19 @@ Clears the screen of terminal. Not all of terminals are supported. Check if your
 Aliases: ```quit```
 
 Exit from testing framework
+
+## Test framework commands
+
+You can use these commands inside tests (**.in** files).
+
+### [@Clear]
+
+Clear the database (deletes the folder with the current database and re-creates it).
+
+### [@PrintLevel MAIN|EXTENDED|NONE]
+Default value: MAIN
+
+Sets the level of the desired output. For printing complete testing progress, use EXTENDED. To get only the test result (no error output) use NONE.
+
+### @@ Some Text
+Comment. Just a comment.

@@ -1,4 +1,4 @@
-[@PrintLevel] EXTENDED
+[@PrintLevel] MAIN
 hello;
 @@ Example comment
 world;
