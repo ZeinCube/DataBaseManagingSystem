@@ -9,11 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-/**
- * Class TestCliEngine
- * Engine for TestCli.java
- * Initialize and run tester
- */
+
 public class TestCliEngine {
 
     private Tester tester;

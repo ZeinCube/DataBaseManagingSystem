@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class TesterCommands {
 
@@ -180,7 +179,7 @@ public class TesterCommands {
     private void sleepCommand(String cmd) {
         String time = cmd.replace(TesterCommands.SLEEP_COMMAND, "").trim();
         try {
-            TimeUnit.MILLISECONDS.sleep(new Integer(time));
+            Thread.sleep(new Integer(time));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -209,7 +208,7 @@ public class TesterCommands {
         try {
             CSWorker.forceRestartServer();
             while (!CSWorker.getServerStatus()) {
-                TimeUnit.MILLISECONDS.sleep(10);
+                Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
@@ -218,7 +217,7 @@ public class TesterCommands {
 
             CSWorker.restartClient();
             while (!CSWorker.getClientStatus()) {
-                TimeUnit.MILLISECONDS.sleep(200);
+                Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
@@ -233,7 +232,7 @@ public class TesterCommands {
         int rand = (int) (Math.random() * ((time - minTime) + 1)) + minTime;
 
         try {
-            TimeUnit.MILLISECONDS.sleep(rand);
+            Thread.sleep(rand);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

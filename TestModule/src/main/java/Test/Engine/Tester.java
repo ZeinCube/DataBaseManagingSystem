@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 
 public class Tester {
@@ -143,7 +142,7 @@ public class Tester {
             if (commands.isWaitServer()) {
                 while (!CSWorker.getClientServerStatus()) {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(200);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
