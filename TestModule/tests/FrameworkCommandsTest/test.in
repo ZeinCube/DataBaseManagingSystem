@@ -1,5 +1,5 @@
-[@PrintLevel] NONE
+[@WaitServerUp]
 [@PrintLevel] EXTENDED
-[@PrintLevel] MAIN
+[@RestartServer]
 
 [@Clear]

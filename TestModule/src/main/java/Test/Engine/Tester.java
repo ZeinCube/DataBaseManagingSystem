@@ -12,12 +12,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
-/**
- * class Tester
- * Core of testing framework
- */
+
 public class Tester {
     private Configurator configurator;
     private TesterCommands commands;
@@ -53,9 +52,14 @@ public class Tester {
             File codes = new File(testFolder + "results/" + test + ".codes");
 
             try {
-                runTest(input, output, codes);
-                if (checkTest(output, expected))
+                ArrayList<String> queries = loadTest(input);
+                runTest(queries, output, codes);
+                if (checkTest(output, expected)) {
                     countPassed++;
+                }
+            } catch (FileNotFoundException e) {
+                Printer.printError(e);
+                return;
             } catch (Exception e) {
                 Printer.printError(e);
             }
@@ -66,39 +70,59 @@ public class Tester {
         }
     }
 
-    private void runTest(File input, File output, File codes) throws IOException {
-        countTests++;
+    private ArrayList<String> loadTest(File input) throws FileNotFoundException {
+        ArrayList<String> queries = new ArrayList<>();
 
-        Scanner inputScanner = new Scanner(input);
-        FileOutputStream outputStream = new FileOutputStream(output);
-        FileOutputStream codesStream = new FileOutputStream(codes);
+        Scanner queriesScanner = new Scanner(input);
 
-        StatusCounter statusCounter = new StatusCounter();
+        StringBuilder query = new StringBuilder();
+        while (queriesScanner.hasNextLine()) {
+            String line = queriesScanner.nextLine().trim();
 
-        String prevQuery = "";
-
-        while (inputScanner.hasNextLine() || commands.repeatModeEnabled()) {
-            String query;
-
-            if (!commands.repeatModeEnabled()) {
-                query = inputScanner.nextLine();
-                prevQuery = query;
-            } else {
-                query = commands.repeatGetQuery(prevQuery);
-            }
-
-            if (commands.isCommand(query)) {
-                commands.parseCommand(query);
-
-                if (commands.readNextLine) {
-                    prevQuery = inputScanner.nextLine();
-                    commands.readNextLine = false;
-                }
+            if (line.isEmpty() || line.startsWith("@@")) {
                 continue;
             }
 
-            String answer = CSWorker.communicate(query).trim();
+            if (commands.isPreprocessorCommand(line)) {
+                queries.addAll(commands.parsePreprocessorCommand(line, queriesScanner.nextLine().trim()));
+                continue;
+            }
 
+            query.append(line).append(" ");
+
+            if (line.endsWith(";") || commands.isFrameworkCommand(line)) {
+                queries.add(query.toString().trim());
+                query = new StringBuilder();
+            }
+        }
+
+        return queries;
+    }
+
+    private void runTest(ArrayList<String> queries, File output, File codes) throws IOException {
+        countTests++;
+
+        FileOutputStream outputStream = new FileOutputStream(output);
+        FileOutputStream codesStream = new FileOutputStream(codes);
+        StatusCounter statusCounter = new StatusCounter();
+
+        for (String query: queries) {
+            if (commands.isFrameworkCommand(query)) {
+                commands.parseFrameworkCommand(query);
+                continue;
+            }
+
+            if (commands.waitServerUp()) {
+                while (!CSWorker.getClientServerStatus()) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            String answer = CSWorker.communicate(query).trim();
             Status status = StatusParser.parse(query, answer);
             codesStream.write(status.toString().concat("\n").getBytes());
             statusCounter.parse(status);
@@ -113,7 +137,6 @@ public class Tester {
         if (commands.getPrintLevel() == TesterCommands.PRINT_LEVEL.EXTENDED) {
             Printer.printInBox(statusCounter.toString());
         }
-
     }
 
     private boolean checkTest(File results, File expected) throws FileNotFoundException {

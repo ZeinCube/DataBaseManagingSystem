@@ -39,7 +39,6 @@ public class Client {
             String[] queries = result.split(";");
 
             for (String s: queries) {
-
                 try {
                     os.writeUTF(s);
                     if (s.equals("exit") || s.equals("quit")) {

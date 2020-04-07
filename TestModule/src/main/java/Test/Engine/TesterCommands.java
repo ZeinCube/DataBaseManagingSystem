@@ -1,6 +1,7 @@
 package Test.Engine;
 
 import Test.Exceptions.DropDatabaseException;
+import Test.Utils.CSWorker;
 import Test.Utils.Printer;
 import org.apache.commons.io.FileUtils;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class TesterCommands {
@@ -15,42 +17,83 @@ public class TesterCommands {
     public TesterCommands() {
         systemOutCopy = System.out;
         printLevel = PRINT_LEVEL.MAIN;
-        readNextLine = false;
+        waitServerUp = false;
     }
 
-    public static final String COMMENT_COMMAND = "@@";
+    public static final String FRAMEWORK_COMMAND_PREFIX = "[@";
+    public static final String PREPROCESSOR_COMMAND_PREFIX = "[#";
+
     public static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     public static final String CLEAR_COMMAND = "[@Clear]";
     public static final String SLEEP_COMMAND = "[@Sleep]";
-    public static final String REPEAT_COMMAND = "[@Repeat]";
+    public static final String RESTART_SERVER_COMMAND = "[@RestartServer]";
+    public static final String WAIT_SERVER_UP_COMMAND = "[@WaitServerUp]";
+
+    public static final String REPEAT_COMMAND = "[#Repeat]";
 
     public enum PRINT_LEVEL {NONE, MAIN, EXTENDED}
 
     private PrintStream systemOutCopy;
     private PRINT_LEVEL printLevel;
 
-    public boolean readNextLine;
+    public boolean waitServerUp;
 
-    public boolean isCommand(String cmd) {
-        return cmd.startsWith("@@") || cmd.startsWith("[@") || cmd.isEmpty();
+    public boolean isFrameworkCommand(String cmd) {
+        return cmd.startsWith(FRAMEWORK_COMMAND_PREFIX);
     }
 
-    public void parseCommand(String cmd) {
-        if (cmd.startsWith("@@") || cmd.isEmpty()) return;
+    public boolean isPreprocessorCommand(String cmd) {
+        return cmd.startsWith(PREPROCESSOR_COMMAND_PREFIX);
+    }
 
-        if (cmd.startsWith(TesterCommands.PRINT_LEVEL_COMMAND)) {
+    public ArrayList<String> parsePreprocessorCommand(String cmd, String query) {
+        if (cmd.startsWith(REPEAT_COMMAND)) {
+            return repeatQuery(cmd, query);
+        }
+
+        return new ArrayList<>();
+    }
+
+    public void parseFrameworkCommand(String cmd) {
+        if (cmd.startsWith(PRINT_LEVEL_COMMAND)) {
             configPrintLevel(cmd);
-        } else if (cmd.startsWith(TesterCommands.CLEAR_COMMAND)) {
+        } else if (cmd.startsWith(CLEAR_COMMAND)) {
             clearCommand();
-        } else if (cmd.startsWith(TesterCommands.SLEEP_COMMAND)) {
+        } else if (cmd.startsWith(SLEEP_COMMAND)) {
             sleepCommand(cmd);
-        } else if (cmd.startsWith(TesterCommands.REPEAT_COMMAND)) {
-            setRepeatMode(cmd);
+        } else if (cmd.startsWith(RESTART_SERVER_COMMAND)) {
+            restartServer();
+        } else if (cmd.startsWith(WAIT_SERVER_UP_COMMAND)) {
+            toggleWaitServerUp();
         }
     }
 
 
+    // #########################
+    // Preprocessor commands
+    // #########################
+
+    // [#Repeat] command
+
+    public ArrayList<String> repeatQuery(String cmd, String query) {
+        ArrayList<String> queries = new ArrayList<>();
+
+        int n = Integer.parseInt(cmd.split(" ")[1]);
+
+        for (int i = 1; i <= n; i++) {
+            queries.add(query.replaceAll("\\$i", String.valueOf(i)));
+        }
+
+        return queries;
+    }
+
+
+    // #########################
+    // Framework commands
+    // #########################
+
     // [@PrintLevel] command
+
     public PRINT_LEVEL getPrintLevel() {
         return printLevel;
     }
@@ -101,6 +144,7 @@ public class TesterCommands {
 
 
     // [@Clear] command
+
     private void clearCommand() {
         try {
             FileUtils.deleteDirectory(new File(System.getProperty("user.home") + "/.dbms"));
@@ -116,6 +160,7 @@ public class TesterCommands {
 
 
     // [@Sleep] command
+
     private void sleepCommand(String cmd) {
         String time = cmd.replace(TesterCommands.SLEEP_COMMAND, "").trim();
         try {
@@ -126,31 +171,40 @@ public class TesterCommands {
     }
 
 
-    // [@Repeat] command
-    private boolean REPEAT_MODE;
-    private int repeatIterator;
-    private int repeatMax;
+    // [@RestartServer]
 
-    private void setRepeatMode(String cmd) {
-        REPEAT_MODE = true;
-
-        repeatIterator = 1;
-        repeatMax = new Integer(cmd.replace(REPEAT_COMMAND, "").trim());
-
-        readNextLine = true;
-    }
-
-    public boolean repeatModeEnabled() {
-        return REPEAT_MODE;
-    }
-
-    public String repeatGetQuery(String cmd) {
-        repeatIterator++;
-        if (repeatIterator > repeatMax) {
-            REPEAT_MODE = false;
+    private void restartServer() {
+        if (printLevel == PRINT_LEVEL.EXTENDED) {
+            Printer.printInfo("Killing server with id " + CSWorker.getServerIdentityId());
         }
 
-        return cmd.replaceAll("\\$i", String.valueOf(repeatIterator - 1));
+        try {
+            CSWorker.forceRestartServer();
+            while (!CSWorker.getServerStatus()) {
+                TimeUnit.MILLISECONDS.sleep(200);
+            }
+
+            CSWorker.restartClient();
+            while (!CSWorker.getClientStatus()) {
+                TimeUnit.MILLISECONDS.sleep(200);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (printLevel == PRINT_LEVEL.EXTENDED) {
+            Printer.printInfo("Started server with id " + CSWorker.getServerIdentityId());
+        }
     }
 
+
+    // [@WaitServerUp]
+
+    private void toggleWaitServerUp() {
+        waitServerUp = !waitServerUp;
+    }
+
+    public boolean waitServerUp() {
+        return waitServerUp;
+    }
 }

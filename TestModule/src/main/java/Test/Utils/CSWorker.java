@@ -79,6 +79,11 @@ public class CSWorker {
         runClientServer();
     }
 
+    public static void forceRestartServer() {
+        server.destroyForcibly();
+        runServer();
+    }
+
     public static Process runAndReturnClient() throws IOException {
         return Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + CLIENT_JAR);
     }
@@ -101,5 +106,13 @@ public class CSWorker {
 
     public static boolean getServerStatus() {
         return server.isAlive();
+    }
+
+    public static boolean getClientServerStatus() {
+        return server.isAlive() && client.isAlive();
+    }
+
+    public static int getServerIdentityId() {
+        return System.identityHashCode(server);
     }
 }

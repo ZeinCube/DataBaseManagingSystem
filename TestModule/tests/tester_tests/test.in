@@ -1,9 +1,8 @@
 [@PrintLevel] EXTENDED
 hello;
 @@ Example comment
-[@Repeat] 5
+[#Repeat] 5
 world$i;
-[@Sleep] 500
 [@Clear]
 foo;
 bar;
