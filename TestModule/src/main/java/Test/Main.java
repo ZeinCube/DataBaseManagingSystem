@@ -10,7 +10,10 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) {
+        if (!args[0].endsWith("/"))
+            args[0] = args[0] + "/";
         CSWorker.PROJECT_PATH = args[0];
+
         CSWorker.runClientServer();
 
         PrintStream original = System.out;

@@ -19,7 +19,7 @@ public class CSWorker {
         try {
             server = Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + SERVER_JAR);
         } catch (IOException e) {
-            e.printStackTrace();
+            Printer.printError(e);
             System.exit(0);
         }
     }
@@ -35,11 +35,14 @@ public class CSWorker {
 
     public static void runClient() {
         try {
+            while (!getServerStatus())
+                Thread.sleep(100);
+
             client = Runtime.getRuntime().exec("java -jar " + PROJECT_PATH + CLIENT_JAR);
             clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
             clientWriter = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            Printer.printError(e);
             System.exit(0);
         }
     }
@@ -91,21 +94,21 @@ public class CSWorker {
         try {
             return clientReader.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
-            return "";
+            Printer.printError(e);
+            return e.getMessage();
         }
     }
 
     public static boolean getClientStatus() {
-        return client.isAlive();
+        return client.isAlive() && client != null;
     }
 
     public static boolean getServerStatus() {
-        return server.isAlive();
+        return server.isAlive() && server != null;
     }
 
     public static boolean getClientServerStatus() {
-        return server.isAlive() && client.isAlive();
+        return getClientStatus() && getServerStatus();
     }
 
     public static int getServerIdentityId() {

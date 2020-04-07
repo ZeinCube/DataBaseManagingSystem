@@ -65,11 +65,11 @@ public class TesterCommands {
         } else if (cmd.startsWith(SLEEP_COMMAND)) {
             sleepCommand(cmd);
         } else if (cmd.startsWith(RESTART_SERVER_COMMAND)) {
-            restartServer();
+            restartServer(cmd);
         } else if (cmd.startsWith(WAIT_SERVER_UP_COMMAND)) {
             toggleWaitServer();
         } else if (cmd.startsWith(NO_OUTPUT_COMMAND)) {
-            noOutputToggle();;
+            noOutputToggle();
         }
     }
 
@@ -189,6 +189,18 @@ public class TesterCommands {
 
     // [@RestartServer]
 
+    private void restartServer(String cmd) {
+        cmd = cmd.replace(RESTART_SERVER_COMMAND, "").trim();
+        String[] args = cmd.split(" ");
+        if (cmd.isEmpty()) {
+            restartServer();
+        } else {
+            int time = Integer.parseInt(args[0]);
+            int minTime = args.length == 2 ? Integer.parseInt(args[1]) : 0;
+            new Thread(() -> restartServer(time, minTime)).start();
+        }
+    }
+
     private void restartServer() {
         if (printLevel == PRINT_LEVEL.EXTENDED) {
             Printer.printInfo("Killing server with id " + CSWorker.getServerIdentityId());
@@ -197,24 +209,40 @@ public class TesterCommands {
         try {
             CSWorker.forceRestartServer();
             while (!CSWorker.getServerStatus()) {
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.MILLISECONDS.sleep(10);
+            }
+
+            if (printLevel == PRINT_LEVEL.EXTENDED) {
+                Printer.printInfo("Started server with id " + CSWorker.getServerIdentityId());
             }
 
             CSWorker.restartClient();
             while (!CSWorker.getClientStatus()) {
                 TimeUnit.MILLISECONDS.sleep(200);
             }
+
+            if (printLevel == PRINT_LEVEL.EXTENDED) {
+                Printer.printInfo("Client connected to server with id " + CSWorker.getServerIdentityId());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void restartServer(int time, int minTime) {
+        int rand = (int) (Math.random() * ((time - minTime) + 1)) + minTime;
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(rand);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (printLevel == PRINT_LEVEL.EXTENDED) {
-            Printer.printInfo("Started server with id " + CSWorker.getServerIdentityId());
-        }
+        restartServer();
     }
 
 
-    // [@WaitServerUp]
+    // [@WaitServer]
 
     private void toggleWaitServer() {
         waitServer = !waitServer;
