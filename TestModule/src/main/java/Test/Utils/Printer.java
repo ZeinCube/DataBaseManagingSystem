@@ -1,9 +1,6 @@
 package Test.Utils;
 
-/**
- * Class Printer
- * Colored and beautiful text printing
- */
+
 public class Printer {
     public static final String DELIMITER =
             "--------------------------------------------------------------------------------";

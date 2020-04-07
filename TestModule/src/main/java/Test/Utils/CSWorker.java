@@ -2,11 +2,7 @@ package Test.Utils;
 
 import java.io.*;
 
-/**
- * Class CSWorker
- * Client Server helper
- * Set PROJECT_PATH before use
- */
+
 public class CSWorker {
     public static String PROJECT_PATH;
 

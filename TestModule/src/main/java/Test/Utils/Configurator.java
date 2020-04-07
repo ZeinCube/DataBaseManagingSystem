@@ -7,12 +7,7 @@ import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-/**
- * Class Configurator
- * Checks config in location $HOME/.dbms_test_config
- * with full path to tests root folder (default $PROJECT_PATH/TestModule/tests)
- * and checks status of client server
- */
+
 public class Configurator {
 
     private File config;

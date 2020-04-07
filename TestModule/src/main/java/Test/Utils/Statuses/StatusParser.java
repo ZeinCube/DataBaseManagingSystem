@@ -2,6 +2,7 @@ package Test.Utils.Statuses;
 
 import java.util.regex.Pattern;
 
+
 public class StatusParser {
     public enum Statuses {OK, DB_ERROR, PARSER_ERROR}
 
