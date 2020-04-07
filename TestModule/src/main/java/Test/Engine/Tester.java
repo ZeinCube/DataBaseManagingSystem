@@ -72,31 +72,59 @@ public class Tester {
 
     private ArrayList<String> loadTest(File input) throws FileNotFoundException {
         ArrayList<String> queries = new ArrayList<>();
-
         Scanner queriesScanner = new Scanner(input);
 
-        StringBuilder query = new StringBuilder();
         while (queriesScanner.hasNextLine()) {
-            String line = queriesScanner.nextLine().trim();
+            String query = getNextCommand(queriesScanner);
+
+            if (commands.isPreprocessorCommand(query)) {
+                queries.addAll(commands.parsePreprocessorCommand(query, getNextCommand(queriesScanner)));
+            } else {
+                queries.add(query);
+            }
+        }
+
+        return queries;
+    }
+
+    private String getNextCommand(Scanner queriesScanner) {
+        String line = "";
+
+        while (queriesScanner.hasNextLine() && (line.isEmpty() || line.startsWith("@@"))) {
+            line = queriesScanner.nextLine().trim();
+        }
+
+        if (commands.isFrameworkCommand(line) || commands.isPreprocessorCommand(line)) return line;
+
+        boolean isTransaction = false;
+        if (line.startsWith("BEGIN TRANSACTION")) {
+            isTransaction = true;
+        }
+
+        StringBuilder query = new StringBuilder();
+        query.append(line).append(isTransaction ? "\n" : " ");
+
+        while (!line.endsWith(isTransaction ? "COMMIT;" : ";") && queriesScanner.hasNextLine()) {
+            line = queriesScanner.nextLine().trim();
 
             if (line.isEmpty() || line.startsWith("@@")) {
                 continue;
             }
 
             if (commands.isPreprocessorCommand(line)) {
-                queries.addAll(commands.parsePreprocessorCommand(line, queriesScanner.nextLine().trim()));
-                continue;
+                ArrayList<String> temp = commands.parsePreprocessorCommand(line, getNextCommand(queriesScanner));
+                StringBuilder s = new StringBuilder();
+                for (String t: temp) {
+                    s.append(t).append("\n");
+                }
+
+                line = s.toString().trim();
             }
 
-            query.append(line).append(" ");
-
-            if (line.endsWith(";") || commands.isFrameworkCommand(line)) {
-                queries.add(query.toString().trim());
-                query = new StringBuilder();
-            }
+            query.append(line).append(isTransaction ? "\n" : " ");
         }
 
-        return queries;
+        return query.toString().trim();
     }
 
     private void runTest(ArrayList<String> queries, File output, File codes) throws IOException {
@@ -106,7 +134,7 @@ public class Tester {
         FileOutputStream codesStream = new FileOutputStream(codes);
         StatusCounter statusCounter = new StatusCounter();
 
-        for (String query: queries) {
+        for (String query : queries) {
             if (commands.isFrameworkCommand(query)) {
                 commands.parseFrameworkCommand(query);
                 continue;
