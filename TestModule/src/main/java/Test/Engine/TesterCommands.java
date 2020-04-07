@@ -17,7 +17,8 @@ public class TesterCommands {
     public TesterCommands() {
         systemOutCopy = System.out;
         printLevel = PRINT_LEVEL.MAIN;
-        waitServerUp = false;
+        waitServer = false;
+        noOutput = false;
     }
 
     public static final String FRAMEWORK_COMMAND_PREFIX = "[@";
@@ -27,7 +28,8 @@ public class TesterCommands {
     public static final String CLEAR_COMMAND = "[@Clear]";
     public static final String SLEEP_COMMAND = "[@Sleep]";
     public static final String RESTART_SERVER_COMMAND = "[@RestartServer]";
-    public static final String WAIT_SERVER_UP_COMMAND = "[@WaitServerUp]";
+    public static final String WAIT_SERVER_UP_COMMAND = "[@WaitServer]";
+    public static final String NO_OUTPUT_COMMAND = "[@NoOutput]";
 
     public static final String REPEAT_COMMAND = "[#Repeat]";
 
@@ -36,7 +38,8 @@ public class TesterCommands {
     private PrintStream systemOutCopy;
     private PRINT_LEVEL printLevel;
 
-    public boolean waitServerUp;
+    private boolean waitServer;
+    private boolean noOutput;
 
     public boolean isFrameworkCommand(String cmd) {
         return cmd.startsWith(FRAMEWORK_COMMAND_PREFIX);
@@ -64,7 +67,9 @@ public class TesterCommands {
         } else if (cmd.startsWith(RESTART_SERVER_COMMAND)) {
             restartServer();
         } else if (cmd.startsWith(WAIT_SERVER_UP_COMMAND)) {
-            toggleWaitServerUp();
+            toggleWaitServer();
+        } else if (cmd.startsWith(NO_OUTPUT_COMMAND)) {
+            noOutputToggle();;
         }
     }
 
@@ -143,6 +148,17 @@ public class TesterCommands {
     }
 
 
+    // [@NoOutput] command
+
+    public void noOutputToggle() {
+        noOutput = !noOutput;
+    }
+
+    public boolean isNoOutput() {
+        return noOutput;
+    }
+
+
     // [@Clear] command
 
     private void clearCommand() {
@@ -200,11 +216,11 @@ public class TesterCommands {
 
     // [@WaitServerUp]
 
-    private void toggleWaitServerUp() {
-        waitServerUp = !waitServerUp;
+    private void toggleWaitServer() {
+        waitServer = !waitServer;
     }
 
-    public boolean waitServerUp() {
-        return waitServerUp;
+    public boolean isWaitServer() {
+        return waitServer;
     }
 }

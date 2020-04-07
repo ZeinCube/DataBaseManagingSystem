@@ -140,7 +140,7 @@ public class Tester {
                 continue;
             }
 
-            if (commands.waitServerUp()) {
+            if (commands.isWaitServer()) {
                 while (!CSWorker.getClientServerStatus()) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(200);
@@ -152,14 +152,16 @@ public class Tester {
 
             String answer = CSWorker.communicate(query).trim();
             Status status = StatusParser.parse(query, answer);
-            codesStream.write(status.toString().concat("\n").getBytes());
             statusCounter.parse(status);
 
             if (commands.getPrintLevel() == TesterCommands.PRINT_LEVEL.EXTENDED) {
                 Printer.printTest(query, answer);
             }
 
-            outputStream.write((answer + "\n").getBytes());
+            if (!commands.isNoOutput()) {
+                codesStream.write(status.toString().concat("\n").getBytes());
+                outputStream.write((answer + "\n").getBytes());
+            }
         }
 
         if (commands.getPrintLevel() == TesterCommands.PRINT_LEVEL.EXTENDED) {
@@ -184,7 +186,7 @@ public class Tester {
             if (expectedScanner.hasNextLine())
                 expectedStr = expectedScanner.nextLine();
 
-            if (resultStr == null || expectedStr == null || !expectedStr.equals(resultStr)) {
+            if (expectedStr == null || !expectedStr.equals(resultStr)) {
                 Printer.printTestError(new TestWrongResultException("Wrong test result on line " + counter), expectedStr, resultStr);
                 passed = false;
             }
