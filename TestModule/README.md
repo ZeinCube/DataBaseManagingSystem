@@ -105,27 +105,20 @@ Exit from testing framework
 
 You can use these commands inside tests (**.in** files).
 
-### *[@Clear]*
+### [@Clear]
 
 Clear the database (deletes the folder with the current database and re-creates it).
 
-### *[@PrintLevel MAIN|EXTENDED|NONE]*
+### [@PrintLevel] MAIN|EXTENDED|NONE
 Default value: MAIN
 
 Sets the level of the desired output. For printing complete testing progress, use EXTENDED. To get only the test result (no error output) use NONE.
 
-### *@@ Some Text*
+### @@ Some Text
 Comment. Just a comment.
 
-### *[@Sleep] TIME*
+### [@Sleep] TIME
 Sleep for TIME milliseconds
 
-### *[@Repeat] TIMES*
+### [@Repeat] TIMES
 Repeat next expression TIMES times. In expression you can use $i variable. It will be replaced from 1 to TIMES on each iteration.
-
-### *[@RestartServer]*
-Restarts client and server in the same thread.
-
-### *[@WaitServerUp]*
-Enables checking client server status before every command executed. Turn on this function if you want to restart server in another thread (look below [@RestartServer] IN_TIME).
-
