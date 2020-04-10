@@ -50,7 +50,7 @@ jobs:
                               
             -   name: Run all tests
                 id: testing
-                run: echo ::set-output name=tests_result::$(sh ./run.sh test run all)
+                run: echo ::set-output name=tests_result::$(sh ./run_all_tests.sh)
   
             -   name: Generate success testing badge
                 if: steps.testing.outputs.tests_result == 'false'
