@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 SCRIPT_DIR=$(dirname "$0")
 TESTS_MODULE_EXECUTABLE="./TestModule/target/Test-1.0.0-jar-with-dependencies.jar"
