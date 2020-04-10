@@ -38,7 +38,7 @@ jobs:
         github_token: secrets.GITHUB_TOKEN
     
     - uses: RubbaBoy/BYOB@v1.1.0
-      if: canceled() || failure()
+      if: cancelled() || failure()
       with:
         name: build_status
         lavel: build
