@@ -39,7 +39,6 @@ public class Client {
             String[] queries = result.split(";");
 
             for (String s: queries) {
-
                 try {
                     os.writeUTF(s);
                     if (s.equals("exit") || s.equals("quit")) {
@@ -58,7 +57,6 @@ public class Client {
         try {
             socket = new Socket(InetAddress.getByName(host), port);
             DataInputStream is = new DataInputStream(socket.getInputStream());
-            System.out.println("Connected to port " + port);
             os = new DataOutputStream(socket.getOutputStream());
             listener = new ServerListener(is);
         } catch (Exception e) {

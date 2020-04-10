@@ -5,6 +5,7 @@ import Test.Utils.Printer;
 import java.util.Arrays;
 import java.util.Scanner;
 
+
 public class TestCli {
     private TestCliEngine engine;
 
@@ -12,7 +13,12 @@ public class TestCli {
         engine = new TestCliEngine();
     }
 
-    public void run() {
+    public int run(String[] args) {
+        if (args.length > 0) {
+            parseCommand(args);
+            return engine.allPassed() ? 0 : 1;
+        }
+
         Scanner scanner = new Scanner(System.in);
         while (true) {
             Printer.printShellPrompt();
@@ -21,7 +27,7 @@ public class TestCli {
             if (command.length == 0) continue;
 
             if (command.length == 1 && (command[0].equals("exit") || command[0].equals("quit"))) {
-                return;
+                return 0;
             } else {
                 parseCommand(command);
             }
@@ -53,6 +59,7 @@ public class TestCli {
                 break;
             case "list":
             case "lst":
+            case "dir":
             case "ls":
                 if (len != 1)
                     Printer.printError("Unknown arguments after list command");
@@ -60,18 +67,16 @@ public class TestCli {
                 engine.listTests();
                 break;
             case "create":
+            case "new":
                 if (checkArgsLen(len))
                     engine.createTest(args);
                 break;
             case "delete":
             case "remove":
+            case "del":
             case "rm":
                 if (checkArgsLen(len))
                     engine.removeTests(args);
-                break;
-            case "show":
-                if (checkArgsLen(len))
-                    engine.showResults(args);
                 break;
             case "cls":
             case "clear":

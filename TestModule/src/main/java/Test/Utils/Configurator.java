@@ -1,10 +1,12 @@
 package Test.Utils;
 
-import Test.Exceptions.TestWrongConfigException;
+import Test.Exceptions.ClientServerDownException;
+import Test.Exceptions.BadConfigException;
 
 import java.io.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+
 
 public class Configurator {
 
@@ -14,13 +16,22 @@ public class Configurator {
     public Configurator() {
         Printer.printInfo("Initializing configuration");
 
+        Printer.printInfo("Checking client server status");
+        if (!checkClientServer())
+            Printer.printCriticalErrorAndExit(new ClientServerDownException());
+        Printer.printInfo("Client Server OK");
+
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
 
         try {
             if (!config.exists()) {
                 Printer.printInfo("Creating new configuration");
-                config.createNewFile();
+
+                boolean flag = config.createNewFile();
+                if (!flag) Printer.printCriticalErrorAndExit(new BadConfigException("Can not create config file"));
+
                 createConfig();
+
                 Printer.printInfo("Configuration created");
             } else {
                 loadConfig();
@@ -42,10 +53,10 @@ public class Configurator {
             if (input.length == 2) {
                 TESTS_FOLDER = input[1];
                 if (!checkTestsFolder()) {
-                    throw new TestWrongConfigException("Incorrect config file on path " + config.getAbsolutePath());
+                    throw new BadConfigException("Incorrect config file on path " + config.getAbsolutePath());
                 }
             }
-        } catch (NoSuchElementException | TestWrongConfigException | FileNotFoundException e) {
+        } catch (NoSuchElementException | BadConfigException | FileNotFoundException e) {
             Printer.printCriticalErrorAndExit(e);
         }
     }
@@ -59,13 +70,13 @@ public class Configurator {
             TESTS_FOLDER = TESTS_FOLDER.replaceAll("\\\\", "/");
 
             if (TESTS_FOLDER.charAt(TESTS_FOLDER.length() - 1) != '/') {
-                TESTS_FOLDER += '/';
+                TESTS_FOLDER = TESTS_FOLDER.concat("/");
             }
 
             if (checkTestsFolder()) {
-                FileOutputStream fout = new FileOutputStream(config);
-                fout.write(("TESTS_FOLDER=" + TESTS_FOLDER + "\n").getBytes());
-                fout.close();
+                FileOutputStream configOutputStream = new FileOutputStream(this.config);
+                configOutputStream.write(("TESTS_FOLDER=" + TESTS_FOLDER + "\n").getBytes());
+                configOutputStream.close();
                 break;
             } else {
                 Printer.printError("Incorrect folder path");
@@ -79,7 +90,7 @@ public class Configurator {
     }
 
     public String getTestFolder(String testName) {
-        String test_folder_path = TESTS_FOLDER + testName + "\\";
+        String test_folder_path = TESTS_FOLDER + testName + "/";
 
         if (!(new File(test_folder_path).exists())) {
             Printer.printError("Test <" + testName + "> does not exist");
@@ -87,5 +98,9 @@ public class Configurator {
         }
 
         return test_folder_path;
+    }
+
+    public boolean checkClientServer() {
+        return CSWorker.getClientStatus() && CSWorker.getServerStatus();
     }
 }

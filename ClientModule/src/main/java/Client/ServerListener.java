@@ -21,5 +21,7 @@ public class ServerListener extends Thread {
                 interrupt();
             }
         }
+
+        System.out.println("Connection lost");
     }
 }

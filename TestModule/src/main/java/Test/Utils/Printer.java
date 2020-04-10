@@ -1,10 +1,13 @@
 package Test.Utils;
 
-public class Printer {
 
+public class Printer {
     public static final String DELIMITER =
             "--------------------------------------------------------------------------------";
   
+    public static final String LEFT_BOX_BORDER = "| ";
+    public static final String RIGHT_BOX_BORDER = " |";
+
     public static final String LEFT_BOX_BORDER = "| ";
     public static final String RIGHT_BOX_BORDER = " |";
 
@@ -99,7 +102,7 @@ public class Printer {
     public static void printInBox(String msg) {
         String[] strings = msg.split("\n");
         int max_len = 0;
-        for (String s: strings) {
+        for (String s : strings) {
             if (s.length() > max_len)
                 max_len = s.length();
         }
@@ -116,7 +119,7 @@ public class Printer {
         }
 
         System.out.println(TEXT_GREEN + TOP_BOTTOM_BORDER + RESET);
-        for (String s: strings)
+        for (String s : strings)
             System.out.println(TEXT_GREEN + LEFT_BOX_BORDER + RESET + s + TEXT_GREEN + RIGHT_BOX_BORDER + RESET);
         System.out.println(TEXT_GREEN + TOP_BOTTOM_BORDER + RESET);
     }
@@ -124,5 +127,11 @@ public class Printer {
     public static void clear() {
         System.out.print(CLEAR);
         System.out.flush();
+    }
+
+    public static void printTestsStatistic(int countTests, int countPassed, int countNotPassed) {
+        System.out.println(BACKGROUND_BLACK + TEXT_WHITE + "[Results] " + countTests + " tests " +
+                BACKGROUND_GREEN + "Passed: " + countPassed + " " +
+                BACKGROUND_RED + "Not passed: " + countNotPassed + RESET);
     }
 }
