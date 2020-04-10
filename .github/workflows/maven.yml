@@ -28,8 +28,9 @@ jobs:
       id: build_step
       run: mvn clean install
     
-    - uses: RubbaBoy/BYOB@v1.1.0
+    - name: Generate success build badge
       if: success()
+      uses: RubbaBoy/BYOB@v1.1.0
       with:
         name: build_status
         label: build
@@ -37,8 +38,9 @@ jobs:
         color: 229954
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
-    - uses: RubbaBoy/BYOB@v1.1.0
+    - name: Generate failed build badge
       if: cancelled() || failure()
+      uses: RubbaBoy/BYOB@v1.1.0
       with:
         name: build_status
         label: build
