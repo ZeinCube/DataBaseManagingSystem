@@ -1,6 +1,6 @@
 # DataBaseManagingSystem Project
 
-![](https://github.com/ZeinCude/DataBaseManagingSystem/workflows/DBMS%20workflow/badge.svg)
+![](https://github.com/ZeinCube/DataBaseManagingSystem/workflows/DBMS%20workflow/badge.svg)
 ![](https://runkit.io/rubbaboy/byob/branches/master/ZeinCube/DataBaseManagingSystem/build_status)
 
 Contributors :
