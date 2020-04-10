@@ -1,8 +1,0 @@
-[@PrintLevel] EXTENDED
-hello;
-@@ Example comment
-[#Repeat] 5
-world$i;
-[@Clear]
-foo;
-bar;
