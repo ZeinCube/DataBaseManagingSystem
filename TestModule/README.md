@@ -1,5 +1,9 @@
 # DBMS testing framework
 
+![](https://github.com/ZeinCube/DataBaseManagingSystem/workflows/DBMS%20workflow/badge.svg)
+![](https://runkit.io/rubbaboy/byob/branches/master/ZeinCube/DataBaseManagingSystem/build_status)
+![](https://runkit.io/rubbaboy/byob/branches/master/ZeinCube/DataBaseManagingSystem/test_status)
+
 For running testing framework on Linux systems use ```run.sh``` script in project root folder:
 
 ```bash

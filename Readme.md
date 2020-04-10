@@ -2,6 +2,7 @@
 
 ![](https://github.com/ZeinCube/DataBaseManagingSystem/workflows/DBMS%20workflow/badge.svg)
 ![](https://runkit.io/rubbaboy/byob/branches/master/ZeinCube/DataBaseManagingSystem/build_status)
+![](https://runkit.io/rubbaboy/byob/branches/master/ZeinCube/DataBaseManagingSystem/test_status)
 
 Contributors :
 * [Anton Melnikov](https://github.com/hehogcode)
