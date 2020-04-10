@@ -29,7 +29,7 @@ run_testing_framework() {
   java -jar $TESTS_MODULE_EXECUTABLE "$(pwd)"/ "$@"
 }
 
-function run_console {
+run_console() {
   java -jar $CONSOLE_MODULE_EXECUTABLE
 }
 
