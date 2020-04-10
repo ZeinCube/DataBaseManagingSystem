@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+  
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v1
@@ -26,24 +26,23 @@ jobs:
     
     - name: Build with Maven
       id: build_step
-      continue-on-error: true
       run: mvn clean install
-      
-    - name: Set build status
-      env:
-        build_badge_color: 008000
-      
-    - name: Check build status
-      if: steps.build_step.outputs.status == 'failure'
-      env: 
-        build_badge_color: FF0000
     
-    - name: Create a badge
-      uses: RubbaBoy/BYOB@v1.1.0
+    - uses: RubbaBoy/BYOB@v1.1.0
+      if: success()
       with:
         name: build_status
         lavel: build
-        status: steps.build_step.outputs.status
-        color: ${{ build_badge_color }}
+        status: Success
+        color: 229954
         github_token: secrets.GITHUB_TOKEN
-        path: .github/shields.json
+    
+    - uses: RubbaBoy/BYOB@v1.1.0
+      if: canceled() || failure()
+      with:
+        name: build_status
+        lavel: build
+        status: Failed
+        color: FF0000
+        github_token: secrets.GITHUB_TOKEN
+    
