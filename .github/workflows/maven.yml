@@ -32,17 +32,17 @@ jobs:
       if: success()
       with:
         name: build_status
-        lavel: build
+        label: build
         status: Success
         color: 229954
-        github_token: secrets.GITHUB_TOKEN
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - uses: RubbaBoy/BYOB@v1.1.0
       if: cancelled() || failure()
       with:
         name: build_status
-        lavel: build
+        label: build
         status: Failed
         color: FF0000
-        github_token: secrets.GITHUB_TOKEN
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     
