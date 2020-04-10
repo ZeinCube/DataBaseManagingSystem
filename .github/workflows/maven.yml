@@ -35,7 +35,7 @@ jobs:
         name: build_status
         label: build
         status: Success
-        color: 229954
+        color: 5cb85c
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Generate failed build badge
@@ -45,6 +45,6 @@ jobs:
         name: build_status
         label: build
         status: Failed
-        color: FF0000
+        color: d9534f
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
