@@ -18,9 +18,32 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+    
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    
     - name: Build with Maven
+      id: build_step
+      continue-on-error: true
       run: mvn clean install
+      
+    - name: Set build status
+      env:
+        build_badge_color: 008000
+      
+    - name: Check build status
+      if: steps.build_step.outputs.status == 'failure'
+      env: 
+        build_badge_color: FF0000
+    
+    - name: Create a badge
+      uses: RubbaBoy/BYOB@v1.1.0
+      with:
+        name: build_status
+        lavel: build
+        status: steps.build_step.outputs.status
+        color: ${{ build_badge_color }}
+        github_token: secrets.GITHUB_TOKEN
+        path: .github/shields.json
