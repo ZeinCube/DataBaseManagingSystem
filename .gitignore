@@ -10,3 +10,5 @@ target/
 .eclipse
 
 Parser/*.*
+
+TestModule/tests/*/results/*
