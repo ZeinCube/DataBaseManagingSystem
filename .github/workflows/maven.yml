@@ -54,9 +54,9 @@ jobs:
 
         steps:
             -   name: Run all tests
-                run: echo ::set-output name=tests_result::$('./run.sh test run all')
+                run: echo ::set-output name=tests_result::$(./run.sh test run all)
 
-            -   name: Generate success build badge
+            -   name: Generate success testing badge
                 if: steps.testing.outputs.tests_result == 'false'
                 uses: RubbaBoy/BYOB@v1.1.0
                 with:
@@ -66,7 +66,7 @@ jobs:
                     color: 5cb85c
                     github_token: ${{ secrets.GITHUB_TOKEN }}
 
-            -   name: Generate failed build badge
+            -   name: Generate failed testing badge
                 if: steps.testing.outputs.tests_result == 'false'
                 uses: RubbaBoy/BYOB@v1.1.0
                 with:
