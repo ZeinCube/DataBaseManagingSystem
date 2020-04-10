@@ -4,10 +4,6 @@ package Test.Utils;
 public class Printer {
     public static final String DELIMITER =
             "--------------------------------------------------------------------------------";
-  
-    public static final String LEFT_BOX_BORDER = "| ";
-    public static final String RIGHT_BOX_BORDER = " |";
-
     public static final String LEFT_BOX_BORDER = "| ";
     public static final String RIGHT_BOX_BORDER = " |";
 
