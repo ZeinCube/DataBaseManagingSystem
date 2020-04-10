@@ -4,7 +4,7 @@ SCRIPT_DIR=$(dirname "$0")
 TESTS_MODULE_EXECUTABLE="./TestModule/target/Test-1.0.0-jar-with-dependencies.jar"
 CONSOLE_MODULE_EXECUTABLE="./ConsoleModule/target/Console-1.0.0-jar-with-dependencies.jar"
 
-function build {
+build() {
   if [ ! -x "$(command -v java)" ]; then
     echo "Java is not installed. Aborting..."
     exit 0
@@ -18,7 +18,7 @@ function build {
   mvn clean install
 }
 
-function run_testing_framework() {
+run_testing_framework() {
   TESTS_CONFIG="$HOME/.dbms_tests_config"
 
   if [[ ! -f $TESTS_CONFIG ]]; then
