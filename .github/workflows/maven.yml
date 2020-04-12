@@ -51,7 +51,10 @@ jobs:
             -   name: Run all tests
                 id: testing
                 run: echo ::set-output name=tests_result::$(./run.sh test run all)
-  
+            
+            -   name: Show tests result
+                run: echo ${{ steps.testing.outputs.tests_result }}
+            
             -   name: Generate success testing badge
                 if: steps.testing.outputs.tests_result == 'true'
                 uses: RubbaBoy/BYOB@v1.1.0
