@@ -1,5 +1,6 @@
 package Test.Engine;
 
+import Test.Exceptions.WrongParametersException;
 import Test.Utils.Printer;
 
 import java.util.Arrays;
@@ -13,10 +14,9 @@ public class TestCli {
         engine = new TestCliEngine();
     }
 
-    public int run(String[] args) {
+    public boolean run(String[] args) {
         if (args.length > 0) {
-            parseCommand(args);
-            return engine.allPassed() ? 0 : 1;
+            return parseCommand(args);
         }
 
         Scanner scanner = new Scanner(System.in);
@@ -26,21 +26,24 @@ public class TestCli {
 
             if (command.length == 0) continue;
 
-            if (command.length == 1 && (command[0].equals("exit") || command[0].equals("quit"))) {
-                return 0;
-            } else {
-                parseCommand(command);
-            }
+            if (isExitCommand(command)) return true;
+
+            parseCommand(command);
         }
     }
 
-    private void parseCommand(String[] command) {
-        int len = command.length;
-        String[] args = len > 1 ? Arrays.copyOfRange(command, 1, command.length) : new String[]{};
+    private boolean parseCommand(String[] command) {
+        String[] args = Arrays.copyOfRange(command, 1, command.length);
 
         switch (command[0]) {
+            case "runfile":
+                if (!checkArgsLen(command.length, 2)) {
+                    return false;
+                }
+
+                return engine.runFile(args);
             case "run":
-                if (!checkArgsLen(len)) break;
+                if (!checkArgsLen(command.length, 2)) return false;
 
                 boolean run_all_flag = false;
                 for (String arg : args) {
@@ -51,52 +54,55 @@ public class TestCli {
                 }
 
                 if (run_all_flag) {
-                    engine.runAllTests();
-                    break;
+                    return engine.runAllTests();
                 }
 
-                engine.runTests(args);
-                break;
+                return engine.runTests(args);
             case "list":
             case "lst":
             case "dir":
             case "ls":
-                if (len != 1)
-                    Printer.printError("Unknown arguments after list command");
+                if (!checkArgsLen(command.length, 1, 1)) return false;
 
                 engine.listTests();
                 break;
             case "create":
             case "new":
-                if (checkArgsLen(len))
-                    engine.createTest(args);
-                break;
+                if (!checkArgsLen(command.length, 2)) return false;
+
+                return engine.createTest(args);
             case "delete":
             case "remove":
             case "del":
             case "rm":
-                if (checkArgsLen(len))
-                    engine.removeTests(args);
-                break;
+                if (!checkArgsLen(command.length, 2)) return false;
+                return engine.removeTests(args);
             case "cls":
             case "clear":
-                if (len != 1) {
-                    Printer.printError("Too many arguments");
-                } else {
-                    Printer.clear();
-                }
+                if (!checkArgsLen(command.length, 1, 1)) return false;
 
+                Printer.clear();
                 break;
             default:
                 Printer.printError("Unknown command");
         }
+
+        return true;
     }
 
-    private boolean checkArgsLen(int len) {
-        if (len < 2) {
-            Printer.printError("Give name(s) of test(s)");
-        }
+    private boolean isExitCommand(String[] command) {
+        return command[0].equals("exit") || command[0].equals("quit");
+    }
 
-        return len >= 2;
+    private boolean checkArgsLen(int len, int min) {
+        boolean result = len >= min;
+        if (!result) Printer.printError(new WrongParametersException());
+        return result;
+    }
+
+    private boolean checkArgsLen(int len, int min, int max) {
+        boolean result = len >= min && len <= max;
+        if (!result) Printer.printError(new WrongParametersException());
+        return result;
     }
 }

@@ -24,7 +24,9 @@ public class TestCliEngine {
         Printer.printDelimiter();
     }
 
-    public void createTest(String[] testNames) {
+    public boolean createTest(String[] testNames) {
+        boolean status = true;
+
         for (String name : testNames) {
             Printer.printTask("Creating test <" + name + ">");
 
@@ -43,9 +45,11 @@ public class TestCliEngine {
             } catch (IOException e) {
                 Printer.printCriticalError(e);
                 Printer.printError("Test <" + name + "> is not created");
+                status = false;
             }
-
         }
+
+        return false;
     }
 
     public void listTests() {
@@ -54,7 +58,9 @@ public class TestCliEngine {
         }
     }
 
-    public void removeTests(String[] testNames) {
+    public boolean removeTests(String[] testNames) {
+        boolean status = true;
+
         for (String name : testNames) {
             Printer.printTask("Deleting test <" + name + ">");
             File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
@@ -67,31 +73,49 @@ public class TestCliEngine {
                     Printer.printInfo("Test <" + name + "> deleted");
                 } catch (IOException e) {
                     Printer.printCriticalError(e);
+                    status = false;
                 }
             } else {
                 Printer.printError("Test not found <" + name + ">");
+                status = false;
             }
         }
+
+        return status;
     }
 
-    public void runTests(String[] testNames) {
-        tester.clearCounters();
+    public boolean runTests(String[] testNames) {
+        int countTests = 0;
+        int countPassed = 0;
+
+        boolean status = true;
 
         for (String testName : testNames) {
             Printer.printTask("Running test <" + testName + ">");
-            tester.test(testName);
+            countTests++;
+
+            boolean result = tester.test(testName);
+
+            if (result) {
+                countPassed++;
+            } else {
+                status = false;
+            }
         }
 
-        tester.printStatistic();
+        Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
+        return status;
     }
 
-    public void runAllTests() {
+    public boolean runFile(String[] args) {
+        File input = new File(args[0]);
+        if (!input.exists()) return false;
+        return tester.test(input);
+    }
+
+    public boolean runAllTests() {
         Printer.printTask("Running all tests");
         Printer.printDelimiter();
-        runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
-    }
-
-    public boolean allPassed() {
-        return tester.allPassed();
+        return runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
     }
 }

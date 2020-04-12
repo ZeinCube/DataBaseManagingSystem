@@ -11,4 +11,5 @@ target/
 
 Parser/*.*
 
+TestModule/tests/temp/*
 TestModule/tests/*/results/*

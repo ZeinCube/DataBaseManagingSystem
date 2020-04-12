@@ -15,10 +15,11 @@ Please, check the path to the root directory with the tests in the configuration
 
 To main function (class Main.java) MUST be passed 1 argument: full path to projects root directory (script run.sh will do it automatically)
 
-If you want to run certain tests and get the result (only true or false), you can use the special syntax:
+If you want to run certain tests and get the result (only true or false), you can use the special syntax: With this syntax you can execute any framework command (but without output).
 ```bash
 ./run.sh test run testname1 testname2 ...
 ./run.sh test run all
+./run.sh test list
 ```
 
 TODO: Script for Windows
@@ -64,6 +65,16 @@ run testname
 run testname1 testname2
 run all
 ```
+
+- ### ```runfile``` command
+Run test from file (may be not from your test folder) and save output and codes in temp folder
+
+Example:
+```
+runfile /home/username/mytest.in
+```
+
+This example will generate files ```TESTS_ROOT/temp/mytest.out``` and ```TESTS_ROOT/temp/mytest.codes```
 
 - ### ```ls``` command
 Aliases: ```list```, ```lst```, ```dir```
