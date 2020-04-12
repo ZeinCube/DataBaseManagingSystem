@@ -1,5 +1,7 @@
 @@ Testing restart server command
 
+[@PrintLevel] EXTENDED
+
 [@Clear]
 [@WaitServerUp]
 
