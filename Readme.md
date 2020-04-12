@@ -26,8 +26,6 @@ To run project you need JDK8 and maven installed
 sudo apt install openjdk-8-jdk maven -y
 sudo update-java-alternatives --set java-1.8.0-openjdk-amd64
 ```
-    
-- Install on fedora
 
 ## ```Run.sh``` script
 For linux users only.
