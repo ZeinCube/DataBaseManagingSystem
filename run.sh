@@ -22,8 +22,7 @@ run_testing_framework() {
   TESTS_CONFIG="$HOME/.dbms_tests_config"
 
   if [[ ! -f $TESTS_CONFIG ]]; then
-    echo "Creating configuration file"
-    echo "TEST_FOLDER=$(pwd)/tests/" > "$TESTS_CONFIG"
+    echo "TEST_FOLDER=$(pwd)/TestModule/tests/" > "$TESTS_CONFIG"
   fi
 
   java -jar $TESTS_MODULE_EXECUTABLE "$(pwd)"/ "$@"
