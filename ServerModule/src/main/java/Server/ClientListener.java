@@ -13,7 +13,6 @@ public class ClientListener extends Thread {
     private Socket socket;
     private DataInputStream is;
     private DataOutputStream os;
-    private API api;
     private ImprovedParserManager manager = new ImprovedParserManager();
 
     public ClientListener(Socket socket) throws Exception {
@@ -45,7 +44,7 @@ public class ClientListener extends Thread {
                 os.writeUTF(manager.parse(message).trim());
                 os.flush();
             } catch (IOException e) {
-                System.err.println("No connection :" + e.getMessage());
+                System.err.println("No connection: " + e.getMessage());
             }
         }
     }

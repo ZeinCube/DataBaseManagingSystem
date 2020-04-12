@@ -11,8 +11,6 @@ import java.util.List;
 public class Server {
     private static ServerSocket mainSocket;
     static InetAddress ADDRESS;
-    static String ifases = null;
-
 
     public static void main(String[] args) throws IOException {
         setAddress("localhost");

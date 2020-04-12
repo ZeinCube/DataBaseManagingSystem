@@ -22,21 +22,50 @@ public class Tester {
     public Tester() {
         configurator = new Configurator();
         commands = new TesterCommands();
-        clearCounters();
     }
 
     public Configurator getConfigurator() {
         return configurator;
     }
 
-    private int countTests;
-    private int countPassed;
+    public boolean test(File input) {
+        String tmpFolder = configurator.getTempFolder();
+        String testName = input.getName();
+        if (testName.contains(".")) {
+            testName = testName.split("\\.")[0];
+        }
 
-    public void test(String testName) {
+        Printer.printTask("Running test <" + testName + ">");
+
+        File output = new File(tmpFolder + testName + ".out");
+        File codes = new File(tmpFolder + testName + ".codes");
+
+        try {
+            output.createNewFile();
+            codes.createNewFile();
+
+            ArrayList<String> queries = loadTest(input);
+            runTest(queries, output, codes);
+        } catch (IOException e) {
+            Printer.printError(e);
+            return false;
+        }
+
+        Printer.printInfo("Test finished");
+
+        return true;
+    }
+
+    public boolean test(String testName) {
         String testFolder = configurator.getTestFolder(testName);
+
+        if (testFolder.isEmpty()) return false;
+
         String[] tests = new File(testFolder).list((file, s) -> s.endsWith(".in"));
 
-        if (tests == null) return;
+        boolean status = true;
+
+        if (tests == null) return true;
 
         for (String test : tests) {
             test = test.replace(".in", "");
@@ -64,12 +93,12 @@ public class Tester {
             try {
                 ArrayList<String> queries = loadTest(input);
                 runTest(queries, output, codes);
-                if (checkTest(output, expected)) {
-                    countPassed++;
+                if (!checkTest(output, expected)) {
+                    status = false;
                 }
             } catch (FileNotFoundException e) {
                 Printer.printError(e);
-                return;
+                return false;
             } catch (Exception e) {
                 Printer.printError(e);
             }
@@ -78,6 +107,8 @@ public class Tester {
 
             Printer.printDelimiter();
         }
+
+        return status;
     }
 
     private ArrayList<String> loadTest(File input) throws FileNotFoundException {
@@ -125,7 +156,7 @@ public class Tester {
             if (commands.isPreprocessorCommand(line)) {
                 ArrayList<String> temp = commands.parsePreprocessorCommand(line, getNextCommand(queriesScanner));
                 StringBuilder s = new StringBuilder();
-                for (String t: temp) {
+                for (String t : temp) {
                     s.append(t).append("\n");
                 }
 
@@ -139,8 +170,6 @@ public class Tester {
     }
 
     private void runTest(ArrayList<String> queries, File output, File codes) throws IOException {
-        countTests++;
-
         FileOutputStream outputStream = new FileOutputStream(output);
         FileOutputStream codesStream = new FileOutputStream(codes);
         StatusCounter statusCounter = new StatusCounter();
@@ -208,18 +237,5 @@ public class Tester {
         expectedScanner.close();
 
         return passed;
-    }
-
-    public boolean allPassed() {
-        return countTests == countPassed;
-    }
-
-    public void clearCounters() {
-        countTests = 0;
-        countPassed = 0;
-    }
-
-    public void printStatistic() {
-        Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
     }
 }

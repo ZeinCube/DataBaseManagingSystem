@@ -29,12 +29,12 @@ public class Main {
             }
         }
 
-        int code = new TestCli().run(Arrays.copyOfRange(args, 1, args.length));
+        boolean result = new TestCli().run(Arrays.copyOfRange(args, 1, args.length));
 
         if (args.length > 1) {
             System.setOut(original);
 
-            System.out.println(code == 0);
+            System.out.println(result);
         }
 
         CSWorker.stopClientServer();
