@@ -27,14 +27,15 @@ public class TesterCommands {
     public static final String CLEAR_COMMAND = "[@Clear]";
     public static final String SLEEP_COMMAND = "[@Sleep]";
     public static final String RESTART_SERVER_COMMAND = "[@RestartServer]";
-    public static final String WAIT_SERVER_UP_COMMAND = "[@WaitServer]";
+    public static final String WAIT_SERVER_COMMAND = "[@WaitServer]";
     public static final String NO_OUTPUT_COMMAND = "[@NoOutput]";
+    public static final String ECHO_COMMAND = "[@Echo]";
 
     public static final String REPEAT_COMMAND = "[#Repeat]";
 
     public enum PRINT_LEVEL {NONE, MAIN, EXTENDED}
 
-    private PrintStream systemOutCopy;
+    private final PrintStream systemOutCopy;
     private PRINT_LEVEL printLevel;
 
     private boolean waitServer;
@@ -65,10 +66,12 @@ public class TesterCommands {
             sleepCommand(cmd);
         } else if (cmd.startsWith(RESTART_SERVER_COMMAND)) {
             restartServer(cmd);
-        } else if (cmd.startsWith(WAIT_SERVER_UP_COMMAND)) {
+        } else if (cmd.startsWith(WAIT_SERVER_COMMAND)) {
             toggleWaitServer();
         } else if (cmd.startsWith(NO_OUTPUT_COMMAND)) {
             noOutputToggle();
+        } else if (cmd.startsWith(ECHO_COMMAND)) {
+            echoCommand(cmd);
         }
     }
 
@@ -147,9 +150,17 @@ public class TesterCommands {
     }
 
 
+    // [@Echo] command
+
+    private void echoCommand(String cmd) {
+        String line = cmd.replace(ECHO_COMMAND, "").trim();
+        Printer.printTestInfo(line);
+    }
+
+
     // [@NoOutput] command
 
-    public void noOutputToggle() {
+    private void noOutputToggle() {
         noOutput = !noOutput;
     }
 
@@ -206,6 +217,7 @@ public class TesterCommands {
         }
 
         try {
+
             CSWorker.forceRestartServer();
             while (!CSWorker.getServerStatus()) {
                 Thread.sleep(10);
@@ -228,7 +240,7 @@ public class TesterCommands {
         }
     }
 
-    public void restartServer(int time, int minTime) {
+    private void restartServer(int time, int minTime) {
         int rand = (int) (Math.random() * ((time - minTime) + 1)) + minTime;
 
         try {

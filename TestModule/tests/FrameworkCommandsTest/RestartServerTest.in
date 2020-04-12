@@ -1,0 +1,11 @@
+@@ Testing restart server command
+
+[@PrintLevel] EXTENDED
+
+[@Clear]
+[@WaitServerUp]
+
+[@RestartServer] 900 500
+
+[#Repeat] 1000
+[@Sleep] 1

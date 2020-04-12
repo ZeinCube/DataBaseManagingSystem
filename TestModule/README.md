@@ -17,7 +17,7 @@ To main function (class Main.java) MUST be passed 1 argument: full path to proje
 
 If you want to run certain tests and get the result (only true or false), you can use the special syntax:
 ```bash
-./run.sh test run testname1, testname2 ...
+./run.sh test run testname1 testname2 ...
 ./run.sh test run all
 ```
 
@@ -51,12 +51,11 @@ In the example above, there are two files with the expected output for each test
 
 The ```results``` folder contains valid tests results. Files with the extension **.out** store the received output, which will then be compared with the corresponding **.expected** file. Files with the extension **.codes** contain operation codes, executable commands and their output in json format.
 
-
 The test framework will automatically create the necessary folders and files using the *create* command.
 
 ## Command line interface
 
-### ```run``` command
+- ### ```run``` command
 Run test or list of tests for executing. You can write ```run all``` for running all available tests from tests root folder. 
 
 Examples:
@@ -66,12 +65,12 @@ run testname1 testname2
 run all
 ```
 
-### ```ls``` command
+- ### ```ls``` command
 Aliases: ```list```, ```lst```, ```dir```
 
 List available tests in tests root folder
 
-### ```create``` command
+- ### ```create``` command
 Aliases: ```new```
 
 Create new folder with test. Takes the name of the test or a list of names as an argument.
@@ -83,7 +82,7 @@ new testname
 create testname1 testname2
 ```
 
-### ```delete``` command
+- ### ```delete``` command
 Aliases: ```remove```, ```del```, ```rm```
 
 Removes folder with test. Takes the name of the test or a list of names as an argument.
@@ -95,12 +94,12 @@ delete testname
 del testname1 testname2
 ```
 
-### ```clear``` command
+- ### ```clear``` command
 Aliases: ```cls```
 
 Clears the screen of terminal. Not all of terminals are supported. Check if your terminal supports ANSI escape codes.
 
-### ```exit``` command
+- ### ```exit``` command
 Aliases: ```quit```
 
 Exit from testing framework
@@ -109,20 +108,57 @@ Exit from testing framework
 
 You can use these commands inside tests (**.in** files).
 
-### [@Clear]
+- ### ```[@Clear]```
 
 Clear the database (deletes the folder with the current database and re-creates it).
 
-### [@PrintLevel] MAIN|EXTENDED|NONE
+- ### ```[@PrintLevel] MAIN|EXTENDED|NONE```
 Default value: MAIN
 
 Sets the level of the desired output. For printing complete testing progress, use EXTENDED. To get only the test result (no error output) use NONE.
 
-### @@ Some Text
+- ### ```@@ Some Text```
 Comment. Just a comment.
 
-### [@Sleep] TIME
+- ### ```[@Sleep] TIME```
 Sleep for TIME milliseconds
 
-### [@Repeat] TIMES
+- ### ```[#Repeat] TIMES```
+Preprocessor command.
 Repeat next expression TIMES times. In expression you can use $i variable. It will be replaced from 1 to TIMES on each iteration.
+
+Example:
+```
+Input:
+[#Repeat] 3
+SELECT * FROM mytable WHERE somefield=$i
+
+Output:
+SELECT * FROM mytable WHERE somefield=1
+SELECT * FROM mytable WHERE somefield=2
+SELECT * FROM mytable WHERE somefield=3
+```
+
+- ### ```[@WaitServer]```
+Toggles wait server mode. If server is down, framework will wait it to become up without errors.
+Use it with async [@RestartServer] command
+
+- ### ```[@NoOutput]```
+Toggles no output mode. All output between pair of such commands will be ignored and will not write to .out and .codes files.
+
+- ### ```[@Echo] SOME TEXT```
+Echo some text to [TestInfo]
+
+- ### ```[@RestartServer]```
+Restart client server. Has 3 variations:
+```
+1) [@RestartServer]
+2) [@RestartServer] TIME
+3) [@RestartServer] TIME MINTIME
+```
+
+1) Reloads the client server in the same thread of execution.
+2) Reboots the server at a random moment in time interval 0..TIME asynchronously from the main thread.
+3) Reboots the server at a random time in the interval MINTIME..TIME asynchronously from the main thread.
+
+Use 2 and 3 variant with ```[@WaitServer]```

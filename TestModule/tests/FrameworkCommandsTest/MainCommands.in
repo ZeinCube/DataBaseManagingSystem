@@ -1,0 +1,19 @@
+@@ Testing main commands
+
+@@ Testing clear command
+[@Clear]
+
+@@ Testing print level command
+[@PrintLevel] NONE
+[@PrintLevel] MAIN
+[@PrintLevel] EXTENDED
+
+@@ Testing repeat and echo command
+[#Repeat] 10
+[@Echo] repeat iteration $i
+
+@@ Testing restart command
+[@RestartServer]
+
+@@ Testing sleep command
+[@Sleep] 100
