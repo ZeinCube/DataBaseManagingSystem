@@ -51,6 +51,18 @@ public class Tester {
             File codes = new File(testFolder + "results/" + test + ".codes");
 
             try {
+                File resultsFolder = new File(testFolder + "results/");
+                if (!resultsFolder.exists()) {
+                    resultsFolder.mkdirs();
+                }
+
+                output.createNewFile();
+                codes.createNewFile();
+            } catch (IOException e) {
+                Printer.printError(e);
+            }
+
+            try {
                 ArrayList<String> queries = loadTest(input);
                 runTest(queries, output, codes);
                 if (checkTest(output, expected)) {
