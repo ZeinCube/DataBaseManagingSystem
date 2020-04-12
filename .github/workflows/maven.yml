@@ -53,7 +53,7 @@ jobs:
                 run: echo ::set-output name=tests_result::$(./run.sh test run all)
   
             -   name: Generate success testing badge
-                if: steps.testing.outputs.tests_result == 'false'
+                if: steps.testing.outputs.tests_result == 'true'
                 uses: RubbaBoy/BYOB@v1.1.0
                 with:
                     name: test_status
@@ -63,7 +63,7 @@ jobs:
                     github_token: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: Generate failed testing badge
-                if: steps.testing.outputs.tests_result == 'false'
+                if: steps.testing.outputs.tests_result != 'true'
                 uses: RubbaBoy/BYOB@v1.1.0
                 with:
                     name: test_status
