@@ -1,0 +1,9 @@
+@@ Testing restart server command
+
+[@Clear]
+[@WaitServerUp]
+
+[@RestartServer] 900 500
+
+[#Repeat] 1000
+[@Sleep] 1

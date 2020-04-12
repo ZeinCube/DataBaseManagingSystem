@@ -15,10 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
 public class Tester {
-    private Configurator configurator;
-    private TesterCommands commands;
+    private final Configurator configurator;
+    private final TesterCommands commands;
 
     public Tester() {
         configurator = new Configurator();
@@ -87,13 +86,14 @@ public class Tester {
 
         while (queriesScanner.hasNextLine()) {
             String query = getNextCommand(queriesScanner);
-
             if (commands.isPreprocessorCommand(query)) {
                 queries.addAll(commands.parsePreprocessorCommand(query, getNextCommand(queriesScanner)));
             } else {
                 queries.add(query);
             }
         }
+
+        queriesScanner.close();
 
         return queries;
     }
@@ -153,6 +153,7 @@ public class Tester {
 
             if (commands.isWaitServer()) {
                 while (!CSWorker.getClientServerStatus()) {
+                    Printer.printTestInfo("Waiting client-server up...");
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
