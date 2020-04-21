@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -116,6 +119,12 @@ public class TestCliEngine {
     public boolean runAllTests() {
         Printer.printTask("Running all tests");
         Printer.printDelimiter();
-        return runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
+
+        List<String> folders = Arrays.asList(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
+
+        if (folders.contains("rqg")) folders.remove("rqg");
+        if (folders.contains("temp")) folders.remove("temp");
+
+        return runTests((String[]) folders.toArray());
     }
 }
