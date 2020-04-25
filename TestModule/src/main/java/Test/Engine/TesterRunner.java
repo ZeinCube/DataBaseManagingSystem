@@ -74,6 +74,8 @@ public class TesterRunner extends Thread {
                 }
             }
         }
+
+        clientHelper.stopClient();
     }
 
     public StatusCounter getStatusCounter() {
