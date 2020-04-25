@@ -15,7 +15,7 @@ public class TesterRunner extends Thread {
     private final ClientHelper clientHelper;
     private final TesterCommander commands;
     private final Test test;
-    private StatusCounter statusCounter;
+    private final StatusCounter statusCounter;
 
     public TesterRunner(Test test) {
         this.test = test;

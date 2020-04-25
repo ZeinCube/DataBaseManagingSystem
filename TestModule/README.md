@@ -24,6 +24,12 @@ If you want to run certain tests and get the result (only true or false), you ca
 
 TODO: Script for Windows
 
+For running on Windows or without script, pass as program argument absolute path to project directory
+
+For example:
+```
+java -jar Test-1.0.0-jar-with-dependencies.jar C:\Workspace\DataBaseManagingSystem\
+```
 ## Tests structure
 
 Example of test folder:
@@ -66,15 +72,8 @@ run testname1 testname2
 run all
 ```
 
-- ### ```runfile``` command
-Run test from file (may be not from your test folder) and save output and codes in temp folder
-
-Example:
-```
-runfile /home/username/mytest.in
-```
-
-This example will generate files ```TESTS_ROOT/temp/mytest.out``` and ```TESTS_ROOT/temp/mytest.codes```
+- ### ```prun``` command
+Like ```run```, but in parallel mode.
 
 - ### ```ls``` command
 Aliases: ```list```, ```lst```, ```dir```
@@ -149,10 +148,6 @@ SELECT * FROM mytable WHERE somefield=1
 SELECT * FROM mytable WHERE somefield=2
 SELECT * FROM mytable WHERE somefield=3
 ```
-
-- ### ```[@WaitServer]```
-Toggles wait server mode. If server is down, framework will wait it to become up without errors.
-Use it with async [@RestartServer] command
 
 - ### ```[@NoOutput]```
 Toggles no output mode. All output between pair of such commands will be ignored and will not write to .out and .codes files.
