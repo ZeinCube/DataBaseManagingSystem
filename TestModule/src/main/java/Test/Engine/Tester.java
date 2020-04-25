@@ -4,7 +4,10 @@ import Test.Exceptions.TestWrongResultException;
 import Test.Utils.Configurator;
 import Test.Utils.Printer;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -89,11 +92,11 @@ public class Tester {
         return result;
     }
 
-    public boolean test(String testName) {
+    public boolean test(String testName, boolean parallel) {
         boolean result = true;
 
         ArrayList<Test> tests;
-        ArrayList<Thread> runners = new ArrayList<>();
+        ArrayList<TesterRunner> runners = new ArrayList<>();
 
         try {
             tests = prepareTests(testName);
@@ -102,20 +105,43 @@ public class Tester {
             return false;
         }
 
-        for (Test test: tests) {
-            runners.add(new TestRunner(test));
+        for (Test test : tests) {
+            runners.add(new TesterRunner(test));
         }
 
-        for (Thread thread: runners) {
-            thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                Printer.printError(e);
+        if (parallel) {
+            Printer.globalOffSystemOut();
+        }
+
+        try {
+            for (TesterRunner runner : runners) {
+                Printer.printTask("Running test <" + runner.getTestName() + ">");
+                runner.start();
+
+                if (!parallel) {
+                    runner.join();
+                }
             }
+
+            for (TesterRunner runner : runners) {
+                runner.join();
+                Printer.newLine();
+                Printer.printTestStatistic(runner.getTestName(), runner.getStatusCounter().toString());
+            }
+        } catch (InterruptedException e) {
+            Printer.printError(e);
         }
 
-        for (Test test: tests) {
+        if (parallel) {
+            Printer.globalResetSystemOut();
+        }
+
+        Printer.printTask("Statuses statistic");
+        for (TesterRunner runner : runners) {
+            Printer.printTestStatistic(runner.getTestName(), runner.getStatusCounter().toString());
+        }
+
+        for (Test test : tests) {
             if (!checkTest(test)) {
                 result = false;
             }
@@ -125,36 +151,6 @@ public class Tester {
 
         return result;
     }
-
-
-//    public boolean test(File input) {
-//        String tmpFolder = configurator.getTempFolder();
-//
-//        String testName = input.getName();
-//        if (testName.contains(".")) {
-//            testName = testName.split("\\.")[0];
-//        }
-//
-//        Printer.printTask("Running test <" + testName + ">");
-//
-//        File output = new File(tmpFolder + testName + ".out");
-//        File codes = new File(tmpFolder + testName + ".codes");
-//
-//        try {
-//            output.createNewFile();
-//            codes.createNewFile();
-//
-//            ArrayList<String> queries = loadTest(input);
-//            runTest(queries, output, codes);
-//        } catch (IOException e) {
-//            Printer.printError(e);
-//            return false;
-//        }
-//
-//        Printer.printInfo("Test finished");
-//
-//        return true;
-//    }
 
     private ArrayList<String> loadTest(File input) throws FileNotFoundException {
         ArrayList<String> queries = new ArrayList<>();

@@ -1,16 +1,19 @@
 package Test.Utils;
 
-import Test.Exceptions.ClientServerDownException;
 import Test.Exceptions.BadConfigException;
+import Test.Exceptions.ServerDownException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
 public class Configurator {
 
-    private File config;
+    private final File config;
     private String TESTS_FOLDER;
 
     public Configurator() {
@@ -18,7 +21,7 @@ public class Configurator {
 
         Printer.printInfo("Checking server status");
         if (!ServerHelper.getServerStatus())
-            Printer.printCriticalErrorAndExit(new ClientServerDownException("Server is down"));
+            Printer.printCriticalErrorAndExit(new ServerDownException());
         Printer.printInfo("Server OK");
 
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
@@ -93,8 +96,7 @@ public class Configurator {
         String test_folder_path = TESTS_FOLDER + testName + "/";
 
         if (!(new File(test_folder_path).exists())) {
-            Printer.printError("Test <" + testName + "> does not exist");
-            return "";
+            return null;
         }
 
         return test_folder_path;

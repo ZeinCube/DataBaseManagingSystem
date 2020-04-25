@@ -1,4 +1,4 @@
-package Test.Engine;
+package Test.Engine.Cli;
 
 import Test.Exceptions.WrongParametersException;
 import Test.Utils.Printer;
@@ -34,14 +34,11 @@ public class TestCli {
 
     private boolean parseCommand(String[] command) {
         String[] args = Arrays.copyOfRange(command, 1, command.length);
+        boolean parallel = false;
 
         switch (command[0]) {
-            case "runfile":
-                if (!checkArgsLen(command.length, 2)) {
-                    return false;
-                }
-
-                return engine.runFile(args);
+            case "prun":
+                parallel = true;
             case "run":
                 if (!checkArgsLen(command.length, 2)) return false;
 
@@ -57,7 +54,7 @@ public class TestCli {
                     return engine.runAllTests();
                 }
 
-                return engine.runTests(args);
+                return engine.runTests(args, parallel);
             case "list":
             case "lst":
             case "dir":

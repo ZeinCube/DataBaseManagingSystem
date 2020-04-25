@@ -1,5 +1,6 @@
-package Test.Engine;
+package Test.Engine.Cli;
 
+import Test.Engine.Tester;
 import Test.Utils.Printer;
 
 import java.io.File;
@@ -60,10 +61,10 @@ public class TestCliEngine {
         }
     }
 
-    public boolean removeTests(String[] testNames) {
+    public boolean removeTests(String[] args) {
         boolean status = true;
 
-        for (String name : testNames) {
+        for (String name : args) {
             Printer.printTask("Deleting test <" + name + ">");
             File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
             if (testFolder.exists()) {
@@ -86,17 +87,21 @@ public class TestCliEngine {
         return status;
     }
 
-    public boolean runTests(String[] testNames) {
+    public boolean runTests(String[] args, boolean parallel) {
         int countTests = 0;
         int countPassed = 0;
 
         boolean status = true;
 
-        for (String testName : testNames) {
-            Printer.printTask("Running test <" + testName + ">");
+        for (String testName : args) {
+            if (tester.getConfigurator().getTestFolder(testName) == null) {
+                Printer.printError("Test <" + testName + "> does not exist");
+                continue;
+            }
+
             countTests++;
 
-            boolean result = tester.test(testName);
+            boolean result = tester.test(testName, parallel);
 
             if (result) {
                 countPassed++;
@@ -105,15 +110,11 @@ public class TestCliEngine {
             }
         }
 
-        Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
-        return status;
-    }
+        if (countTests > 0) {
+            Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
+        }
 
-    public boolean runFile(String[] args) {
-        return true;
-//        File input = new File(args[0]);
-//        if (!input.exists()) return false;
-//        return tester.test(input);
+        return status;
     }
 
     public boolean runAllTests() {
@@ -122,9 +123,6 @@ public class TestCliEngine {
 
         List<String> folders = Arrays.asList(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
 
-        if (folders.contains("rqg")) folders.remove("rqg");
-        if (folders.contains("temp")) folders.remove("temp");
-
-        return runTests((String[]) folders.toArray());
+        return runTests((String[]) folders.toArray(), false);
     }
 }

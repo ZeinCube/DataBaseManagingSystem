@@ -11,21 +11,26 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class TestRunner extends Thread {
+public class TesterRunner extends Thread {
     private final ClientHelper clientHelper;
     private final TesterCommander commands;
-    private Test test;
+    private final Test test;
+    private StatusCounter statusCounter;
 
-    public TestRunner(Test test) {
+    public TesterRunner(Test test) {
         this.test = test;
         clientHelper = new ClientHelper();
+        clientHelper.runClient();
         commands = new TesterCommander(clientHelper);
+        statusCounter = new StatusCounter();
+    }
+
+    public String getTestName() {
+        return test.getName();
     }
 
     @Override
     public void run() {
-        StatusCounter statusCounter = new StatusCounter();
-
         FileOutputStream statusStream;
         FileOutputStream resultStream;
 
@@ -57,7 +62,7 @@ public class TestRunner extends Thread {
             statusCounter.parse(status);
 
             if (commands.getPrintLevel() == TesterCommander.PRINT_LEVEL.EXTENDED) {
-                Printer.printTest(query, answer);
+                Printer.printTestQuery(query, answer);
             }
 
             if (!commands.isNoOutput()) {
@@ -69,9 +74,9 @@ public class TestRunner extends Thread {
                 }
             }
         }
+    }
 
-        if (commands.getPrintLevel() == TesterCommander.PRINT_LEVEL.EXTENDED) {
-            Printer.printInBox(statusCounter.toString());
-        }
+    public StatusCounter getStatusCounter() {
+        return statusCounter;
     }
 }

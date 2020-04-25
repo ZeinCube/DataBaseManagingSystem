@@ -65,10 +65,8 @@ public class Printer {
     }
 
     public static void globalResetSystemOut() {
-        System.setOut(new PrintStream(new OutputStream() {
-            public void write(int b) {
-            }
-        }));
+        systemOutGlobalOff = false;
+        System.setOut(SYSTEM_OUT);
     }
 
 
@@ -121,7 +119,7 @@ public class Printer {
         System.out.println(TEXT_BRIGHT_YELLOW + "[Task]" + RESET + " " + msg);
     }
 
-    public static void printTest(String query, String result) {
+    public static void printTestQuery(String query, String result) {
         System.out.println(TEXT_PURPLE + "[TestQuery]" + RESET + "\n" + "\tQuery: " + query + "\n" + "\tResult: " + result);
     }
 
@@ -135,6 +133,10 @@ public class Printer {
 
     public static void printTestInfo(String msg) {
         System.out.println(TEXT_BLUE + "[TestInfo] " + RESET + msg);
+    }
+
+    public static void printTestStatistic(String testName, String msg) {
+        printInBox("TEST: " + testName + "\n" + msg);
     }
 
     public static void printInBox(String msg) {
@@ -171,5 +173,9 @@ public class Printer {
         System.out.println(BACKGROUND_BLACK + TEXT_WHITE + "[Results] " + countTests + " tests " +
                 BACKGROUND_GREEN + "Passed: " + countPassed + " " +
                 BACKGROUND_RED + "Not passed: " + countNotPassed + RESET);
+    }
+
+    public static void newLine() {
+        System.out.println();
     }
 }

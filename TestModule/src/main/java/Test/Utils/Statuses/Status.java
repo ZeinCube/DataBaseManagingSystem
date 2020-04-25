@@ -7,27 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Status {
     private String status;
-    private String command;
-    private String answer;
+    private final String command;
+    private final String answer;
 
     public Status(String command, String answer) {
         this.command = command;
-        this.answer = answer;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
         this.answer = answer;
     }
 
