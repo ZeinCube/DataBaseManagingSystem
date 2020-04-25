@@ -1,1 +1,1 @@
-{"build_status":{"label":"build","status":"Failed","color":"d9534f"},"test_status":{"label":"test","status":"Pass","color":"5cb85c"}}
+{"build_status":{"label":"build","status":"Success","color":"5cb85c"},"test_status":{"label":"test","status":"Pass","color":"5cb85c"}}
