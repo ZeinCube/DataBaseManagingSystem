@@ -63,6 +63,10 @@ public class TesterCommander {
         return printLevel;
     }
 
+    public void resetPrintLevel() {
+        this.printLevel = PRINT_LEVEL.MAIN;
+    }
+
     public void setPrintLevel(PRINT_LEVEL printLevel) {
         this.printLevel = printLevel;
     }
