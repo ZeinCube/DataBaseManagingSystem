@@ -111,14 +111,4 @@ public class Configurator {
 
         return tmp;
     }
-
-    public String getTempFolder() {
-        String tmp = TESTS_FOLDER + "temp/";
-        File tmpFolder = new File(tmp);
-        if (!tmpFolder.exists()) {
-            tmpFolder.mkdirs();
-        }
-
-        return tmp;
-    }
 }
