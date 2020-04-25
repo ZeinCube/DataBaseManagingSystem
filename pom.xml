@@ -16,6 +16,7 @@
         <module>ServerModule</module>
         <module>ClientModule</module>
         <module>TestModule</module>
+        <module>RandomQueryGenerator</module>
     </modules>
 
     <properties>

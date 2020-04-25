@@ -13,3 +13,15 @@ Parser/*.*
 
 TestModule/tests/temp/*
 TestModule/tests/*/results/*
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+.classpath
+.project
+.settings
+.swp

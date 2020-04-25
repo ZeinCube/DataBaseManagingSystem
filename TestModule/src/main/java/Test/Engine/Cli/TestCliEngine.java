@@ -1,18 +1,21 @@
-package Test.Engine;
+package Test.Engine.Cli;
 
-import Test.Utils.Printer;;
+import Test.Engine.Tester;
+import Test.Utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
 public class TestCliEngine {
 
-    private Tester tester;
+    private final Tester tester;
 
     public TestCliEngine() {
         Printer.printDelimiter();
@@ -49,7 +52,7 @@ public class TestCliEngine {
             }
         }
 
-        return false;
+        return status;
     }
 
     public void listTests() {
@@ -58,10 +61,10 @@ public class TestCliEngine {
         }
     }
 
-    public boolean removeTests(String[] testNames) {
+    public boolean removeTests(String[] args) {
         boolean status = true;
 
-        for (String name : testNames) {
+        for (String name : args) {
             Printer.printTask("Deleting test <" + name + ">");
             File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
             if (testFolder.exists()) {
@@ -84,17 +87,21 @@ public class TestCliEngine {
         return status;
     }
 
-    public boolean runTests(String[] testNames) {
+    public boolean runTests(String[] args, boolean parallel) {
         int countTests = 0;
         int countPassed = 0;
 
         boolean status = true;
 
-        for (String testName : testNames) {
-            Printer.printTask("Running test <" + testName + ">");
+        for (String testName : args) {
+            if (tester.getConfigurator().getTestFolder(testName) == null) {
+                Printer.printError("Test <" + testName + "> does not exist");
+                continue;
+            }
+
             countTests++;
 
-            boolean result = tester.test(testName);
+            boolean result = tester.test(testName, parallel);
 
             if (result) {
                 countPassed++;
@@ -103,19 +110,19 @@ public class TestCliEngine {
             }
         }
 
-        Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
-        return status;
-    }
+        if (countTests > 0) {
+            Printer.printTestsStatistic(countTests, countPassed, countTests - countPassed);
+        }
 
-    public boolean runFile(String[] args) {
-        File input = new File(args[0]);
-        if (!input.exists()) return false;
-        return tester.test(input);
+        return status;
     }
 
     public boolean runAllTests() {
         Printer.printTask("Running all tests");
         Printer.printDelimiter();
-        return runTests(Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list()));
+
+        List<String> folders = Arrays.asList(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
+
+        return runTests((String[]) folders.toArray(), false);
     }
 }
