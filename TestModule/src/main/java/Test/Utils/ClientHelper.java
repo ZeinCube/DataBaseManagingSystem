@@ -49,7 +49,18 @@ public class ClientHelper {
         clientWriter.flush();
 
         try {
-            return clientReader.readLine();
+            StringBuilder builder = new StringBuilder();
+
+            while(true) {
+                String s = clientReader.readLine().trim();
+                if (s.equals(".done.")) {
+                    break;
+                }
+
+                builder.append(s).append("\n");
+            }
+
+            return builder.toString();
         } catch (IOException e) {
             Printer.printError(e);
             return e.getMessage();

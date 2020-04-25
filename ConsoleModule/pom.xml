@@ -30,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Console.ImprovedConsole</mainClass>
+                            <mainClass>Console.Console</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -278,4 +278,8 @@ public class Listener extends DBGrammarBaseListener {
         return messageRet;
     }
 
+    public void clearMessageRet() {
+        messageRet = null;
+    }
+
 }

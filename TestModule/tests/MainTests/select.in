@@ -1,0 +1,15 @@
+[@Clear]
+
+[@PrintLevel] EXTENDED
+
+CREATE TABLE t (id INTEGER PRIMARY KEY);
+
+[@Echo] Testing SHOW CREATE
+SHOW CREATE TABLE t;
+
+[@Echo] Testing insert
+INSERT INTO t values (1, 2, 3);
+
+[@Echo] Testing select
+SELECT id FROM TABLE t;
+

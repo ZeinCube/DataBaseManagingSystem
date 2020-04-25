@@ -120,6 +120,10 @@ public class Printer {
     }
 
     public static void printTestQuery(String query, String result) {
+        if (result.contains("\n")) {
+            result = "\n" + result;
+        }
+
         System.out.println(TEXT_PURPLE + "[TestQuery]" + RESET + "\n" + "\tQuery: " + query + "\n" + "\tResult: " + result);
     }
 

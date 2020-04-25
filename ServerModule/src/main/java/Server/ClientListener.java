@@ -1,7 +1,6 @@
 package Server;
 
-import Engine.API;
-import Logic.ImprovedParserManager;
+import Logic.ParserManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,7 +12,7 @@ public class ClientListener extends Thread {
     private Socket socket;
     private DataInputStream is;
     private DataOutputStream os;
-    private ImprovedParserManager manager = new ImprovedParserManager();
+    private ParserManager manager = new ParserManager();
 
     public ClientListener(Socket socket) throws Exception {
         this.socket = socket;
@@ -41,10 +40,11 @@ public class ClientListener extends Thread {
                     break;
                 }
 
-                os.writeUTF(manager.parse(message).trim());
+                os.writeUTF(manager.parse(message).concat("\n.done."));
                 os.flush();
             } catch (IOException e) {
                 System.err.println("No connection: " + e.getMessage());
+                break;
             }
         }
     }

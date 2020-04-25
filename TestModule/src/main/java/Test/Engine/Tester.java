@@ -125,8 +125,6 @@ public class Tester {
 
             for (TesterRunner runner : runners) {
                 runner.join();
-                Printer.newLine();
-                Printer.printTestStatistic(runner.getTestName(), runner.getStatusCounter().toString());
             }
         } catch (InterruptedException e) {
             Printer.printError(e);
@@ -161,7 +159,9 @@ public class Tester {
             if (preprocessor.isPreprocessorCommand(query)) {
                 queries.addAll(preprocessor.parsePreprocessorCommand(query, getNextCommand(queriesScanner)));
             } else {
-                queries.add(query);
+                if (!query.isEmpty()) {
+                    queries.add(query);
+                }
             }
         }
 
