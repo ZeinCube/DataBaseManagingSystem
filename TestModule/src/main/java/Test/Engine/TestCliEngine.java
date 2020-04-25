@@ -1,13 +1,12 @@
 package Test.Engine;
 
-import Test.Utils.Printer;;
+import Test.Utils.Printer;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +14,7 @@ import java.util.Objects;
 
 public class TestCliEngine {
 
-    private Tester tester;
+    private final Tester tester;
 
     public TestCliEngine() {
         Printer.printDelimiter();
@@ -52,7 +51,7 @@ public class TestCliEngine {
             }
         }
 
-        return false;
+        return status;
     }
 
     public void listTests() {
@@ -111,9 +110,10 @@ public class TestCliEngine {
     }
 
     public boolean runFile(String[] args) {
-        File input = new File(args[0]);
-        if (!input.exists()) return false;
-        return tester.test(input);
+        return true;
+//        File input = new File(args[0]);
+//        if (!input.exists()) return false;
+//        return tester.test(input);
     }
 
     public boolean runAllTests() {

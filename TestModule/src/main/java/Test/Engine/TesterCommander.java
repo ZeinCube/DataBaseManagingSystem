@@ -21,7 +21,6 @@ public class TesterCommands {
     }
 
     public static final String FRAMEWORK_COMMAND_PREFIX = "[@";
-    public static final String PREPROCESSOR_COMMAND_PREFIX = "[#";
 
     public static final String PRINT_LEVEL_COMMAND = "[@PrintLevel]";
     public static final String CLEAR_COMMAND = "[@Clear]";
@@ -30,8 +29,6 @@ public class TesterCommands {
     public static final String WAIT_SERVER_COMMAND = "[@WaitServer]";
     public static final String NO_OUTPUT_COMMAND = "[@NoOutput]";
     public static final String ECHO_COMMAND = "[@Echo]";
-
-    public static final String REPEAT_COMMAND = "[#Repeat]";
 
     public enum PRINT_LEVEL {NONE, MAIN, EXTENDED}
 
@@ -43,18 +40,6 @@ public class TesterCommands {
 
     public boolean isFrameworkCommand(String cmd) {
         return cmd.startsWith(FRAMEWORK_COMMAND_PREFIX);
-    }
-
-    public boolean isPreprocessorCommand(String cmd) {
-        return cmd.startsWith(PREPROCESSOR_COMMAND_PREFIX);
-    }
-
-    public ArrayList<String> parsePreprocessorCommand(String cmd, String query) {
-        if (cmd.startsWith(REPEAT_COMMAND)) {
-            return repeatQuery(cmd, query);
-        }
-
-        return new ArrayList<>();
     }
 
     public void parseFrameworkCommand(String cmd) {
@@ -73,25 +58,6 @@ public class TesterCommands {
         } else if (cmd.startsWith(ECHO_COMMAND)) {
             echoCommand(cmd);
         }
-    }
-
-
-    // #########################
-    // Preprocessor commands
-    // #########################
-
-    // [#Repeat] command
-
-    public ArrayList<String> repeatQuery(String cmd, String query) {
-        ArrayList<String> queries = new ArrayList<>();
-
-        int n = Integer.parseInt(cmd.split(" ")[1]);
-
-        for (int i = 1; i <= n; i++) {
-            queries.add(query.replaceAll("\\$i", String.valueOf(i)));
-        }
-
-        return queries;
     }
 
 

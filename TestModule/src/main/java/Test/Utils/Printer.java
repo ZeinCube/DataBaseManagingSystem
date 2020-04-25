@@ -1,6 +1,9 @@
 package Test.Utils;
 
 
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 public class Printer {
     public static final String DELIMITER =
             "--------------------------------------------------------------------------------";
@@ -33,6 +36,45 @@ public class Printer {
     public static final String BACKGROUND_PURPLE = "\u001B[45m";
     public static final String BACKGROUND_CYAN = "\u001B[46m";
     public static final String BACKGROUND_WHITE = "\u001B[47m";
+
+
+    // ##################
+    // System.out helper
+    // ##################
+
+    public static final PrintStream SYSTEM_OUT = System.out;
+
+    private static boolean systemOutGlobalOff = false;
+
+    public static void offSystemOut() {
+        System.setOut(new PrintStream(new OutputStream() {
+            public void write(int b) {
+            }
+        }));
+    }
+
+    public static void resetSystemOut() {
+        if (!systemOutGlobalOff) {
+            System.setOut(SYSTEM_OUT);
+        }
+    }
+
+    public static void globalOffSystemOut() {
+        systemOutGlobalOff = true;
+        offSystemOut();
+    }
+
+    public static void globalResetSystemOut() {
+        System.setOut(new PrintStream(new OutputStream() {
+            public void write(int b) {
+            }
+        }));
+    }
+
+
+    // ##################
+    // Printer commands
+    // ##################
 
     public static void printMessage(String msg) {
         System.out.println(msg);

@@ -16,10 +16,10 @@ public class Configurator {
     public Configurator() {
         Printer.printInfo("Initializing configuration");
 
-        Printer.printInfo("Checking client server status");
-        if (!checkClientServer())
-            Printer.printCriticalErrorAndExit(new ClientServerDownException());
-        Printer.printInfo("Client Server OK");
+        Printer.printInfo("Checking server status");
+        if (!ServerHelper.getServerStatus())
+            Printer.printCriticalErrorAndExit(new ClientServerDownException("Server is down"));
+        Printer.printInfo("Server OK");
 
         config = new File(System.getProperty("user.home") + "/.dbms_tests_config");
 
@@ -98,10 +98,6 @@ public class Configurator {
         }
 
         return test_folder_path;
-    }
-
-    public boolean checkClientServer() {
-        return CSWorker.getClientStatus() && CSWorker.getServerStatus();
     }
 
     public String getTempFolder() {
