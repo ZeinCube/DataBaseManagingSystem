@@ -1,22 +1,21 @@
 package Test.Engine;
 
 import Test.Exceptions.DropDatabaseException;
-import Test.Utils.CSWorker;
+import Test.Utils.ClientHelper;
 import Test.Utils.Printer;
+import Test.Utils.ServerHelper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
 
-public class TesterCommands {
+public class TesterCommander {
 
-    public TesterCommands() {
-        systemOutCopy = System.out;
+    private final ClientHelper clientHelper;
+
+    public TesterCommander(ClientHelper clientHelper) {
+        this.clientHelper = clientHelper;
         printLevel = PRINT_LEVEL.MAIN;
-        waitServer = false;
         noOutput = false;
     }
 
@@ -26,16 +25,13 @@ public class TesterCommands {
     public static final String CLEAR_COMMAND = "[@Clear]";
     public static final String SLEEP_COMMAND = "[@Sleep]";
     public static final String RESTART_SERVER_COMMAND = "[@RestartServer]";
-    public static final String WAIT_SERVER_COMMAND = "[@WaitServer]";
     public static final String NO_OUTPUT_COMMAND = "[@NoOutput]";
     public static final String ECHO_COMMAND = "[@Echo]";
 
     public enum PRINT_LEVEL {NONE, MAIN, EXTENDED}
 
-    private final PrintStream systemOutCopy;
     private PRINT_LEVEL printLevel;
 
-    private boolean waitServer;
     private boolean noOutput;
 
     public boolean isFrameworkCommand(String cmd) {
@@ -51,8 +47,6 @@ public class TesterCommands {
             sleepCommand(cmd);
         } else if (cmd.startsWith(RESTART_SERVER_COMMAND)) {
             restartServer(cmd);
-        } else if (cmd.startsWith(WAIT_SERVER_COMMAND)) {
-            toggleWaitServer();
         } else if (cmd.startsWith(NO_OUTPUT_COMMAND)) {
             noOutputToggle();
         } else if (cmd.startsWith(ECHO_COMMAND)) {
@@ -62,53 +56,32 @@ public class TesterCommands {
 
 
     // #########################
-    // Framework commands
-    // #########################
-
     // [@PrintLevel] command
+    // #########################
 
     public PRINT_LEVEL getPrintLevel() {
         return printLevel;
-    }
-
-    public void resetPrintLevel() {
-        this.printLevel = PRINT_LEVEL.MAIN;
     }
 
     public void setPrintLevel(PRINT_LEVEL printLevel) {
         this.printLevel = printLevel;
     }
 
-    private void offSystemOut() {
-        try {
-            System.setOut(new PrintStream(new OutputStream() {
-                public void write(int b) {
-                }
-            }));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void resetSystemOut() {
-        System.setOut(systemOutCopy);
-    }
-
     private void configPrintLevel(String cmd) {
-        String printLevel = cmd.replace(TesterCommands.PRINT_LEVEL_COMMAND, "").trim();
+        String printLevel = cmd.replace(TesterCommander.PRINT_LEVEL_COMMAND, "").trim();
         boolean flag = false;
-        for (TesterCommands.PRINT_LEVEL level : TesterCommands.PRINT_LEVEL.values()) {
+        for (TesterCommander.PRINT_LEVEL level : TesterCommander.PRINT_LEVEL.values()) {
             if (level.name().equals(printLevel)) {
                 setPrintLevel(level);
                 flag = true;
 
-                if (getPrintLevel() == TesterCommands.PRINT_LEVEL.NONE) {
-                    offSystemOut();
+                if (getPrintLevel() == TesterCommander.PRINT_LEVEL.NONE) {
+                    Printer.offSystemOut();
                 } else {
-                    resetSystemOut();
+                    Printer.resetSystemOut();
                 }
 
-                if (getPrintLevel() == TesterCommands.PRINT_LEVEL.EXTENDED) {
+                if (getPrintLevel() == TesterCommander.PRINT_LEVEL.EXTENDED) {
                     Printer.printTestInfo("PrintLevel set to " + printLevel);
                 }
             }
@@ -120,7 +93,9 @@ public class TesterCommands {
     }
 
 
+    // #########################
     // [@Echo] command
+    // #########################
 
     private void echoCommand(String cmd) {
         String line = cmd.replace(ECHO_COMMAND, "").trim();
@@ -128,7 +103,9 @@ public class TesterCommands {
     }
 
 
+    // #########################
     // [@NoOutput] command
+    // #########################
 
     private void noOutputToggle() {
         noOutput = !noOutput;
@@ -139,7 +116,9 @@ public class TesterCommands {
     }
 
 
+    // #########################
     // [@Clear] command
+    // #########################
 
     private void clearCommand() {
         try {
@@ -149,16 +128,18 @@ public class TesterCommands {
             Printer.printCriticalError(new DropDatabaseException());
         }
 
-        if (printLevel == TesterCommands.PRINT_LEVEL.EXTENDED) {
+        if (printLevel == TesterCommander.PRINT_LEVEL.EXTENDED) {
             Printer.printTestInfo("Database dropped");
         }
     }
 
 
+    // #########################
     // [@Sleep] command
+    // #########################
 
     private void sleepCommand(String cmd) {
-        String time = cmd.replace(TesterCommands.SLEEP_COMMAND, "").trim();
+        String time = cmd.replace(TesterCommander.SLEEP_COMMAND, "").trim();
         try {
             Thread.sleep(new Integer(time));
         } catch (InterruptedException e) {
@@ -167,7 +148,9 @@ public class TesterCommands {
     }
 
 
+    // #########################
     // [@RestartServer]
+    // #########################
 
     private void restartServer(String cmd) {
         cmd = cmd.replace(RESTART_SERVER_COMMAND, "").trim();
@@ -183,27 +166,27 @@ public class TesterCommands {
 
     private void restartServer() {
         if (printLevel == PRINT_LEVEL.EXTENDED) {
-            Printer.printInfo("Killing server with id " + CSWorker.getServerIdentityId());
+            Printer.printInfo("Killing server with id " + ServerHelper.getServerIdentityId());
         }
 
         try {
 
-            CSWorker.forceRestartServer();
-            while (!CSWorker.getServerStatus()) {
+            ServerHelper.forceRestartServer();
+            while (!ServerHelper.getServerStatus()) {
                 Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
-                Printer.printInfo("Started server with id " + CSWorker.getServerIdentityId());
+                Printer.printInfo("Started server with id " + ServerHelper.getServerIdentityId());
             }
 
-            CSWorker.restartClient();
-            while (!CSWorker.getClientStatus()) {
+            clientHelper.restartClient();
+            while (!clientHelper.getClientStatus()) {
                 Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
-                Printer.printInfo("Client connected to server with id " + CSWorker.getServerIdentityId());
+                Printer.printInfo("Client connected to server with id " + ServerHelper.getServerIdentityId());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -220,16 +203,5 @@ public class TesterCommands {
         }
 
         restartServer();
-    }
-
-
-    // [@WaitServer]
-
-    private void toggleWaitServer() {
-        waitServer = !waitServer;
-    }
-
-    public boolean isWaitServer() {
-        return waitServer;
     }
 }
