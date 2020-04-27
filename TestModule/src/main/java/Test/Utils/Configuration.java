@@ -64,7 +64,7 @@ public class Configuration {
         } catch (IOException | BadConfigException e) {
             Printer.printCriticalErrorAndExit(e);
         }
-        
+
         return configuration;
     }
 }

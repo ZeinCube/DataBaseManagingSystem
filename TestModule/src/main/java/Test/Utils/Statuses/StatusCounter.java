@@ -1,6 +1,5 @@
 package Test.Utils.Statuses;
 
-
 public class StatusCounter {
     private int DB_ERROR_COUNT = 0;
     private int PARSER_ERROR_COUNT = 0;

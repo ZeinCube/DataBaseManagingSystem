@@ -1,6 +1,5 @@
 package Test.Exceptions;
 
-
 public class TestWrongResultException extends Exception {
     public TestWrongResultException() {
         super("Wrong test result");

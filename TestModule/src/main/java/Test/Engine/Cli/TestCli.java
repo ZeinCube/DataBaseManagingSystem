@@ -6,7 +6,6 @@ import Test.Utils.Printer;
 import java.util.Arrays;
 import java.util.Scanner;
 
-
 public class TestCli {
     private TestCliEngine engine;
 

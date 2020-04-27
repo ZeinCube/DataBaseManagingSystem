@@ -57,7 +57,6 @@ public class TesterCommander {
         }
     }
 
-
     // #########################
     // [@PrintLevel] command
     // #########################
@@ -99,7 +98,6 @@ public class TesterCommander {
         }
     }
 
-
     // #########################
     // [@Echo] command
     // #########################
@@ -108,7 +106,6 @@ public class TesterCommander {
         String line = cmd.replace(ECHO_COMMAND, "").trim();
         Printer.printTestInfo(line);
     }
-
 
     // #########################
     // [@NoOutput] command
@@ -121,7 +118,6 @@ public class TesterCommander {
     public boolean isNoOutput() {
         return noOutput;
     }
-
 
     // #########################
     // [@Clear] command
@@ -144,7 +140,6 @@ public class TesterCommander {
         }
     }
 
-
     // #########################
     // [@Sleep] command
     // #########################
@@ -157,7 +152,6 @@ public class TesterCommander {
             e.printStackTrace();
         }
     }
-
 
     // #########################
     // [@RestartServer]
