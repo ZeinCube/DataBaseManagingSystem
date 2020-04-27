@@ -1,3 +1,5 @@
+package DBMSNioServer;
+
 import Logic.ParserManager;
 
 import java.io.IOException;
@@ -12,8 +14,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class DBMSNioServer implements Runnable {
-    private final Logger log = Logger.getLogger("DBMS Nio Server");
+public class DBMSNioServer implements Runnable {
+    private Logger logger = null;
 
     private final int BUFFER_SIZE = 2048;
     private final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -22,11 +24,23 @@ class DBMSNioServer implements Runnable {
     private Selector selector;
     private int port = 10274;
 
+
     public DBMSNioServer() throws IOException {
         initServer();
     }
 
+    public DBMSNioServer(Logger logger) throws IOException {
+        this.logger = logger;
+        initServer();
+    }
+
     public DBMSNioServer(int port) throws IOException {
+        this.port = port;
+        initServer();
+    }
+
+    public DBMSNioServer(int port, Logger logger) throws IOException {
+        this.logger = logger;
         this.port = port;
         initServer();
     }
@@ -41,7 +55,9 @@ class DBMSNioServer implements Runnable {
 
     @Override
     public void run() {
-        log.info("Server started on port " + this.port);
+        if (logger != null) {
+            logger.info("Server started on port " + this.port);
+        }
 
         try {
             Iterator<SelectionKey> iterator;
@@ -73,7 +89,9 @@ class DBMSNioServer implements Runnable {
                 }
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, "Exception", e);
+            if (logger != null) {
+                logger.log(Level.SEVERE, "Exception", e);
+            }
         }
     }
 
@@ -87,7 +105,9 @@ class DBMSNioServer implements Runnable {
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ, address.toString());
 
-        log.info("Accepted connection from: " + address.toString());
+        if (logger != null) {
+            logger.info("Accepted connection from: " + address.toString());
+        }
     }
 
     private void handleRead(SelectionKey key) throws IOException {
@@ -107,7 +127,9 @@ class DBMSNioServer implements Runnable {
 
         String query = queryBuilder.toString();
 
-        log.info("Got " + query.getBytes().length + " bytes from client " + getAddress((SocketChannel) key.channel()));
+        if (logger != null) {
+            logger.info("Got " + query.getBytes().length + " bytes from client " + getAddress((SocketChannel) key.channel()));
+        }
 
         if (query.equals("exit") || read < 0) {
             clientChannel.close();
@@ -117,7 +139,13 @@ class DBMSNioServer implements Runnable {
 
         String msg = manager.parse(query).trim();
 
-        log.info("Sent " + msg.getBytes().length + " bytes to client " + getAddress((SocketChannel) key.channel()));
+        if (msg.isEmpty()) {
+            msg = "Operation done";
+        }
+
+        if (logger != null) {
+            logger.info("Sent " + msg.getBytes().length + " bytes to client " + getAddress((SocketChannel) key.channel()));
+        }
 
         clientChannel.write(ByteBuffer.wrap(msg.getBytes()));
     }
@@ -127,7 +155,10 @@ class DBMSNioServer implements Runnable {
     }
 
     private void disconnectClient(SelectionKey key) {
-        log.info("Disconnected client : " + getAddress((SocketChannel) key.channel()));
+        if (logger != null) {
+            logger.info("Disconnected client : " + getAddress((SocketChannel) key.channel()));
+        }
+
         key.cancel();
     }
 
@@ -135,7 +166,7 @@ class DBMSNioServer implements Runnable {
         DBMSNioServer server = null;
 
         try {
-            server = new DBMSNioServer();
+            server = new DBMSNioServer(Logger.getLogger("DBMSNioServer"));
         } catch (IOException e) {
             System.out.println("Unable to start server");
             e.printStackTrace();

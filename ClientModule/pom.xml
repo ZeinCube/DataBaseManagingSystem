@@ -20,9 +20,11 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>DBMSClient</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>ClientRunner</mainClass>
+                            <mainClass>DBMSClient.ClientRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

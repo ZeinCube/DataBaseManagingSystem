@@ -1,3 +1,5 @@
+package DBMSClient;
+
 import java.util.Scanner;
 
 public class ClientRunner {
@@ -14,7 +16,7 @@ public class ClientRunner {
 
             if (line.equals("exit")) {
                 client.disconnect();
-                break;
+                System.exit(0);
             }
 
             builder.append(line);

@@ -28,9 +28,11 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>DBMSNioServer</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>DBMSNioServer</mainClass>
+                            <mainClass>DBMSNioServer.DBMSNioServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

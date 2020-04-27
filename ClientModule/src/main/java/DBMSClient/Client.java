@@ -1,9 +1,11 @@
+package DBMSClient;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
     private final int BUFFER_SIZE = 2048;
@@ -13,10 +15,16 @@ public class Client {
     private String hostname = "localhost";
     private int port = 10274;
 
+    private PrintStream printStream = System.out;
+    private PrintStream errorStream = System.err;
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
-    private Scanner scanner = new Scanner(System.in);
 
+    public Client(PrintStream printStream, PrintStream errorStream) {
+        this.printStream = printStream;
+        this.errorStream = errorStream;
+        connect();
+    }
 
     public Client() {
         connect();
@@ -53,16 +61,23 @@ public class Client {
                 result.append(new String(buffer));
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            errorStream.println(e.getMessage());
+            result = new StringBuilder("Connection lost");
             reconnect();
         }
 
         return result.toString().trim();
     }
 
+    public boolean getStatus() {
+        return !socket.isClosed();
+    }
+
     public void reconnect() {
-        System.out.println("Trying to reconnect");
-        connect();
+        if (!getStatus()) {
+            printStream.println("Trying to reconnect");
+            connect();
+        }
     }
 
     public void disconnect() {
@@ -71,11 +86,10 @@ public class Client {
             outputStream.close();
             socket.close();
         } catch (IOException e) {
-            System.err.println("Exception: " + e.getMessage());
+            errorStream.println("Exception: " + e.getMessage());
         }
 
-        System.out.println("Connection closed");
-        System.exit(0);
+        printStream.println("Connection closed");
     }
 
     private void connect() {
@@ -83,15 +97,14 @@ public class Client {
             socket = new Socket(InetAddress.getByName(hostname), port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Connected to DBMS Server on port: " + port);
+            printStream.println("Connected to DBMS Server on port: " + port);
         } catch (Exception e) {
-            System.err.println("Connection failed. Trying again");
+            errorStream.println("Connection failed. Trying again");
 
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException interruptedException) {
-                System.err.println("Critical error: " + interruptedException.getMessage());
-                System.exit(0);
+                errorStream.println("Critical error: " + interruptedException.getMessage());
             }
 
             connect();
