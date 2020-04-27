@@ -1,6 +1,7 @@
 package Test.Utils;
 
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -42,15 +43,21 @@ public class Printer {
     // System.out helper
     // ##################
 
-    public static final PrintStream SYSTEM_OUT = System.out;
+    public static PrintStream SYSTEM_OUT;
 
     private static boolean systemOutGlobalOff = false;
 
-    public static void offSystemOut() {
-        System.setOut(new PrintStream(new OutputStream() {
-            public void write(int b) {
+    public static PrintStream getEmptyPrintStream() {
+        return new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+
             }
-        }));
+        });
+    }
+
+    public static void offSystemOut() {
+        System.setOut(getEmptyPrintStream());
     }
 
     public static void resetSystemOut() {

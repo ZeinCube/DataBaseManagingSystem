@@ -2,7 +2,7 @@ package Test.Exceptions;
 
 public class ClientDownException extends Exception {
     public ClientDownException() {
-        super("Client is down");
+        super("DBMSClient.Client is down");
     }
 
     public ClientDownException(String message) {

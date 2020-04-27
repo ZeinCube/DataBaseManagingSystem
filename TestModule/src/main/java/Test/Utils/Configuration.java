@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
-class Configuration {
+public class Configuration {
     @JsonProperty
     private String testsFolder;
 
@@ -53,7 +53,7 @@ class Configuration {
         return testFolderPath;
     }
 
-    public static void load() {
+    public static Configuration load() {
         Path config = Paths.get(System.getProperty("user.home"), ".dbms_testing_config");
         ObjectMapper mapper = new ObjectMapper();
         Configuration configuration = null;
@@ -64,5 +64,7 @@ class Configuration {
         } catch (IOException | BadConfigException e) {
             Printer.printCriticalErrorAndExit(e);
         }
+        
+        return configuration;
     }
 }

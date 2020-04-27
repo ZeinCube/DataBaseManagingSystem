@@ -4,10 +4,13 @@ import Test.Exceptions.DropDatabaseException;
 import Test.Utils.ClientHelper;
 import Test.Utils.Printer;
 import Test.Utils.ServerHelper;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 
 public class TesterCommander {
 
@@ -126,7 +129,11 @@ public class TesterCommander {
 
     private void clearCommand() {
         try {
-            FileUtils.deleteDirectory(new File(System.getProperty("user.home") + "/.dbms"));
+            Files.walk(Paths.get(System.getProperty("user.home"), ".dbms"))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            Files.createDirectory(Paths.get(System.getProperty("user.home"), ".dbms"));
         } catch (IOException e) {
             Printer.printCriticalError(e);
             Printer.printCriticalError(new DropDatabaseException());
@@ -170,27 +177,25 @@ public class TesterCommander {
 
     private void restartServer() {
         if (printLevel == PRINT_LEVEL.EXTENDED) {
-            Printer.printInfo("Killing server with id " + ServerHelper.getServerIdentityId());
+            Printer.printInfo("Killing server");
         }
 
         try {
-
             ServerHelper.forceRestartServer();
             while (!ServerHelper.getServerStatus()) {
                 Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
-                Printer.printInfo("Started server with id " + ServerHelper.getServerIdentityId());
+                Printer.printInfo("Started server");
             }
 
-            clientHelper.restartClient();
             while (!clientHelper.getClientStatus()) {
                 Thread.sleep(10);
             }
 
             if (printLevel == PRINT_LEVEL.EXTENDED) {
-                Printer.printInfo("Client connected to server with id " + ServerHelper.getServerIdentityId());
+                Printer.printInfo("Client connected to server");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

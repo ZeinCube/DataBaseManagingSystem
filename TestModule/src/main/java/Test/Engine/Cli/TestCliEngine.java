@@ -23,7 +23,7 @@ public class TestCliEngine {
 
         tester = new Tester();
 
-        Printer.printInfo("Tests folder: " + tester.getConfigurator().getTESTS_FOLDER());
+        Printer.printInfo("Tests folder: " + tester.getConfiguration().getTestsFolder());
         Printer.printDelimiter();
     }
 
@@ -33,7 +33,7 @@ public class TestCliEngine {
         for (String name : testNames) {
             Printer.printTask("Creating test <" + name + ">");
 
-            String test_dir = tester.getConfigurator().getTESTS_FOLDER().concat(name);
+            String test_dir = tester.getConfiguration().getTestsFolder().concat(name);
             String test_results_dir = test_dir.concat("/results");
             String test_expected_dir = test_dir.concat("/expected");
 
@@ -56,7 +56,7 @@ public class TestCliEngine {
     }
 
     public void listTests() {
-        for (String f : Objects.requireNonNull(new File(tester.getConfigurator().getTESTS_FOLDER()).list())) {
+        for (String f : Objects.requireNonNull(new File(tester.getConfiguration().getTestsFolder()).list())) {
             Printer.printListElement(f);
         }
     }
@@ -66,7 +66,7 @@ public class TestCliEngine {
 
         for (String name : args) {
             Printer.printTask("Deleting test <" + name + ">");
-            File testFolder = new File(tester.getConfigurator().getTESTS_FOLDER() + name);
+            File testFolder = new File(tester.getConfiguration().getTestsFolder() + name);
             if (testFolder.exists()) {
                 try {
                     Files.walk(Paths.get(String.valueOf(testFolder)))
@@ -94,7 +94,7 @@ public class TestCliEngine {
         boolean status = true;
 
         for (String testName : args) {
-            if (tester.getConfigurator().getTestFolder(testName) == null) {
+            if (tester.getConfiguration().getTestPath(testName) == null) {
                 Printer.printError("Test <" + testName + "> does not exist");
                 continue;
             }
@@ -121,7 +121,7 @@ public class TestCliEngine {
         Printer.printTask("Running all tests");
         Printer.printDelimiter();
 
-        List<String> folders = Arrays.asList(new File(tester.getConfigurator().getTESTS_FOLDER()).list());
+        List<String> folders = Arrays.asList(new File(tester.getConfiguration().getTestsFolder()).list());
 
         return runTests((String[]) folders.toArray(), false);
     }

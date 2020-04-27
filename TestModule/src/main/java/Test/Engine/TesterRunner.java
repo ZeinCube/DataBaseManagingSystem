@@ -20,7 +20,6 @@ public class TesterRunner extends Thread {
     public TesterRunner(Test test) {
         this.test = test;
         clientHelper = new ClientHelper();
-        clientHelper.runClient();
         commands = new TesterCommander(clientHelper);
         statusCounter = new StatusCounter();
     }
@@ -62,7 +61,7 @@ public class TesterRunner extends Thread {
             statusCounter.parse(status);
 
             if (commands.getPrintLevel() == TesterCommander.PRINT_LEVEL.EXTENDED) {
-                Printer.printTestQuery(query, answer);
+                Printer.printTestQuery(query, answer.isEmpty() ? "empty" : answer);
             }
 
             if (!commands.isNoOutput()) {

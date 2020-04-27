@@ -1,8 +1,9 @@
 package Test.Engine;
 
 import Test.Exceptions.TestWrongResultException;
-import Test.Utils.Configurator;
+import Test.Utils.Configuration;
 import Test.Utils.Printer;
+import Test.Utils.ServerHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,22 +13,24 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Tester {
-    private final Configurator configurator;
+    private final Configuration configuration;
     private final TesterPreprocessor preprocessor;
 
     public Tester() {
-        configurator = new Configurator();
+        configuration = Configuration.load();
         preprocessor = new TesterPreprocessor();
+        ServerHelper.SERVER_JAR = configuration.getServerJar();
+        ServerHelper.runServer();
     }
 
-    public Configurator getConfigurator() {
-        return configurator;
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     private ArrayList<Test> prepareTests(String testName) throws IOException {
         ArrayList<Test> tests = new ArrayList<>();
 
-        String testFolder = configurator.getTestFolder(testName);
+        String testFolder = configuration.getTestPath(testName).toAbsolutePath().toString() + "/";
         String[] testFiles = new File(testFolder).list((file, s) -> s.endsWith(".in"));
 
         if (testFiles == null) return tests;
