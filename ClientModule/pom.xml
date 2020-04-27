@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Client.Client</mainClass>
+                            <mainClass>ClientRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

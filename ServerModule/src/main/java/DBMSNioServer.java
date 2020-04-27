@@ -9,14 +9,18 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 class DBMSNioServer implements Runnable {
+    private final Logger log = Logger.getLogger("DBMS Nio Server");
+
+    private final int BUFFER_SIZE = 2048;
+    private final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
     private final ParserManager manager = new ParserManager();
-    private final ByteBuffer buffer = ByteBuffer.allocate(2048);
-
-    private int port = 10274;
-
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
+    private int port = 10274;
 
     public DBMSNioServer() throws IOException {
         initServer();
@@ -37,10 +41,9 @@ class DBMSNioServer implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Started server on port " + this.port);
+        log.info("Server started on port " + this.port);
 
         try {
-
             Iterator<SelectionKey> iterator;
             SelectionKey key = null;
             while (this.serverSocketChannel.isOpen()) {
@@ -70,7 +73,7 @@ class DBMSNioServer implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Exception", e);
         }
     }
 
@@ -83,40 +86,38 @@ class DBMSNioServer implements Runnable {
 
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ, address.toString());
-        clientChannel.write(ByteBuffer.wrap("Connected to DBMS NIO Server".getBytes()));
 
-        System.out.println("Accepted connection from: " + address.toString());
+        log.info("Accepted connection from: " + address.toString());
     }
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
-        StringBuilder query = new StringBuilder();
+        StringBuilder queryBuilder = new StringBuilder();
 
-        buffer.clear();
-        int read = 0;
-
+        int read;
         while ((read = clientChannel.read(buffer)) > 0) {
             buffer.flip();
 
             byte[] bytes = new byte[buffer.limit()];
             buffer.get(bytes);
 
-            query.append(new String(bytes));
+            queryBuilder.append(new String(bytes));
             buffer.clear();
         }
 
-        if (query.equals("exit;")) {
+        String query = queryBuilder.toString();
+
+        log.info("Got " + query.getBytes().length + " bytes from client " + getAddress((SocketChannel) key.channel()));
+
+        if (query.equals("exit") || read < 0) {
+            clientChannel.close();
             disconnectClient(key);
             return;
         }
 
-        String msg;
-        if (read < 0) {
-            msg = "Client " + getAddress(clientChannel) + " disconnected\n";
-            clientChannel.close();
-        } else {
-            msg = manager.parse(query.toString());
-        }
+        String msg = manager.parse(query).trim();
+
+        log.info("Sent " + msg.getBytes().length + " bytes to client " + getAddress((SocketChannel) key.channel()));
 
         clientChannel.write(ByteBuffer.wrap(msg.getBytes()));
     }
@@ -126,7 +127,7 @@ class DBMSNioServer implements Runnable {
     }
 
     private void disconnectClient(SelectionKey key) {
-        System.out.println("Disconnected client : " + getAddress((SocketChannel) key.channel()));
+        log.info("Disconnected client : " + getAddress((SocketChannel) key.channel()));
         key.cancel();
     }
 
