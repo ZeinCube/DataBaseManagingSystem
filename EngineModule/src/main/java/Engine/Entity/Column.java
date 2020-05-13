@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * The type Column.
+ */
 public class Column implements Serializable {
 
     private String columnName;
@@ -14,25 +17,40 @@ public class Column implements Serializable {
     private Class valueClass;
     private ArrayList<Cell> values;
 
+    /**
+     * Instantiates a new Column.
+     *
+     * @param columnName the column name
+     * @param valueClass the value class
+     * @param unique     the unique
+     * @param primaryKey the primary key
+     */
     public Column(String columnName, Class valueClass, boolean unique, boolean primaryKey) {
         PRIMARY_KEY = primaryKey;
 
         this.valueClass = valueClass;
+        this.columnName = columnName;
 
         UNIQUE = primaryKey || unique;
 
-        this.columnName = columnName;
     }
 
 
+    /**
+     * Instantiates a new Column.
+     *
+     * @param columnName  the column name
+     * @param valueClass  the value class
+     * @param primary_key the primary key
+     */
     public Column(String columnName, Class valueClass, boolean primary_key) {
         PRIMARY_KEY = primary_key;
 
         this.valueClass = valueClass;
+        this.columnName = columnName;
 
         UNIQUE = primary_key;
 
-        this.columnName = columnName;
     }
 
     @Override
@@ -46,6 +64,11 @@ public class Column implements Serializable {
         return result;
     }
 
+    /**
+     * Gets meta.
+     *
+     * @return the meta
+     */
     public MetaColumn getMeta() {
         MetaColumn meta = new MetaColumn();
         meta.setPRIMARY_KEY(this.PRIMARY_KEY);
@@ -55,46 +78,101 @@ public class Column implements Serializable {
         return meta;
     }
 
+    /**
+     * Sets values.
+     *
+     * @param values the values
+     */
     public void setValues(ArrayList<Cell> values) {
         this.values = values;
     }
 
+    /**
+     * Add value.
+     *
+     * @param value the value
+     */
     public void addValue(Cell value) {
         this.values.add(value);
     }
 
+    /**
+     * Delete value.
+     *
+     * @param value the value
+     */
     public void deleteValue(Cell value) {
         this.values.remove(value);
     }
 
+    /**
+     * Gets values.
+     *
+     * @return the values
+     */
     public ArrayList<Cell> getValues() {
         return values;
     }
 
+    /**
+     * Sets column name.
+     *
+     * @param columnName the column name
+     */
     public void setColumnName(String columnName) {
         this.columnName = columnName;
     }
 
+    /**
+     * Gets column name.
+     *
+     * @return the column name
+     */
     public String getColumnName() {
         return columnName;
     }
 
+    /**
+     * Is unique boolean.
+     *
+     * @return the boolean
+     */
     public boolean isUNIQUE() {
         return UNIQUE;
     }
 
+    /**
+     * Sets unique.
+     *
+     * @param UNIQUE the unique
+     */
     public void setUNIQUE(boolean UNIQUE) {
         this.UNIQUE = UNIQUE;
     }
 
+    /**
+     * Is primary key boolean.
+     *
+     * @return the boolean
+     */
     public boolean isPRIMARY_KEY() {
         return PRIMARY_KEY;
     }
 
+    /**
+     * Gets value class.
+     *
+     * @return the value class
+     */
     public Class getValueClass() {
         return valueClass;
     }
 
+    /**
+     * Sets value class.
+     *
+     * @param valueClass the value class
+     */
     public void setValueClass(Class valueClass) {
         this.valueClass = valueClass;
     }

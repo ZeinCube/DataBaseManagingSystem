@@ -8,13 +8,31 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * The type Commitable.
+ */
 @JsonIgnoreProperties(value = {"path"})
 public abstract class Commitable implements Serializable {
 
+    /**
+     * Commit.
+     *
+     * @throws DBMSException the dbms exception
+     */
     public abstract void commit() throws DBMSException;
 
+    /**
+     * Gets path.
+     *
+     * @return the path
+     */
     protected abstract String getPath();
 
+    /**
+     * Save to json.
+     *
+     * @throws DBMSException the dbms exception
+     */
     protected void saveToJSON() throws DBMSException {
         ObjectMapper mapper = new ObjectMapper();
 

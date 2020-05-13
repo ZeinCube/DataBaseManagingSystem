@@ -7,20 +7,32 @@ import Engine.Exceptions.ExistingColumnException;
 import Engine.Exceptions.ExistingPrimaryKeyException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Meta table.
+ */
 @JsonRootName(value = "MetaTable")
 @JsonIgnoreProperties(value = {"create"})
 public class MetaTable {
     private String name;
     private List<MetaColumn> columns;
-    private Class primaryKeyClass;
     private String fileTable;
+    private BigInteger rowsCount;
+    private long lastRowIndex;
+    private long pagesCount;
 
-    public MetaTable(Table table) {
+    /**
+     * Instantiates a new Meta table.
+     *
+     * @param table the table
+     */
+    public MetaTable(@NotNull Table table) {
         this.name = table.getName();
         columns = new ArrayList<>();
 
@@ -28,20 +40,47 @@ public class MetaTable {
             columns.add(entry.getValue().getMeta());
         }
 
-        this.primaryKeyClass = table.getPrimaryKeyClass();
         fileTable = table.getPath();
     }
 
-    public MetaTable(String name, List<MetaColumn> columns, Class primaryKeyClass, String fileTable) {
-        this.name = name;
-        this.columns = columns;
-        this.primaryKeyClass = primaryKeyClass;
-        this.fileTable = fileTable;
+    /**
+     * Instantiates a new Meta table.
+     *
+     * @param name         the name
+     * @param columns      the columns
+     * @param fileTable    the file table
+     * @param lastRowIndex the last row index
+     * @param rowsCount    the rows count
+     * @param pagesCount   the pages count
+     */
+    public MetaTable(
+            String name,
+            List<MetaColumn> columns,
+            String fileTable,
+            long lastRowIndex,
+            BigInteger rowsCount,
+            long pagesCount
+    ) {
+        this.name         = name;
+        this.columns      = columns;
+        this.fileTable    = fileTable;
+        this.lastRowIndex = lastRowIndex;
+        this.rowsCount    = rowsCount;
+        this.pagesCount   = pagesCount;
     }
 
+    /**
+     * Instantiates a new Meta table.
+     */
     public MetaTable() {
     }
 
+    /**
+     * Add column.
+     *
+     * @param column the column
+     * @throws DBMSException the dbms exception
+     */
     public void addColumn(MetaColumn column) throws DBMSException {
         if (columns.contains(column)) {
             throw new ExistingColumnException(column, this);
@@ -54,6 +93,11 @@ public class MetaTable {
         columns.add(column);
     }
 
+    /**
+     * Gets create.
+     *
+     * @return the create
+     */
     public String getCreate() {
         StringBuilder builder = new StringBuilder();
 
@@ -86,36 +130,111 @@ public class MetaTable {
         return builder.toString();
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets name.
+     *
+     * @param name the name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets columns.
+     *
+     * @return the columns
+     */
     public List<MetaColumn> getColumns() {
         return columns;
     }
 
+    /**
+     * Sets columns.
+     *
+     * @param columns the columns
+     */
     public void setColumns(ArrayList<MetaColumn> columns) {
         this.columns = columns;
     }
 
-    public Class getPrimaryKeyClass() {
-        return primaryKeyClass;
-    }
-
-    public void setPrimaryKeyClass(Class primaryKeyClass) {
-        this.primaryKeyClass = primaryKeyClass;
-    }
-
+    /**
+     * Gets file table.
+     *
+     * @return the file table
+     */
     public String getFileTable() {
         return fileTable;
     }
 
+    /**
+     * Sets file table.
+     *
+     * @param fileTable the file table
+     */
     public void setFileTable(String fileTable) {
         this.fileTable = fileTable;
     }
 
+    /**
+     * Gets rows count.
+     *
+     * @return the rows count
+     */
+    public BigInteger getRowsCount() {
+        return rowsCount;
+    }
+
+    /**
+     * Sets rows count.
+     *
+     * @param rowsCount the rows count
+     */
+    public void setRowsCount(BigInteger rowsCount) {
+        this.rowsCount = rowsCount;
+    }
+
+    /**
+     * Gets last row index.
+     *
+     * @return the last row index
+     */
+    public long getLastRowIndex() {
+        return lastRowIndex;
+    }
+
+    /**
+     * Sets last row index.
+     *
+     * @param lastRowIndex the last row index
+     */
+    public void setLastRowIndex(long lastRowIndex) {
+        this.lastRowIndex = lastRowIndex;
+    }
+
+    /**
+     * Gets pages count.
+     *
+     * @return the pages count
+     */
+    public long getPagesCount() {
+        return pagesCount;
+    }
+
+    /**
+     * Sets pages count.
+     *
+     * @param pagesCount the pages count
+     */
+    public void setPagesCount(long pagesCount) {
+        this.pagesCount = pagesCount;
+    }
 }

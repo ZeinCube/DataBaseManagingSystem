@@ -3,6 +3,7 @@ package Engine.Entity.Meta;
 import Engine.Entity.Commitable;
 import Engine.Exceptions.DBMSException;
 import Engine.Exceptions.DropException;
+import Engine.Exceptions.NoTableException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
@@ -39,18 +40,22 @@ public class MetaFile extends Commitable {
         return this;
     }
 
-    public void dropTable(String tableName) throws Exception {
+    public void dropTable(String tableName) throws DropException {
         if (!tables.containsKey(tableName)) {
             throw new DropException("Table with name \"" + tableName + "does not exist\"");
         }
 
-        FileUtils.forceDelete(new File(tables.get(tableName).getFileTable()));
-        tables.remove(tableName);
+        try {
+            FileUtils.forceDelete(new File(tables.get(tableName).getFileTable()));
+            tables.remove(tableName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public MetaTable getTable(String tableName) throws DBMSException {
+    public MetaTable getTable(String tableName) throws NoTableException {
         if (!tables.containsKey(tableName)) {
-            throw new DBMSException("Table with name \"" + tableName + "does not exist\"");
+            throw new NoTableException("Table with name \"" + tableName + "does not exist\"");
         }
 
         return tables.get(tableName);
